@@ -5,6 +5,7 @@ import ExerciseDetails from "./src/screens/ExerciseDetails/ExerciseDetails";
 import {createStackNavigator} from "@react-navigation/stack";
 import ExerciseTabs from "./src/ExerciseTabs";
 import AddExercise from "./src/screens/AddExercise/AddExercise";
+import { colors } from "./src/utils/util";
 
 type StackParamList = {
   Exercises: undefined;
@@ -19,8 +20,8 @@ const App = () => {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="Exercises" component={ExerciseTabs} options={{headerShown: false}} />
-        <Stack.Screen name="Details" component={ExerciseDetails} options={{title: "Exercise Details"}} />
-        <Stack.Screen name="AddExercise" component={AddExercise} options={{title: "Add Exercise"}} />
+        <Stack.Screen name="Details" component={ExerciseDetails} options={{title: "Exercise Details", headerTintColor: colors.onSecondary, headerStyle: {backgroundColor: colors.accent}}} />
+        <Stack.Screen name="AddExercise" component={AddExercise} options={{title: "Add Exercise", headerStyle: {backgroundColor: colors.onSecondary }}} />
       </Stack.Navigator>
     </NavigationContainer>
   );
