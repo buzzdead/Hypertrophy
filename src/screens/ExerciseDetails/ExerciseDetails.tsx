@@ -1,8 +1,10 @@
+// ExerciseDetails/ExerciseDetails.tsx
 import React, {useEffect, useState} from "react";
-import {SafeAreaView, Text} from "react-native";
 import {StackScreenProps} from "@react-navigation/stack";
-import {fetchExerciseById} from "../api/realmAPI";
-import {Exercise} from "../types";
+import {fetchExerciseById} from "../../api/realmAPI";
+import {Exercise} from "../../types";
+import ExerciseDetailsContent from "./ExerciseDetailsContent";
+import LoadingIndicator from "./LoadingIndicator";
 
 type Props = StackScreenProps<
   {
@@ -12,7 +14,7 @@ type Props = StackScreenProps<
 >;
 
 const ExerciseDetails: React.FC<Props> = ({route}) => {
-  const [exercise, setExercise] = useState<Exercise | null>();
+  const [exercise, setExercise] = useState<Nullable<Exercise>>(null);
 
   useEffect(() => {
     const {exerciseId} = route.params;
@@ -27,23 +29,7 @@ const ExerciseDetails: React.FC<Props> = ({route}) => {
     setExercise(fetchedExercise);
   }
 
-  if (!exercise) {
-    return (
-      <SafeAreaView>
-        <Text>Loading...</Text>
-      </SafeAreaView>
-    );
-  }
-
-  return (
-    <SafeAreaView
-      style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
-      <Text>{exercise.name}</Text>
-      <Text>
-        {exercise.sets} sets x {exercise.reps} reps
-      </Text>
-    </SafeAreaView>
-  );
+  return exercise ? <ExerciseDetailsContent exercise={exercise} /> : <LoadingIndicator />;
 };
 
 export default ExerciseDetails;

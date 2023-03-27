@@ -1,60 +1,64 @@
 import React, {useState} from "react";
-import {View, TextInput, TouchableOpacity, Text} from "react-native";
+import {View, TextInput, TouchableOpacity, Text, StyleSheet} from "react-native";
+import {ValueUpdater, createValueUpdater} from "../utils/ValueUpdater";
+import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { colors } from "../utils/util";
 
 interface NumberInputProps {
-  value: string;
-  onChange: (value: string) => void;
+  value: number;
+  onChange: (value: number) => void;
 }
 
-const NumberInput = ({value, onChange}: NumberInputProps) => {
-  const [number, setNumber] = useState(value || "0");
+const NumberInput = ({value = 0, onChange}: NumberInputProps) => {
+  const [currentValue, setCurrentValue] = useState(value);
 
-  const handleIncrement = () => {
-    const newValue = (parseInt(number) || 0) + 1;
-    setNumber(newValue.toString());
-    onChange(newValue.toString());
-  };
+  const valueUpdater: ValueUpdater = createValueUpdater(setCurrentValue, onChange);
 
-  const handleDecrement = () => {
-    let newNumber = parseInt(number) || 1;
-    const newValue = newNumber - 1;
-    setNumber(newValue.toString());
-    onChange(newValue.toString());
-  };
-
-  const handleInputChange = (text: string) => {
-    const newValue = parseInt(text, 10);
-    if (!isNaN(newValue)) {
-      setNumber(newValue.toString());
-      onChange(newValue.toString());
-    }
-  };
+  const renderButton = (onPress: () => void, icon: IconProp, color: Optional<string>) => (
+    <TouchableOpacity onPress={onPress} style={styles.button}>
+      <FontAwesomeIcon icon={icon} size={18} color={color}/>
+    </TouchableOpacity>
+  );
 
   return (
-    <View style={{flexDirection: "row", alignItems: "center"}}>
-      <TouchableOpacity onPress={handleDecrement} style={{padding: 5}}>
-        <Text style={{fontSize: 30}}>-</Text>
-      </TouchableOpacity>
+    <View style={styles.container}>
+      {renderButton(() => valueUpdater.handleDecrement(currentValue), faMinus, colors.error)}
       <TextInput
-        style={{
-          borderWidth: 1,
-          borderColor: "gray",
-          borderRadius: 5,
-          marginHorizontal: 10,
-          paddingHorizontal: 10,
-          fontSize: 24,
-          minWidth: 50,
-          textAlign: "center",
-        }}
+        style={styles.input}
         keyboardType="numeric"
-        value={number.toString()}
-        onChangeText={handleInputChange}
+        value={currentValue.toString()}
+        onChangeText={(text: string) => valueUpdater.handleInputChange(currentValue, text)}
       />
-      <TouchableOpacity onPress={handleIncrement} style={{padding: 5}}>
-        <Text style={{fontSize: 30}}>+</Text>
-      </TouchableOpacity>
+      {renderButton(() => valueUpdater.handleIncrement(currentValue), faPlus, colors.accent)}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  button: {
+    padding: 5,
+  },
+  buttonText: {
+    fontSize: 40,
+    fontweight: 700
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "gray",
+    borderRadius: 5,
+    marginHorizontal: 5,
+    paddingHorizontal: 5,
+    paddingVertical: 5,
+    fontSize: 24,
+    minWidth: 50,
+    textAlign: "center",
+  },
+});
 
 export default NumberInput;

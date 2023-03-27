@@ -17,24 +17,17 @@ type Props = {
   route: any;
 };
 
-const ExerciseTabs: React.FC<Props> = ({navigation, route}) => {
+const ExerciseTabs: React.FC<Props> = () => {
   return (
     <Tab.Navigator>
       <Tab.Screen
         name="List"
-        component={() => <ExerciseList navigation={navigation} route={route} />}
+        component={ExerciseList}
+        initialParams={undefined}
         options={{title: "Exercises"}}
       />
-      <Tab.Screen
-        name="Progress"
-        component={ProgressTracking}
-        options={{title: "Progress"}}
-      />
-      <Tab.Screen
-        name="Settings"
-        component={Settings}
-        options={{title: "Settings"}}
-      />
+      <Tab.Screen name="Progress" component={ProgressTracking} options={{title: "Progress"}} />
+      <Tab.Screen name="Settings" component={Settings} options={{title: "Settings"}} />
     </Tab.Navigator>
   );
 };

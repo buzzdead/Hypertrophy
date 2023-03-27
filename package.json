@@ -7,7 +7,8 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "android-linux": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && react-native run-android"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.3.0",
@@ -23,6 +24,7 @@
     "react-native-elements": "^3.4.3",
     "react-native-gesture-handler": "^2.9.0",
     "react-native-material-design": "^0.3.7",
+    "react-native-paper": "^5.5.1",
     "react-native-picker-select": "^8.0.4",
     "react-native-safe-area-context": "^4.5.0",
     "react-native-screens": "^3.20.0",
@@ -41,6 +43,7 @@
     "@types/react-test-renderer": "^18.0.0",
     "babel-jest": "^29.2.1",
     "eslint": "^8.19.0",
+    "eslint-plugin-unused-imports": "^2.0.0",
     "jest": "^29.2.1",
     "metro-react-native-babel-preset": "0.73.8",
     "prettier": "^2.4.1",
