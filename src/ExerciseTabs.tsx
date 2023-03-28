@@ -1,7 +1,7 @@
 import React from "react";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import ExerciseList from "./screens/ExerciseList";
-import ProgressTracking from "./screens/ProgressTracking";
+import ProgressTracking from "./screens/ProgressTracking/ProgressTracking";
 import Settings from "./screens/Settings";
 import { colors } from "./utils/util";
 
