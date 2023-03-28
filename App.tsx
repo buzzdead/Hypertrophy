@@ -21,7 +21,7 @@ const App = () => {
       <Stack.Navigator>
         <Stack.Screen name="Exercises" component={ExerciseTabs} options={{headerShown: false}} />
         <Stack.Screen name="Details" component={ExerciseDetails} options={{title: "Exercise Details", headerTintColor: colors.onSecondary, headerStyle: {backgroundColor: colors.accent}}} />
-        <Stack.Screen name="AddExercise" component={AddExercise} options={{title: "Add Exercise", headerStyle: {backgroundColor: colors.onSecondary }}} />
+        <Stack.Screen name="AddExercise" component={AddExercise} options={{title: "Add Exercise", headerTintColor: colors.onSecondary, headerStyle: {backgroundColor: colors.accent }}} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -6,4 +6,5 @@ export type Exercise = {
   reps: number;
   date: Date;
   category: string; // Add this line
+  categories?: string[]
 };

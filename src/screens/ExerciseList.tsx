@@ -4,7 +4,8 @@ import {fetchExercises} from "../api/realmAPI";
 import {Exercise} from "../types";
 import {StackNavigationProp, StackScreenProps} from "@react-navigation/stack";
 import {useFocusEffect} from "@react-navigation/native";
-import { colors } from "../utils/util";
+import {colors} from "../utils/util";
+import { useLoadExercises } from "../hooks/useLoadExercises";
 
 type Props = StackScreenProps<
   {
@@ -25,33 +26,20 @@ const renderItem = (
   }
   return (
     <TouchableOpacity style={styles.item} onPress={() => navigation.navigate("Details", {exerciseId: item.id})}>
-      <View style={{flexDirection: 'column', width: "100%", gap: 15}}>
-      <Text style={{...styles.itemText, color: colors.accent}}>{item.name}</Text>
-      <Text style={styles.itemText}>Category: {item.category}</Text>
-      <Text style={styles.itemText}>
-        Result: {item.sets} sets x {item.reps} reps
-      </Text>
+      <View style={{flexDirection: "column", width: "100%", gap: 15}}>
+        <Text style={{...styles.itemText, color: colors.accent}}>{item.name}</Text>
+        <Text style={styles.itemText}>Category: {item.category}</Text>
+        <Text style={styles.itemText}>
+          Result: {item.sets} sets x {item.reps} reps
+        </Text>
       </View>
     </TouchableOpacity>
   );
 };
 
-
 const ExerciseList: React.FC<Props> = ({navigation}) => {
-  const [exercises, setExercises] = useState<Exercise[]>([]);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      loadExercises();
-      return () => {};
-    }, []),
-  );
-
-  async function loadExercises() {
-    const exerciseArray = await fetchExercises();
-    setExercises(exerciseArray);
-  }
-
+  const exercises = useLoadExercises();
+  
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
@@ -69,7 +57,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: colors.background
+    backgroundColor: colors.background,
   },
   item: {
     flexDirection: "row",

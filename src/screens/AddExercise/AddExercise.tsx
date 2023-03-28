@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useReducer } from "react";
 import {
   Button,
   SafeAreaView,
@@ -7,75 +7,84 @@ import {
   TextInput,
   View,
 } from "react-native";
-import {addExercise, fetchUniqueCategories} from "../../api/realmAPI";
-import {Exercise} from "../../types";
+import { addExercise, fetchUniqueCategories } from "../../api/realmAPI";
+import { Exercise } from "../../types";
 import NumberInput from "../../components/NumberInput";
 import CategoryInput from "./CategoryInput";
 import CategoryPicker from "./CategoryPicker";
+import exerciseListReducer from "./Reducer";
+import { colors } from "../../utils/util";
 
 type Props = {
   navigation: any;
 };
 
-const AddExercise: React.FC<Props> = ({navigation}) => {
-  const [name, setName] = useState("");
-  const [sets, setSets] = useState(0);
-  const [reps, setReps] = useState(0);
-  const [category, setCategory] = useState("");
-  const [pickerVisible, setPickerVisible] = useState(false);
-  const [categories, setCategories] = useState<string[]>([]);
+const initialState = {
+  name: "",
+  sets: 1,
+  reps: 1,
+  category: "",
+  categories: [],
+  pickerVisible: false,
+};
 
-  async function handleAddExercise() {
+const AddExercise: React.FC<Props> = ({ navigation }) => {
+  const [state, dispatch] = useReducer(exerciseListReducer, initialState);
+
+  const handleAddExercise = async () => {
     const exercise: Exercise = {
       id: 0,
-      name,
-      sets: sets,
-      reps: reps,
+      name: state.name,
+      sets: state.sets,
+      reps: state.reps,
       date: new Date(),
-      category,
+      category: state.category,
+      categories: state.categories
     };
     await addExercise(exercise);
     navigation.goBack();
+  };
+
+  const loadCategories = async () => {
+    const uniqueCategories = await fetchUniqueCategories();
+    dispatch({ type: "setCategories", payload: uniqueCategories });
+  };
+
+  const togglePicker = () => {
+    dispatch({ type: "togglePicker" });
+  };
+
+  const renderNumberInput = (title: string, value: number, onChange: (value: number) => void) => {
+    return (
+      <View style={styles.inputContainer}>
+        <Text style={styles.touchFieldLabel}>{title}</Text>
+        <NumberInput value={value} onChange={onChange} />
+      </View>
+    )
   }
 
   useEffect(() => {
     loadCategories();
   }, []);
 
-  async function loadCategories() {
-    const uniqueCategories = await fetchUniqueCategories();
-    setCategories(uniqueCategories);
-  }
-
-  function togglePicker() {
-    setPickerVisible(!pickerVisible);
-  }
-
-  const renderNumberInput = (title: string, onChange: (value: number) => void) => {
-    return (
-      <View style={styles.inputContainer}>
-      <Text style={styles.touchFieldLabel}>{title}</Text>
-      <NumberInput value={sets} onChange={onChange} />
-    </View>
-    )
-  }
-
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{marginBottom: 16}}>
+      <View style={{ marginBottom: 16 }}>
         <Text style={styles.textFieldLabel}>Category:</Text>
-        <CategoryInput value={category} onChangeText={setCategory} onPickerToggle={togglePicker}/>
+        <CategoryInput value={state.category} onChangeText={(value) => dispatch({ type: "setCategory", payload: value })} onPickerToggle={togglePicker} />
       </View>
-      <View style={{marginBottom: 16}}>
+      <View style={{ marginBottom: 16 }}>
         <Text style={styles.textFieldLabel}>Name:</Text>
-        <TextInput style={styles.input} onChangeText={setName} value={name} placeholder="Enter exercise name" />
+        <TextInput style={styles.input} onChangeText={(value) => dispatch({ type: "setName", payload: value })} value={state.name} placeholder="Enter exercise name" />
       </View>
-      <View style={{flexDirection: "row", gap: 5}}>
-        {renderNumberInput("Sets:", setSets)}
-        {renderNumberInput("Reps:", setReps)}
+      <View style={{ flexDirection: "row", gap: 20, alignSelf: "center" }}>
+        {renderNumberInput("Sets", state.sets, (value) => dispatch({ type: "setSets", payload: value }))}
+        {renderNumberInput("Reps", state.reps, (value) => dispatch({ type: "setReps", payload: value }))}
       </View>
+      <View style={{paddingTop: 30}}>
       <Button title="Add" onPress={handleAddExercise} />
-      <CategoryPicker visible={pickerVisible} categories={categories} onSelect={setCategory} onClose={togglePicker} />
+      </View>
+      <CategoryPicker visible={state.pickerVisible} categories={state.categories} onSelect={(value) => dispatch({ type: "setCategory", payload: value })} onClose={togglePicker} />
     </SafeAreaView>
   );
 };
@@ -87,7 +96,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     marginBottom: 16,
-    flexDirection: "row",
+    flexDirection: "column",
     alignItems: "center",
     marginRight: 10,
   },
@@ -96,9 +105,9 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   touchFieldLabel: {
-    fontWeight: "bold",
-    fontSize: 20,
-    textAlign: "center",
+    color: colors.new,
+    fontSize: 22,
+    fontWeight: "800",
     padding: 6,
     paddingRight: 10,
   },
