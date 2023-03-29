@@ -7,15 +7,14 @@ import {
   TouchableOpacity,
   StyleSheet,
   View,
-  Animated,
 } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import { Exercise } from '../types';
 import { colors } from '../utils/util';
-import { useLoadExercises } from '../hooks/useLoadExercises';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useExercises } from '../hooks/useExercises';
 import { SideBar } from './SideBar';
 import { fetchUniqueCategories } from '../api/realmAPI';
+import { useCategories } from '../hooks/useCategories';
 
 type Props = StackScreenProps<
   {
@@ -27,18 +26,9 @@ type Props = StackScreenProps<
 >;
 
 const ExerciseList: React.FC<Props> = ({ navigation }) => {
-  const exercises = useLoadExercises();
+  const exercises = useExercises();
   const [filteredExercises, setFilteredExercises] = useState<Exercise[]>();
-  const [categories, setCategories] = useState<string[]>([])
-
-  const loadCategories = async () => {
-    const uniqueCategories = await fetchUniqueCategories();
-    setCategories(uniqueCategories);
-  };
-
-  useEffect(() => {
-    loadCategories();
-  }, []);
+  const categories = useCategories()
 
 
   const handleFilterChange = (selectedCategories: string[]) => {

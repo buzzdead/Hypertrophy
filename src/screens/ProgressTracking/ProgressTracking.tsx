@@ -3,14 +3,14 @@ import React, {useEffect, useRef} from "react";
 import {Button, SafeAreaView, Text, TouchableOpacity, View, Dimensions} from "react-native";
 import {LineChart, Grid, YAxis, XAxis} from "react-native-svg-charts";
 import * as shape from "d3-shape";
-import {useLoadExercises} from "../../hooks/useLoadExercises";
+import {useExercises} from "../../hooks/useExercises";
 import {aggregateData, AggregatedDataItem} from "../../utils/chartDataUtils";
 
 const ProgressTracking = () => {
   const [timeFrame, setTimeFrame] = React.useState("day"); // 'week', 'month'
   const [selectedDataPoint, setSelectedDataPoint] = React.useState<Nullable<AggregatedDataItem>>(null);
 
-  const exercises = useLoadExercises();
+  const exercises = useExercises();
 
   const screenWidth = Dimensions.get("window").width;
   const chartWidth = screenWidth * 0.9;
