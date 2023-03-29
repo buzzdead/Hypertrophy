@@ -70,7 +70,7 @@ const ExerciseList: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
-        data={filteredExercises}
+        data={filteredExercises || exercises}
         renderItem={(item) => renderItem(item, navigation)}
         keyExtractor={(item) => item.id.toString()}
       />

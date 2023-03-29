@@ -48,7 +48,7 @@ const NumberInput = ({value = 0, onChange}: NumberInputProps) => {
           onMomentumScrollEnd={handleScroll}
           showsHorizontalScrollIndicator={false}
           contentOffset={{ x: value * 50, y: 0 }}
-          style={{paddingLeft: 50}}
+          style={{paddingLeft: 50, padding: 10}}
         />
         </View>
       </View>

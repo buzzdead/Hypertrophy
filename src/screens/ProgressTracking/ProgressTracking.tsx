@@ -1,14 +1,16 @@
 // screens/ProgressTracking.tsx
-import React, {useEffect, useRef} from "react";
-import {Button, SafeAreaView, Text, TouchableOpacity, View, Dimensions} from "react-native";
+import React from "react";
+import {Button, SafeAreaView, Text, TouchableOpacity, View, Dimensions, FlatList} from "react-native";
 import {LineChart, Grid, YAxis, XAxis} from "react-native-svg-charts";
 import * as shape from "d3-shape";
 import {useExercises} from "../../hooks/useExercises";
 import {aggregateData, AggregatedDataItem} from "../../utils/chartDataUtils";
+type TimeFrameType = "day" | "week" | "month";
 
 const ProgressTracking = () => {
-  const [timeFrame, setTimeFrame] = React.useState("day"); // 'week', 'month'
+  const [timeFrame, setTimeFrame] = React.useState<TimeFrameType>("day"); // 'week', 'month'
   const [selectedDataPoint, setSelectedDataPoint] = React.useState<Nullable<AggregatedDataItem>>(null);
+  const timeFrames: TimeFrameType[] = ["day", "week", "month"];
 
   const exercises = useExercises();
 
@@ -18,6 +20,21 @@ const ProgressTracking = () => {
   const handleChartPress = (index: number) => {
     setSelectedDataPoint(aggregatedData[index] || null);
   };
+
+  function renderInfo(): React.ReactNode {
+    if ((timeFrame === "week" && chartData.length < 7) || (timeFrame === "month" && chartData.length < 31))
+      return (
+        <View style={{width: "100%", height: "100%", alignItems: "center", justifyContent: "center"}}>
+          <Text>Not enough data, try again later.</Text>
+        </View>
+      );
+    return (
+      <View style={{alignSelf: "center", top: 40, position: "absolute"}}>
+        <Text>Number of exercises:{selectedDataPoint ? selectedDataPoint.exercises : ""}</Text>
+        <Text>Categories: {selectedDataPoint ? Array.from(selectedDataPoint.categories).join(", ") : ""}</Text>
+      </View>
+    );
+  }
 
   const aggregatedData = aggregateData(exercises, timeFrame);
   const chartData = aggregatedData.map(item => item.exercises);
@@ -53,10 +70,7 @@ const ProgressTracking = () => {
             curve={shape.curveBasis}></LineChart>
         </TouchableOpacity>
       </View>
-      <View style={{alignSelf: "center", top: 40, position: "absolute"}}>
-        <Text>Number of exercises:{selectedDataPoint ? selectedDataPoint.exercises : ""}</Text>
-        <Text>Categories: {selectedDataPoint ? Array.from(selectedDataPoint.categories).join(", ") : ""}</Text>
-      </View>
+      {renderInfo()}
       <XAxis
         style={{marginHorizontal: -10, marginTop: 10, width: "100%"}}
         data={chartData}
@@ -64,9 +78,13 @@ const ProgressTracking = () => {
         svg={{fontSize: 10, fill: "grey"}}
       />
       <View style={{flexDirection: "row", gap: 5, position: "absolute", bottom: 20}}>
-        <Button title="Day" onPress={() => setTimeFrame("day")} />
-        <Button title="Week" onPress={() => setTimeFrame("week")} />
-        <Button title="Month" onPress={() => setTimeFrame("month")} />
+        {timeFrames.map(timeFrame => {
+          return (
+            <View key={timeFrame} style={{minWidth: 100}}>
+              <Button title={timeFrame} onPress={() => setTimeFrame(timeFrame)} />
+            </View>
+          );
+        })}
       </View>
     </SafeAreaView>
   );

@@ -64,8 +64,7 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange}) =>
           <MaterialCommunityIcons adjustsFontSizeToFit name={sidebarVisible ? "chevron-left" : "chevron-right"} size={24} color="#000" />
         </TouchableOpacity>
       </View>
-      {/* Add your Sidebar content here */}
-      <Text style={styles.sidebarTitle}>SidebarMenu</Text>
+      <Text style={styles.sidebarTitle}>Filter</Text>
       {categories.map(category => (
         <TouchableOpacity
           key={category}
