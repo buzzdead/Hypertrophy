@@ -34,7 +34,7 @@ const ExerciseTabs: React.FC<Props> = () => {
         <MaterialCommunityIcons name="chart-line" color={color} size={size} />
       ),}} />
       <Tab.Screen name="Settings" component={Settings} options={{title: "Settings", headerTintColor: colors.onSecondary, headerStyle: {backgroundColor: colors.accent}, tabBarIcon: ({ color, size }) => (
-        <MaterialCommunityIcons name="settings" color={color} size={size} />
+        <MaterialCommunityIcons name="eye-settings-outline" color={color} size={size} />
       ),}} />
     </Tab.Navigator>
   );
