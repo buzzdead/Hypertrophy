@@ -10,6 +10,19 @@ interface AggregatedDataItem {
     exercises: number;
     categories: Set<string>; // Add this line
   }
+
+  const generateDateRange = (startDate: Date, endDate: Date): Date[] => {
+    const dates: Date[] = [];
+    let currentDate = new Date(startDate);
+  
+    while (currentDate <= endDate) {
+      dates.push(new Date(currentDate));
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+  
+    return dates;
+  };
+  
   
 
   const aggregateData = (data: Exercise[], timeFrame: string): AggregatedDataItem[] => {
@@ -37,14 +50,26 @@ interface AggregatedDataItem {
       dateCategories[dateKey].add(item.category);
     });
   
-    const aggregatedData: AggregatedDataItem[] = Object.entries(dateCount).map(([dateKey, exercises], index) => ({
-      key: index.toString(),
-      exercises,
-      categories: dateCategories[dateKey],
-    }));
+    const startDate = data.reduce((earliest, exercise) => {
+      return new Date(exercise.date) < new Date(earliest) ? new Date(exercise.date) : new Date(earliest);
+    }, new Date());
+  
+    const endDate = new Date();
+    const dateRange = generateDateRange(startDate, endDate);
+  
+    const aggregatedData: AggregatedDataItem[] = dateRange.map((date, index) => {
+      const dateKey = date.toISOString().split("T")[0];
+  
+      return {
+        key: index.toString(),
+        exercises: dateCount[dateKey] || 0,
+        categories: dateCategories[dateKey] || new Set(),
+      };
+    });
   
     return aggregatedData;
   };
+  
   
 
 export { aggregateData };    
