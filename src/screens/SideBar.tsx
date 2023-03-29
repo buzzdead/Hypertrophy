@@ -61,7 +61,7 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange}) =>
         <TouchableOpacity
           style={{...styles.sidebarEdge, zIndex: sidebarVisible ? 1001 : -1}}
           onPress={() => (sidebarVisible ? handleCloseSidebar() : handleOpenSidebar())}>
-          <MaterialCommunityIcons name={sidebarVisible ? "chevron-left" : "chevron-right"} size={24} color="#000" />
+          <MaterialCommunityIcons adjustsFontSizeToFit name={sidebarVisible ? "chevron-left" : "chevron-right"} size={24} color="#000" />
         </TouchableOpacity>
       </View>
       {/* Add your Sidebar content here */}
@@ -109,10 +109,9 @@ const styles = StyleSheet.create({
   },
   sidebarEdgeIndicator: {
     position: "absolute",
-    top: 10,
+    top: 35,
     left: -SidebarVisibleWidth,
     zIndex: 1000,
-    padding: 8,
     backgroundColor: "#ccc", // You can change this color to match your design
     borderRadius: 4,
   },

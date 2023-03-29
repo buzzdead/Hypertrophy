@@ -54,7 +54,10 @@ const ExerciseList: React.FC<Props> = ({ navigation }) => {
         onPress={() => navigation.navigate('Details', { exerciseId: item.id })}
       >
         <View style={{ flexDirection: 'column', width: '100%', gap: 15 }}>
-          <Text style={{ ...styles.itemText, color: colors.accent }}>{item.name}</Text>
+          <View style={{justifyContent: 'space-between', flexDirection: 'row'}}>
+          <Text style={{ ...styles.itemText, color: colors.accent }}>{item.name.toUpperCase()}</Text>
+          <Text style={{fontStyle: 'italic', color: colors.secondary}}>{item.date.toLocaleDateString()}</Text>
+          </View>
           <Text style={styles.itemText}>Category: {item.category}</Text>
           <Text style={styles.itemText}>
             Result: {item.sets} sets x {item.reps} reps

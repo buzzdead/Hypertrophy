@@ -39,7 +39,7 @@ const NumberInput = ({value = 0, onChange}: NumberInputProps) => {
       <View style={styles.borderedFlatList}>
       <View style={{ width: 150, overflow: "hidden"}}>
         <FlatList
-          data={Array.from({ length: 101 }, (_, i) => i)}
+          data={Array.from({ length: 31 }, (_, i) => i)}
           renderItem={renderItem}
           keyExtractor={(item) => item.toString()}
           horizontal

@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
   pickerDisplay: {
     position: "absolute",
     right: 20,
+    padding: 10,
     zIndex: 2,
   },
 });
