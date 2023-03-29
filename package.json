@@ -9,7 +9,7 @@
     "start": "react-native start",
     "test": "jest",
     "bundle-android": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res",
-    "build-android": "npm run bundle-android && cd android && ./gradlew assembleDebug"
+    "build-android": "npm run bundle-android & cd android & .\\gradleW assembleDebug"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.3.0",
