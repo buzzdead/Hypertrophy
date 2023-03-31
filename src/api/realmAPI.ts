@@ -38,3 +38,9 @@ export async function fetchUniqueCategories(): Promise<string[]> {
   const categories = Array.from(new Set(exercises.map(e => e.category)));
   return categories;
 }
+
+export async function fetchUniqueExerciseTypes(category: string): Promise<string[]> {
+  const exercises = realm.objects<Exercise>("Exercise");
+  const categories = exercises.filter(e => e.category === category).map(e2 => e2.name)
+  return categories;
+}
