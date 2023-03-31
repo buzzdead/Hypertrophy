@@ -1,6 +1,7 @@
 // screens/ProgressTracking.tsx
 import React from "react";
-import {Button, SafeAreaView, Text, TouchableOpacity, View, Dimensions, FlatList} from "react-native";
+import { Button, SafeAreaView, Text, TouchableOpacity, View, Dimensions, FlatList, ScrollView, RefreshControl } from "react-native";
+
 import {LineChart, Grid, YAxis, XAxis} from "react-native-svg-charts";
 import * as shape from "d3-shape";
 import {useExercises} from "../../hooks/useExercises";
@@ -12,7 +13,22 @@ const ProgressTracking = () => {
   const [selectedDataPoint, setSelectedDataPoint] = React.useState<Nullable<AggregatedDataItem>>(null);
   const timeFrames: TimeFrameType[] = ["day", "week", "month"];
 
-  const exercises = useExercises();
+  const {exercises, refresh} = useExercises();
+  console.log(exercises)
+
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const _onRefresh = () => {
+    setRefreshing(true);
+    refresh();
+
+    // Update your exercises data here and update your component's state.
+    // Once the data updating is done, set the refreshing state to false.
+
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000); // This is a simulation of data updating. Replace it with your own data updating logic.
+  };
 
   const screenWidth = Dimensions.get("window").width;
   const chartWidth = screenWidth * 0.9;
@@ -22,7 +38,7 @@ const ProgressTracking = () => {
   };
 
   function renderInfo(): React.ReactNode {
-    if ((timeFrame === "week" && chartData.length < 7) || (timeFrame === "month" && chartData.length < 31))
+    if (chartData.length === 1)
       return (
         <View style={{width: "100%", height: "100%", alignItems: "center", justifyContent: "center"}}>
           <Text>Not enough data, try again later.</Text>
@@ -38,10 +54,22 @@ const ProgressTracking = () => {
 
   const aggregatedData = aggregateData(exercises, timeFrame);
   const chartData = aggregatedData.map(item => item.exercises);
-  const dataPointWidth = chartWidth / (chartData.length + 1);
+  const dataPointWidth = chartWidth / (chartData.length);
 
   return (
     <SafeAreaView style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
+      <ScrollView
+      contentContainerStyle={{ flexGrow: 1 }}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={_onRefresh}
+          colors={["#9Bd35A", "#689F38"]}
+          progressBackgroundColor="#fff"
+          tintColor="#689F38"
+        />
+      }
+    >
       <View style={{flexDirection: "row", padding: 20, flex: 1, maxHeight: 500}}>
         <YAxis
           data={chartData}
@@ -72,11 +100,11 @@ const ProgressTracking = () => {
       </View>
       {renderInfo()}
       <XAxis
-        style={{marginHorizontal: -10, marginTop: 10, width: "100%"}}
-        data={chartData}
-        contentInset={{left: 100, right: 100}}
-        svg={{fontSize: 10, fill: "grey"}}
-      />
+  style={{ marginTop: 10, width: chartWidth, marginLeft: 16 }}
+  data={Array.from({ length: chartData.length }, (_, i) => i)}
+  contentInset={{ left: dataPointWidth / 2, right: dataPointWidth / 2 }}
+  svg={{ fontSize: 10, fill: "grey" }}
+/>
       <View style={{flexDirection: "row", gap: 5, position: "absolute", bottom: 20}}>
         {timeFrames.map(timeFrame => {
           return (
@@ -86,6 +114,7 @@ const ProgressTracking = () => {
           );
         })}
       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };

@@ -11,6 +11,10 @@ export function useExercises() {
     setExercises(exerciseArray);
   };
 
+  const refresh = () => {
+    loadExercises()
+  }
+
   useFocusEffect(
     useCallback(() => {
       loadExercises();
@@ -18,5 +22,5 @@ export function useExercises() {
     }, []),
   );
 
-  return exercises;
+  return {exercises, refresh};
 }
