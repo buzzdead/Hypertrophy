@@ -40,12 +40,13 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 24,
-    fontWeight: "bold",
     color: "#4CAF50",
+    fontFamily: "Roboto-Black"
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
+    fontFamily: "Roboto-Thin"
   },
   titleContainer: {
     flexDirection: "row",
