@@ -30,12 +30,7 @@ const realmConfig: Realm.Configuration = {
 };
 
 function migration(oldRealm: Realm, newRealm: Realm) {
-  const oldObjects = oldRealm.objects("Exercise");
-  const newObjects = newRealm.objects("Exercise");
-
-  for (let i = 0; i < oldObjects.length; i++) {
-    (newObjects[i] as ExerciseSchema).category = "default"; // Or any default value you want to assign
-  }
+  return
 }
 
 export default realmConfig;
