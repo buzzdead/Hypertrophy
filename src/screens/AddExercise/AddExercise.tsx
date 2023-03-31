@@ -7,11 +7,11 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { addExercise, fetchUniqueCategories } from "../../api/realmAPI";
+import { addExercise, fetchUniqueCategories, fetchUniqueExerciseTypes } from "../../api/realmAPI";
 import { Exercise } from "../../types";
 import NumberInput from "../../components/NumberInput";
-import CategoryInput from "./CategoryInput";
-import CategoryPicker from "./CategoryPicker";
+import PickerInput from "./PickerInput";
+import Picker from "./Picker";
 import exerciseListReducer from "./Reducer";
 import { colors } from "../../utils/util";
 
@@ -21,11 +21,13 @@ type Props = {
 
 const initialState = {
   name: "",
+  names: [],
   sets: 1,
   reps: 1,
   category: "",
   categories: [],
   pickerVisible: false,
+  namePickerVisible: false
 };
 
 const AddExercise: React.FC<Props> = ({ navigation }) => {
@@ -35,6 +37,7 @@ const AddExercise: React.FC<Props> = ({ navigation }) => {
     const exercise: Exercise = {
       id: 0,
       name: state.name,
+      names: state.names,
       sets: state.sets,
       reps: state.reps,
       date: new Date(),
@@ -50,9 +53,18 @@ const AddExercise: React.FC<Props> = ({ navigation }) => {
     dispatch({ type: "setCategories", payload: uniqueCategories });
   };
 
+  const loadNames = async (cat: string) => {
+    const uniqueExerciseTypes = await fetchUniqueExerciseTypes(cat);
+    dispatch({ type: "setNames", payload: uniqueExerciseTypes });
+  };
+  
+
   const togglePicker = () => {
     dispatch({ type: "togglePicker" });
   };
+  const toggleNamePicker = () => {
+    dispatch({ type: "toggleNamePicker" })
+  }
 
   const renderNumberInput = (title: string, value: number, onChange: (value: number) => void) => {
     return (
@@ -66,16 +78,24 @@ const AddExercise: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     loadCategories();
   }, []);
+  useEffect(() => {
+    if(state.category === "") return
+    loadNames(state.category);
+  }, [state.category])
+  useEffect(() => {
+    if(state.names.length > 0)
+      dispatch({type: "setName", payload: state.names[0]})
+  }, [state.names])
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ marginBottom: 16 }}>
         <Text style={styles.textFieldLabel}>Category:</Text>
-        <CategoryInput value={state.category} onChangeText={(value) => dispatch({ type: "setCategory", payload: value })} onPickerToggle={togglePicker} />
+        <PickerInput value={state.category} onChangeText={(value) => dispatch({ type: "setCategory", payload: value })} onPickerToggle={togglePicker} placeholder="Category" />
       </View>
       <View style={{ marginBottom: 16 }}>
-        <Text style={styles.textFieldLabel}>Name:</Text>
-        <TextInput style={styles.input} onChangeText={(value) => dispatch({ type: "setName", payload: value })} value={state.name} placeholder="Enter exercise name" />
+        <Text style={styles.textFieldLabel}>Type:</Text>
+        <PickerInput value={state.name} onChangeText={(value) => dispatch({ type: "setName", payload: value })} onPickerToggle={toggleNamePicker} placeholder="Name" />
       </View>
       <View style={{ flexDirection: "row", gap: 20, alignSelf: "center" }}>
         {renderNumberInput("Sets", state.sets, (value) => dispatch({ type: "setSets", payload: value }))}
@@ -84,7 +104,8 @@ const AddExercise: React.FC<Props> = ({ navigation }) => {
       <View style={{paddingTop: 30}}>
       <Button title="Add" onPress={handleAddExercise} />
       </View>
-      <CategoryPicker visible={state.pickerVisible} categories={state.categories} onSelect={(value) => dispatch({ type: "setCategory", payload: value })} onClose={togglePicker} />
+      <Picker visible={state.pickerVisible} items={state.categories} onSelect={(value) => dispatch({ type: "setCategory", payload: value })} onClose={togglePicker} />
+      <Picker picker visible={state.namePickerVisible} items={state.names} onSelect={(value) => dispatch({ type: "setName", payload: value })} onClose={toggleNamePicker} />
     </SafeAreaView>
   );
 };

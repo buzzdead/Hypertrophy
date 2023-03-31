@@ -3,22 +3,23 @@ import React from "react";
 import { View, Modal, TouchableWithoutFeedback, TouchableOpacity, FlatList, StyleSheet } from "react-native";
 import { Text } from "react-native-paper";
 
-type Props = {
+type PickerProps = {
   visible: boolean;
-  categories: string[];
-  onSelect: (category: string) => void;
+  items: string[];
+  onSelect: (item: string) => void;
   onClose: () => void;
+  picker?: boolean
 };
 
-const CategoryPicker: React.FC<Props> = ({ visible, categories, onSelect, onClose }) => {
+const Picker: React.FC<PickerProps> = ({ visible, items, onSelect, onClose, picker }) => {
   return (
     <Modal visible={visible} transparent={true} animationType="fade" onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={onClose}>
         <View style={styles.modalOverlay} />
       </TouchableWithoutFeedback>
-      <View style={styles.pickerContainer}>
+      <View style={{...styles.pickerContainer, top: picker ? 200 : 100}}>
         <FlatList
-          data={categories.filter(category => category !== "newcategory" && category !== "default")}
+          data={items.filter(item => item !== "default")}
           renderItem={({ item }) => (
             <TouchableOpacity
               style={{ padding: 8 }}
@@ -44,7 +45,6 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     position: "absolute",
-    top: 100,
     left: 16,
     right: 16,
     zIndex: 2,
@@ -54,4 +54,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CategoryPicker;
+export default Picker;

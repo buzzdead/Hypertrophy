@@ -24,9 +24,26 @@ const NumberInput = ({value = 0, onChange}: NumberInputProps) => {
   xOffset.addListener(handleScrollEvent)
   
 
-  const renderItem = ({ item }: { item: number }) => (
-    <Text style={item === currentValue ? styles.selectedItem : styles.item}>{item}</Text>
-  );
+  const renderItem = ({ item, index }: { item: number; index: number }) => {
+    const inputRange = [(index - 1) * 50, index * 50, (index + 1) * 50];
+    const scale = xOffset.interpolate({
+      inputRange,
+      outputRange: [1, 1.5, 1],
+      extrapolate: "clamp",
+    });
+  
+    return (
+      <Animated.View style={{ transform: [{ scale }] }}>
+        <Text
+          style={
+            item === currentValue ? styles.selectedItem : styles.item
+          }
+        >
+          {item}
+        </Text>
+      </Animated.View>
+    );
+  };
 
   const handleScroll = Animated.event([{ nativeEvent: { contentOffset: { x: xOffset } } }], {
     useNativeDriver: false,

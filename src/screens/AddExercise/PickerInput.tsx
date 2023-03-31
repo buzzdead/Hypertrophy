@@ -4,20 +4,21 @@ import { View, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons/faCaretDown";
 
-type Props = {
+type PickerInputProps = {
   value: string;
   onChangeText: (text: string) => void;
   onPickerToggle: () => void;
+  placeholder: string;
 };
 
-const CategoryInput: React.FC<Props> = ({ value, onChangeText, onPickerToggle }) => {
+const PickerInput: React.FC<PickerInputProps> = ({ value, onChangeText, onPickerToggle, placeholder }) => {
   return (
-    <View style={styles.categoryContainer}>
+    <View style={styles.pickerInputContainer}>
       <TextInput
-        style={[styles.input, styles.categoryInput]}
+        style={[styles.input, styles.pickerInput]}
         onChangeText={onChangeText}
         value={value}
-        placeholder="Enter exercise category"
+        placeholder={placeholder}
       />
       <TouchableOpacity onPress={onPickerToggle} style={styles.pickerDisplay}>
         <FontAwesomeIcon icon={faCaretDown} size={20} />
@@ -27,7 +28,7 @@ const CategoryInput: React.FC<Props> = ({ value, onChangeText, onPickerToggle })
 };
 
 const styles = StyleSheet.create({
-  categoryContainer: {
+  pickerInputContainer: {
     zIndex: 1,
     flexDirection: "row",
     alignItems: "center",
@@ -38,7 +39,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     padding: 8,
   },
-  categoryInput: {
+  pickerInput: {
     flex: 1,
     marginRight: 8,
   },
@@ -50,4 +51,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CategoryInput;
+export default PickerInput;
