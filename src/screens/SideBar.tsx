@@ -9,9 +9,10 @@ const SidebarVisibleWidth = 30;
 interface SideBarProps {
   categories: string[];
   onFilterChange: (selectedCategories: string[]) => void;
+  icon?: string
 }
 
-export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange}) => {
+export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, icon}) => {
   const [selectedCategoryAnimations, setSelectedCategoryAnimations] = useState(
     categories.map(() => new Animated.Value(0)),
   );
@@ -76,7 +77,7 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange}) =>
           onPress={() => (sidebarVisible ? handleCloseSidebar() : handleOpenSidebar())}>
           <MaterialCommunityIcons
             adjustsFontSizeToFit
-            name={"tune-vertical"}
+            name={icon || "tune-vertical"}
             size={24}
             color={sidebarVisible ? "green" : "red"}
           />
