@@ -99,16 +99,17 @@ const styles = StyleSheet.create({
   },
   item: {
     fontSize: 24,
-    fontWeight: "bold",
     width: 50,
     textAlign: "center",
+    fontFamily: "Roboto-Black",
   },
   selectedItem: {
-    fontSize: 24,
-    fontWeight: "bold",
+    fontSize: 26,
     width: 50,
     textAlign: "center",
-    color: colors.test2, // Change this to the desired highlight color
+    lineHeight: 32.5,
+    fontFamily: "Roboto-Black",
+    color: colors.new
   },
   borderedFlatList: {
     borderWidth: 2,
