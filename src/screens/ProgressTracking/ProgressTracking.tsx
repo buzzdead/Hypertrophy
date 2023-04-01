@@ -1,6 +1,6 @@
 // screens/ProgressTracking.tsx
 import React from "react";
-import {SafeAreaView, View, ScrollView, RefreshControl, Dimensions, Text, StyleSheet, Button} from "react-native";
+import {SafeAreaView, View, ScrollView, RefreshControl, Dimensions, Text, StyleSheet} from "react-native";
 
 import {LineChart, YAxis, XAxis} from "react-native-svg-charts";
 import * as shape from "d3-shape";
@@ -17,6 +17,7 @@ const ProgressTracking = () => {
   const [refreshing, setRefreshing] = React.useState(false);
   const [chartData, setChartData] = React.useState<number[]>([])
   const [maxExercises, setMaxExercises] = React.useState(0)
+  const [startDate, setStartDate] = React.useState<Date>()
   const [filteredCategories, setFilteredCategories] = React.useState<string[]>([])
 
   const _onRefresh = () => {
@@ -25,10 +26,11 @@ const ProgressTracking = () => {
     setRefreshing(false);
   };
 
-  React.useEffect(() => {
-    const {chartData, maxExercises, exercisesByDate} = ChartData({exercises, categories: filteredCategories})
+  React.useLayoutEffect(() => {
+    const {chartData, maxExercises, exercisesByDate, theDate} = ChartData({exercises, categories: filteredCategories})
     setChartData(chartData)
     setMaxExercises(maxExercises)
+    setStartDate(theDate)
   }, [exercises, filteredCategories])
 
   const chartWidth = Dimensions.get("window").width * 0.9;
@@ -59,7 +61,7 @@ const ProgressTracking = () => {
             tintColor="#689F38"
           />
         }>
-          <Text style={styles.legend}>Days</Text>
+          <Text style={styles.legend}># of exercises</Text>
         <View style={styles.yAxis}>
           <YAxis
             data={chartData}
@@ -84,7 +86,11 @@ const ProgressTracking = () => {
           contentInset={{left: dataPointWidth / 2, right: dataPointWidth / 2}}
           svg={{fontSize: 10, fill: "grey"}}
         />
-        <Text style={{...styles.legend, marginLeft: 40, marginTop: 10, textAlign: "center"}}>Exercises</Text>
+        <View style={{flexDirection: 'row', gap: 100}}>
+        <Text style={{fontSize: 10, marginTop: 10, paddingLeft: 35}}>{startDate?.toLocaleDateString()}</Text>
+        <Text style={{...styles.legend, marginTop: 10, textAlign: "center"}}>Days</Text>
+        <Text style={{fontSize: 10, marginTop: 10, paddingLeft: 35}}>{(new Date()).toLocaleDateString()}</Text>
+        </View>
       </ScrollView>
       <SideBar categories={categories} onFilterChange={handleFilterChange} icon={'chart-bar'} />
     </SafeAreaView>
@@ -98,7 +104,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   legend: {
-    fontSize: 10, fontFamily: "Roboto-MediumItalic", color: colors.primary
+    fontSize: 10, fontFamily: "Roboto-MediumItalic", color: colors.new
   },
   yAxis: {
     justifyContent: "center",

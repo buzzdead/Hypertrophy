@@ -2,14 +2,14 @@ import { Exercise } from "../../types";
 
 interface Props {
     exercises: Exercise[]
-    categories?: string[]
+    categories: string[]
 }
 
 export const ChartData = ({exercises, categories: category}: Props) => {
 
-  const getExercisesByDate = (exercises: Exercise[], categories?: string[]) => {
+  const getExercisesByDate = (exercises: Exercise[], categories: string[]) => {
       return exercises.reduce((accumulator: { date: string; exercises: Exercise[] }[], exercise) => {
-        if (categories && !categories.includes(exercise.category)) {
+        if (categories.length !== 0 && !categories.includes(exercise.category)) {
           return accumulator;
         }
         const exerciseDate = exercise.date.toDateString();
@@ -23,14 +23,19 @@ export const ChartData = ({exercises, categories: category}: Props) => {
       }, []);
     }
   const exercisesByDate = getExercisesByDate(exercises, category);
-  console.log(exercisesByDate)
   const chartDates = exercises.map(entry => new Date(entry.date));
   const startTimestamp = Math.min(...chartDates.map(date => date.getTime()));
   const startDate = new Date(startTimestamp).getTime();
   const endTimestamp = new Date().getTime();
   const numDays = Math.round((endTimestamp - startTimestamp) / (1000 * 3600 * 24)) + 1;
 
-  const shouldDisplayWeekly = numDays > 14;
+const dates = exercises.map(e => e.date)
+dates.sort((a: Date, b: Date): number => {
+  return new Date(a).getTime() - new Date(b).getTime();
+});
+const theDate = dates[0]
+
+  const shouldDisplayWeekly = numDays > 21;
   const numWeeks = shouldDisplayWeekly ? Math.ceil(numDays / 7) : 0;
 
   const weeklyChartData = Array.from({ length: numWeeks }, (_, i) => {
@@ -55,5 +60,5 @@ export const ChartData = ({exercises, categories: category}: Props) => {
 
   const maxExercises = exercisesByDate.reduce((max, entry) => Math.max(max, entry.exercises.length), 0);
 
-  return {chartData, maxExercises, exercisesByDate}
+  return {chartData, maxExercises, exercisesByDate, theDate}
 }
