@@ -3,6 +3,7 @@ type State = {
   names: string[];
   sets: number;
   reps: number;
+  weight: number | ''
   category: string;
   categories: string[];
   pickerVisible: boolean;
@@ -15,6 +16,7 @@ type Action =
   | { type: "setSets"; payload: number }
   | { type: "setReps"; payload: number }
   | { type: "setCategory"; payload: string }
+  | { type: "setWeight"; payload: number | '' }
   | {type: "setCategories"; payload: string[] }
   | { type: "togglePicker" }
   | {type: "toggleNamePicker" };
@@ -31,6 +33,8 @@ export default function exerciseListReducer(state: State, action: Action): State
       return { ...state, reps: action.payload };
     case "setCategory":
       return { ...state, category: action.payload };
+    case "setWeight":
+      return { ...state, weight: action.payload };
     case "togglePicker":
       return { ...state, pickerVisible: !state.pickerVisible };
     case "toggleNamePicker":
