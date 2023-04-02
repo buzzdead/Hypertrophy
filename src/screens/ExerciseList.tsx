@@ -11,7 +11,7 @@ type Props = StackScreenProps<
   {
     List: undefined;
     Details: {exerciseId?: number};
-    AddExercise: undefined;
+    AddExercise: {previousExercise: Exercise | null};
   },
   "List"
 >;
@@ -78,7 +78,8 @@ const ExerciseList: React.FC<Props> = ({navigation}) => {
             progressBackgroundColor="#fff"
             tintColor="#689F38"
           />} />
-      <Button title="Add Exercise" onPress={() => navigation.navigate("AddExercise")} />
+      <Button title="New Exercise" onPress={() => navigation.navigate("AddExercise", { previousExercise: null })} />
+
       <SideBar categories={categories} onFilterChange={handleFilterChange} />
     </SafeAreaView>
   );

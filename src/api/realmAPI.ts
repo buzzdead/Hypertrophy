@@ -7,7 +7,8 @@ const realmService = RealmService.getInstance();
 const realm = realmService.getRealm();
 
 export async function addExercise(exercise: Exercise) {
-  const {name, sets, reps, date, category} = exercise;
+  const {name, sets, reps, date, category, weight} = exercise;
+  if(exercise.weight === '') exercise.weight = 0
   const id = realm.objects("Exercise").length + 1;
 
   realm.write(() => {
@@ -17,9 +18,28 @@ export async function addExercise(exercise: Exercise) {
       sets,
       reps,
       date,
+      weight,
       category,
     });
   });
+}
+
+export async function saveExercise(exercise: Exercise) {
+  const { id, name, sets, reps, date, category, weight } = exercise;
+  if (weight === '') exercise.weight = 0;
+
+  const existingExercise = realm.objectForPrimaryKey<Exercise>("Exercise", id);
+
+  if (existingExercise) {
+    realm.write(() => {
+      existingExercise.name = name;
+      existingExercise.sets = sets;
+      existingExercise.reps = reps;
+      existingExercise.date = date;
+      existingExercise.category = category;
+      existingExercise.weight = weight;
+    });
+  }
 }
 
 export async function fetchExercises() {
@@ -41,6 +61,7 @@ export async function fetchUniqueCategories(): Promise<string[]> {
 
 export async function fetchUniqueExerciseTypes(category: string): Promise<string[]> {
   const exercises = realm.objects<Exercise>("Exercise");
-  const categories = exercises.filter(e => e.category === category).map(e2 => e2.name)
-  return categories;
+  const cat = exercises.filter(e => e.category === category)
+  const exerciseTypes = Array.from(new Set(cat.map(e => e.name)));
+  return exerciseTypes;
 }

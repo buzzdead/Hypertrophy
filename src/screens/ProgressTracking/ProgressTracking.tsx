@@ -1,122 +1,123 @@
 // screens/ProgressTracking.tsx
 import React from "react";
-import { Button, SafeAreaView, Text, TouchableOpacity, View, Dimensions, FlatList, ScrollView, RefreshControl } from "react-native";
+import {SafeAreaView, View, ScrollView, RefreshControl, Dimensions, Text, StyleSheet} from "react-native";
 
-import {LineChart, Grid, YAxis, XAxis} from "react-native-svg-charts";
+import {LineChart, YAxis, XAxis} from "react-native-svg-charts";
 import * as shape from "d3-shape";
 import {useExercises} from "../../hooks/useExercises";
-import {aggregateData, AggregatedDataItem} from "../../utils/chartDataUtils";
-type TimeFrameType = "day" | "week" | "month";
+import {ChartData} from "./ChartData";
+import { colors } from "../../utils/util";
+import { useCategories } from "../../hooks/useCategories";
+import { SideBar } from "../SideBar";
 
 const ProgressTracking = () => {
-  const [timeFrame, setTimeFrame] = React.useState<TimeFrameType>("day"); // 'week', 'month'
-  const [selectedDataPoint, setSelectedDataPoint] = React.useState<Nullable<AggregatedDataItem>>(null);
-  const timeFrames: TimeFrameType[] = ["day", "week", "month"];
-
   const {exercises, refresh} = useExercises();
-  console.log(exercises)
+  const categories = useCategories()
 
   const [refreshing, setRefreshing] = React.useState(false);
+  const [chartData, setChartData] = React.useState<number[]>([])
+  const [maxExercises, setMaxExercises] = React.useState(0)
+  const [startDate, setStartDate] = React.useState<Date>()
+  const [filteredCategories, setFilteredCategories] = React.useState<string[]>([])
 
   const _onRefresh = () => {
     setRefreshing(true);
     refresh();
-
-    // Update your exercises data here and update your component's state.
-    // Once the data updating is done, set the refreshing state to false.
-
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 2000); // This is a simulation of data updating. Replace it with your own data updating logic.
+    setRefreshing(false);
   };
 
-  const screenWidth = Dimensions.get("window").width;
-  const chartWidth = screenWidth * 0.9;
+  React.useLayoutEffect(() => {
+    const {chartData, maxExercises, exercisesByDate, theDate} = ChartData({exercises, categories: filteredCategories})
+    setChartData(chartData)
+    setMaxExercises(maxExercises)
+    setStartDate(theDate)
+  }, [exercises, filteredCategories])
 
-  const handleChartPress = (index: number) => {
-    setSelectedDataPoint(aggregatedData[index] || null);
+  const chartWidth = Dimensions.get("window").width * 0.9;
+  const dataPointWidth = chartWidth / (chartData?.length || 1);
+
+  const handleFilterChange = (selectedCategories: string[]) => {
+    if (selectedCategories.length === 0) {
+      setFilteredCategories(categories);
+    } else {
+      setFilteredCategories(categories.filter(category => selectedCategories.includes(category)));
+    }
   };
-
-  function renderInfo(): React.ReactNode {
-    if (chartData.length === 1)
-      return (
-        <View style={{width: "100%", height: "100%", alignItems: "center", justifyContent: "center"}}>
-          <Text>Not enough data, try again later.</Text>
-        </View>
-      );
-    return (
-      <View style={{alignSelf: "center", top: 40, position: "absolute"}}>
-        <Text>Number of exercises:{selectedDataPoint ? selectedDataPoint.exercises : ""}</Text>
-        <Text>Categories: {selectedDataPoint ? Array.from(selectedDataPoint.categories).join(", ") : ""}</Text>
-      </View>
-    );
-  }
-
-  const aggregatedData = aggregateData(exercises, timeFrame);
-  const chartData = aggregatedData.map(item => item.exercises);
-  const dataPointWidth = chartWidth / (chartData.length);
 
   return (
     <SafeAreaView style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
+      <Text style={styles.header}>
+        This is the graph of exercises spread out from the day you started exercising till today
+      </Text>
       <ScrollView
-      contentContainerStyle={{ flexGrow: 1 }}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={_onRefresh}
-          colors={["#9Bd35A", "#689F38"]}
-          progressBackgroundColor="#fff"
-          tintColor="#689F38"
-        />
-      }
-    >
-      <View style={{flexDirection: "row", padding: 20, flex: 1, maxHeight: 500}}>
-        <YAxis
-          data={chartData}
-          contentInset={{top: 20, bottom: 20}}
-          svg={{
-            fill: "grey",
-            fontSize: 10,
-          }}
-          numberOfTicks={10}
-          formatLabel={value => `${value}`}
-        />
-        <TouchableOpacity
-          style={{width: "90%", height: "100%"}}
-          onPress={(event: {nativeEvent: {locationX: any}}) => {
-            const {locationX} = event.nativeEvent;
-            const index = Math.floor(locationX / dataPointWidth);
-            if (index >= 0 && index < chartData.length) {
-              handleChartPress(index);
-            }
-          }}>
+        style={{paddingTop: 80}}
+        contentContainerStyle={{flexGrow: 1}}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={_onRefresh}
+            colors={["#9Bd35A", "#689F38"]}
+            progressBackgroundColor="#fff"
+            tintColor="#689F38"
+          />
+        }>
+          <Text style={styles.legend}># of exercises</Text>
+        <View style={styles.yAxis}>
+          <YAxis
+            data={chartData}
+            contentInset={{top: 20, bottom: 40}}
+            svg={{
+              fill: "grey",
+              fontSize: 10,
+            }}
+            numberOfTicks={maxExercises}
+          />
+
           <LineChart
             style={{flex: 1, marginLeft: 16}}
             data={chartData}
-            svg={{stroke: "rgb(134, 65, 244)"}}
-            contentInset={{top: 20, bottom: 20}}
-            curve={shape.curveBasis}></LineChart>
-        </TouchableOpacity>
-      </View>
-      {renderInfo()}
-      <XAxis
-  style={{ marginTop: 10, width: chartWidth, marginLeft: 16 }}
-  data={Array.from({ length: chartData.length }, (_, i) => i)}
-  contentInset={{ left: dataPointWidth / 2, right: dataPointWidth / 2 }}
-  svg={{ fontSize: 10, fill: "grey" }}
-/>
-      <View style={{flexDirection: "row", gap: 5, position: "absolute", bottom: 20}}>
-        {timeFrames.map(timeFrame => {
-          return (
-            <View key={timeFrame} style={{minWidth: 100}}>
-              <Button title={timeFrame} onPress={() => setTimeFrame(timeFrame)} />
-            </View>
-          );
-        })}
-      </View>
+            svg={{stroke: colors.primary}}
+            contentInset={{top: 20, bottom: 40}}
+            curve={shape.curveCatmullRom}></LineChart>
+        </View>
+        <XAxis
+          style={styles.xAxis}
+          data={chartData}
+          contentInset={{left: dataPointWidth / 2, right: dataPointWidth / 2}}
+          svg={{fontSize: 10, fill: "grey"}}
+        />
+        <View style={{flexDirection: 'row', gap: 100}}>
+        <Text style={{fontSize: 10, marginTop: 10, paddingLeft: 35}}>{startDate?.toLocaleDateString()}</Text>
+        <Text style={{...styles.legend, marginTop: 10, textAlign: "center"}}>Days</Text>
+        <Text style={{fontSize: 10, marginTop: 10, paddingLeft: 35}}>{(new Date()).toLocaleDateString()}</Text>
+        </View>
       </ScrollView>
+      <SideBar categories={categories} onFilterChange={handleFilterChange} icon={'chart-bar'} />
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  header: {
+    fontFamily: "Roboto-Medium",
+    padding: 50,
+    textAlign: "center",
+  },
+  legend: {
+    fontSize: 10, fontFamily: "Roboto-MediumItalic", color: colors.new
+  },
+  yAxis: {
+    justifyContent: "center",
+    flexDirection: "row",
+    padding: 20,
+    flex: 2,
+    maxHeight: 300,
+  },
+  xAxis: {
+    marginTop: -25,
+    marginLeft: 30,
+    width: 350,
+  },
+});
 
 export default ProgressTracking;

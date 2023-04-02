@@ -15,6 +15,7 @@ The app has three main screens:
 2. Progress - On the Progress screen, you can keep track of your progress over time. The app shows you how many exercises you did each day, displayed on a graph. In the future, the app will also allow you to filter the specific exercises you want to show on the graph and adjust the date range.
 
    <img src="images/Progress.png" alt="Progress" width="250"/>
+   <img src="images/ProgressFilter.png" alt="ProgressFilter" width="250"/>
 
 3. Settings - The Settings screen (not yet implemented) will allow you to customize the app to suit your needs.
 
