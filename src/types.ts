@@ -5,7 +5,7 @@ export type Exercise = {
   names?: string[]
   sets: number;
   reps: number;
-  weight: number | ''
+  weight: number | string
   date: Date;
   category: string; // Add this line
   categories?: string[]

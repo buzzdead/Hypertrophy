@@ -3,7 +3,7 @@ type State = {
   names: string[];
   sets: number;
   reps: number;
-  weight: number | ''
+  weight: number | string
   category: string;
   categories: string[];
   pickerVisible: boolean;
@@ -16,7 +16,7 @@ type Action =
   | { type: "setSets"; payload: number }
   | { type: "setReps"; payload: number }
   | { type: "setCategory"; payload: string }
-  | { type: "setWeight"; payload: number | '' }
+  | { type: "setWeight"; payload: number | string }
   | {type: "setCategories"; payload: string[] }
   | { type: "togglePicker" }
   | {type: "toggleNamePicker" };

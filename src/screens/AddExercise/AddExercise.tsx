@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import {
   Button,
   SafeAreaView,
@@ -48,6 +48,7 @@ const AddExercise: React.FC<Props> = ({ navigation, previousExercise }) => {
     initialState.weight = 0;
   }
   const [state, dispatch] = useReducer(exerciseListReducer, initialState);
+  const [isWeightValid, setIsWeightValid] = useState(true);
 
   const handleAddExercise = async () => {
     const exercise: Exercise = {
@@ -56,7 +57,7 @@ const AddExercise: React.FC<Props> = ({ navigation, previousExercise }) => {
       names: state.names,
       sets: state.sets,
       reps: state.reps,
-      weight: state.weight,
+      weight: Number(state.weight),
       date: new Date(),
       category: state.category,
       categories: state.categories
@@ -96,22 +97,29 @@ const AddExercise: React.FC<Props> = ({ navigation, previousExercise }) => {
     )
   }
 
-  const renderWeightInput = (title: string, value: number | '', onChange: (value: number | '') => void) => {
+  const renderWeightInput = (title: string, value: number | string, onChange: (value: number | string) => void) => {
+    const handleWeightChange = (text: string) => {
+      const weight = Number(text);
+      const isWeightNaN = isNaN(weight);
+      setIsWeightValid(!isWeightNaN);
+      onChange(text);
+    };
     return (
       <View style={styles.inputContainer}>
         <Text style={styles.touchFieldLabel}>{title}</Text>
-        <View style={{flexDirection: 'row', gap: 5}}>
-        <TextInput
-          style={styles.input}
-          value={String(value)}
-          keyboardType='numeric'
-          onChangeText={(text) => {const parsedValue = parseFloat(text); onChange(isNaN(parsedValue) ? '' : parsedValue)}}
-        />
-        <Text style={{textAlign: "center", alignSelf: "center", fontSize: 24}}>Kg</Text>
+        <View style={[styles.weightInputContainer, !isWeightValid && styles.invalidWeightInputContainer]}>
+          <TextInput
+            style={[styles.input, !isWeightValid && styles.invalidInput]}
+            value={String(value)}
+            onChangeText={handleWeightChange}
+          />
+          <Text style={{ textAlign: "center", alignSelf: "center", fontSize: 24 }}>Kg</Text>
         </View>
+        {!isWeightValid && <Text style={styles.errorText}>Weight must be a number</Text>}
       </View>
     );
   };
+  
 
   useEffect(() => {
     loadCategories();
@@ -141,7 +149,7 @@ const AddExercise: React.FC<Props> = ({ navigation, previousExercise }) => {
         {renderNumberInput("Reps", state.reps, (value) => dispatch({ type: "setReps", payload: value }))}
       </View>
       <View style={{paddingTop: 30}}>
-      <Button title="Save" onPress={handleAddExercise} />
+      <Button disabled={!isWeightValid} title="Save" onPress={handleAddExercise} />
       </View>
       <Picker visible={state.pickerVisible} items={state.categories} onSelect={(value) => dispatch({ type: "setCategory", payload: value })} onClose={togglePicker} />
       <Picker picker visible={state.namePickerVisible} items={state.names} onSelect={(value) => dispatch({ type: "setName", payload: value })} onClose={toggleNamePicker} />
@@ -181,6 +189,21 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto-Black",
     padding: 8,
     fontSize: 24,
+  },
+  weightInputContainer: {
+    flexDirection: "row",
+    gap: 5,
+  },
+  invalidWeightInputContainer: {
+    borderColor: "red",
+  },
+  invalidInput: {
+    borderColor: "red",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 12,
+    marginTop: 4,
   },
 });
 
