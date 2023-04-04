@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {View, Animated, StyleSheet, FlatList, Text} from "react-native";
 import { throttle } from "lodash";
 import { colors } from "../utils/util";
@@ -9,9 +9,10 @@ interface NumberInputProps {
   onChange: (value: number) => void;
 }
 
-const NumberInput = ({value = 0, onChange}: NumberInputProps) => {
+const NumberInput = ({value, onChange}: NumberInputProps) => {
   const [currentValue, setCurrentValue] = useState(value);
   const xOffset = new Animated.Value(value * 50);
+  const flatListRef = useRef<FlatList>(null);
 
   const handleScrollEvent = throttle(({ value: offsetX }) => {
     const newValue = Math.round(offsetX / 50);
@@ -21,8 +22,19 @@ const NumberInput = ({value = 0, onChange}: NumberInputProps) => {
     }
   }, 100);
 
+  useEffect(() => {
+    setCurrentValue(value);
+    xOffset.setValue(value * 50);
+
+    if (flatListRef.current) {
+      flatListRef.current.scrollToOffset({
+        offset: value * 50,
+        animated: true,
+      });
+    }
+  }, [flatListRef.current]);
+
   xOffset.addListener(handleScrollEvent)
-  
 
   const renderItem = ({ item, index }: { item: number; index: number }) => {
     const inputRange = [(index - 1) * 50, index * 50, (index + 1) * 50];
@@ -56,6 +68,7 @@ const NumberInput = ({value = 0, onChange}: NumberInputProps) => {
       <View style={styles.borderedFlatList}>
       <View style={{ width: 150, overflow: "hidden"}}>
         <FlatList
+          ref={flatListRef}
           data={Array.from({ length: 31 }, (_, i) => i)}
           renderItem={renderItem}
           keyExtractor={(item) => item.toString()}

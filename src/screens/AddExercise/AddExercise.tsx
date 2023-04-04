@@ -7,48 +7,36 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { addExercise, fetchUniqueCategories, fetchUniqueExerciseTypes, saveExercise } from "../../api/realmAPI";
+import { addExercise, fetchUniqueExerciseTypes, saveExercise } from "../../api/realmAPI";
 import { Exercise } from "../../types";
 import NumberInput from "../../components/NumberInput";
-import PickerInput from "./PickerInput";
-import Picker from "./Picker";
-import exerciseListReducer from "../../Reducer";
-import { colors } from "../../utils/util";
+import exerciseListReducer, { ExerciseReducerState } from "../../Reducer";
+import { colors, getPreviousStateMergedWithInitialState } from "../../utils/util";
+import LoadingIndicator from "../../components/LoadingIndicator";
+import PickerWithLocalState from "./PickerWithLocalState";
+import { useCategories } from "../../hooks/useCategories";
 
 type Props = {
   navigation: any;
   previousExercise?: Exercise | null
 };
 
-const initialState = {
+const initialState: ExerciseReducerState = {
   name: "",
   names: [],
   weight: 0,
   sets: 1,
-  reps: 1,
+  reps: 10,
   category: "",
-  categories: [],
-  pickerVisible: false,
-  namePickerVisible: false
 };
 
 const AddExercise: React.FC<Props> = ({ navigation, previousExercise }) => {
-  if(previousExercise) {
-    initialState.name = previousExercise.name
-    initialState.sets = previousExercise.sets
-    initialState.category = previousExercise.category
-    initialState.reps = previousExercise.reps
-    initialState.weight = Number(previousExercise.weight);
-  }
-  else {
-    initialState.name = ""
-    initialState.sets = 1
-    initialState.category = ""
-    initialState.reps = 1
-    initialState.weight = 0;
-  }
-  const [state, dispatch] = useReducer(exerciseListReducer, initialState);
+  const currentState = previousExercise ? getPreviousStateMergedWithInitialState(initialState, previousExercise) : initialState
+  const [state, dispatch] = useReducer(exerciseListReducer, currentState);
   const [isWeightValid, setIsWeightValid] = useState(true);
+  const [loading, setLoading] = useState(false)
+  const categories = useCategories()
+
 
   const handleAddExercise = async () => {
     const exercise: Exercise = {
@@ -60,7 +48,6 @@ const AddExercise: React.FC<Props> = ({ navigation, previousExercise }) => {
       weight: Number(state.weight),
       date: new Date(),
       category: state.category,
-      categories: state.categories
     };
     if (previousExercise) {
       await saveExercise({...exercise, id: previousExercise.id});
@@ -70,23 +57,14 @@ const AddExercise: React.FC<Props> = ({ navigation, previousExercise }) => {
     navigation.goBack();
   };
 
-  const loadCategories = async () => {
-    const uniqueCategories = await fetchUniqueCategories();
-    dispatch({ type: "setCategories", payload: uniqueCategories });
-  };
-
   const loadNames = async (cat: string) => {
-    const uniqueExerciseTypes = await fetchUniqueExerciseTypes(cat);
-    dispatch({ type: "setNames", payload: uniqueExerciseTypes });
+    !loading && setLoading(true)
+    await fetchUniqueExerciseTypes(cat).then((res) => {
+      if(!previousExercise && res.length > 0) dispatch({type: "setName", payload: res[0]})
+      dispatch({ type: "setNames", payload: res });
+    });
+    setTimeout(() => setLoading(false), 200)
   };
-  
-
-  const togglePicker = () => {
-    dispatch({ type: "togglePicker" });
-  };
-  const toggleNamePicker = () => {
-    dispatch({ type: "toggleNamePicker" })
-  }
 
   const renderNumberInput = (title: string, value: number, onChange: (value: number) => void) => {
     return (
@@ -122,27 +100,16 @@ const AddExercise: React.FC<Props> = ({ navigation, previousExercise }) => {
   
 
   useEffect(() => {
-    loadCategories();
-  }, []);
-  useEffect(() => {
     if(state.category === "") return
     loadNames(state.category);
   }, [state.category])
-  useEffect(() => {
-    if(state.names.length > 0)
-      dispatch({type: "setName", payload: state.names[0]})
-  }, [state.names])
 
+  if(loading) return <LoadingIndicator />
+  console.log("How is it looking")
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ marginBottom: 16 }}>
-        <Text style={styles.textFieldLabel}>Category:</Text>
-        <PickerInput value={state.category} onChangeText={(value) => dispatch({ type: "setCategory", payload: value })} onPickerToggle={togglePicker} placeholder="Category" />
-      </View>
-      <View style={{ marginBottom: 16 }}>
-        <Text style={styles.textFieldLabel}>Type:</Text>
-        <PickerInput value={state.name} onChangeText={(value) => dispatch({ type: "setName", payload: value })} onPickerToggle={toggleNamePicker} placeholder="Name" />
-      </View>
+      <PickerWithLocalState setLoading={() => setLoading(true)} item={state.category} items={categories} onChange={(value) => dispatch({type: "setCategory", payload: value})}/>
+      <PickerWithLocalState item={state.name} items={state.names} onChange={(value) => dispatch({type: "setName", payload: value})}/>
       {renderWeightInput("Weight", state.weight, (value) => dispatch({ type: "setWeight", payload: value }))}
       <View style={{ flexDirection: "row", gap: 20, alignSelf: "center" }}>
         {renderNumberInput("Sets", state.sets, (value) => dispatch({ type: "setSets", payload: value }))}
@@ -151,8 +118,6 @@ const AddExercise: React.FC<Props> = ({ navigation, previousExercise }) => {
       <View style={{paddingTop: 30}}>
       <Button disabled={!isWeightValid} title="Save" onPress={handleAddExercise} />
       </View>
-      <Picker visible={state.pickerVisible} items={state.categories} onSelect={(value) => dispatch({ type: "setCategory", payload: value })} onClose={togglePicker} />
-      <Picker picker visible={state.namePickerVisible} items={state.names} onSelect={(value) => dispatch({ type: "setName", payload: value })} onClose={toggleNamePicker} />
     </SafeAreaView>
   );
 };
@@ -167,10 +132,6 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     marginRight: 10,
-  },
-  textFieldLabel: {
-    fontWeight: "bold",
-    marginBottom: 4,
   },
   touchFieldLabel: {
     color: colors.new,
@@ -207,4 +168,11 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddExercise;
+const propsAreEqual = (prevProps: Props, nextProps: Props) => {
+  return (
+    prevProps.previousExercise === nextProps.previousExercise &&
+    prevProps.navigation === nextProps.navigation
+  );
+};
+
+export default React.memo(AddExercise, propsAreEqual);

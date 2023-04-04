@@ -1,6 +1,36 @@
 // realmConfig.ts
 import Realm from "realm";
 
+export class CategorySchema extends Realm.Object {
+  static schema = {
+    name: "Category",
+    primaryKey: "id",
+    properties: {
+      id: "int",
+      name: "string",
+    },
+  };
+
+  id!: number;
+  name!: string;
+}
+
+export class ExerciseTypeSchema extends Realm.Object {
+  static schema = {
+    name: "ExerciseType",
+    primaryKey: "id",
+    properties: {
+      id: "int",
+      name: "string",
+      category: "Category",
+    },
+  };
+
+  id!: number;
+  name!: string;
+  category!: CategorySchema;
+}
+
 export class ExerciseSchema extends Realm.Object {
   static schema = {
     name: "Exercise",
