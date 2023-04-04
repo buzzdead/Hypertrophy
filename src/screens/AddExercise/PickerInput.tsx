@@ -6,17 +6,15 @@ import { faCaretDown } from "@fortawesome/free-solid-svg-icons/faCaretDown";
 
 type PickerInputProps = {
   value: string;
-  onChangeText: (text: string) => void;
   onPickerToggle: () => void;
   placeholder: string;
 };
 
-const PickerInput: React.FC<PickerInputProps> = ({ value, onChangeText, onPickerToggle, placeholder }) => {
+const PickerInput: React.FC<PickerInputProps> = ({ value, onPickerToggle, placeholder }) => {
   return (
     <View style={styles.pickerInputContainer}>
       <TextInput
         style={[styles.input, styles.pickerInput]}
-        onChangeText={onChangeText}
         value={value}
         placeholder={placeholder}
       />

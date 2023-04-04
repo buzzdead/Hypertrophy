@@ -8,5 +8,4 @@ export type Exercise = {
   weight: number | string
   date: Date;
   category: string; // Add this line
-  categories?: string[]
 };

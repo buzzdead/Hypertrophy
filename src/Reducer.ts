@@ -1,13 +1,10 @@
-type State = {
+export type ExerciseReducerState = {
   name: string;
   names: string[];
   sets: number;
   reps: number;
   weight: number | string
   category: string;
-  categories: string[];
-  pickerVisible: boolean;
-  namePickerVisible: boolean;
 };
 
 type Action =
@@ -17,11 +14,8 @@ type Action =
   | { type: "setReps"; payload: number }
   | { type: "setCategory"; payload: string }
   | { type: "setWeight"; payload: number | string }
-  | {type: "setCategories"; payload: string[] }
-  | { type: "togglePicker" }
-  | {type: "toggleNamePicker" };
 
-export default function exerciseListReducer(state: State, action: Action): State {
+export default function exerciseListReducer(state: ExerciseReducerState, action: Action): ExerciseReducerState {
   switch (action.type) {
     case "setName":
       return { ...state, name: action.payload };
@@ -35,12 +29,6 @@ export default function exerciseListReducer(state: State, action: Action): State
       return { ...state, category: action.payload };
     case "setWeight":
       return { ...state, weight: action.payload };
-    case "togglePicker":
-      return { ...state, pickerVisible: !state.pickerVisible };
-    case "toggleNamePicker":
-      return { ...state, namePickerVisible: !state.namePickerVisible}
-    case "setCategories":
-        return { ...state, categories: action.payload };
     default:
       throw new Error("Invalid action type");
   }
