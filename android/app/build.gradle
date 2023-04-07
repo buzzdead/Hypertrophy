@@ -98,7 +98,7 @@ android {
 
     namespace "com.hypertrophy"
     defaultConfig {
-        applicationId "com.Hypertrophy"
+        applicationId "com.hypertrophy"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 2
