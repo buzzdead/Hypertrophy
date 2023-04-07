@@ -1,34 +1,32 @@
-export type ExerciseReducerState = {
-  name: string;
-  names: string[];
-  sets: number;
-  reps: number;
-  weight: number | string
-  category: string;
-};
+import { Exercise } from "../typings/types";
+import { CategorySchema, ExerciseTypeSchema } from "./config/realmConfig";
+
+export interface ExerciseReducerType extends Pick<Exercise, "date" | "sets" | "reps" | "weight"> {
+  category: Nullable<CategorySchema>,
+  exerciseType: Nullable<ExerciseTypeSchema>
+}
 
 type Action =
-  | { type: "setName"; payload: string }
-  | { type: "setNames"; payload: string[] }
+  | { type: "setType"; payload: ExerciseTypeSchema }
   | { type: "setSets"; payload: number }
   | { type: "setReps"; payload: number }
-  | { type: "setCategory"; payload: string }
   | { type: "setWeight"; payload: number | string }
+  | { type: "setCategory"; payload: Nullable<CategorySchema> }
+  | { type: "setExerciseType"; payload: Nullable<ExerciseTypeSchema> }
 
-export default function exerciseListReducer(state: ExerciseReducerState, action: Action): ExerciseReducerState {
+export default function exerciseListReducer(state: ExerciseReducerType, action: Action): ExerciseReducerType {
   switch (action.type) {
-    case "setName":
-      return { ...state, name: action.payload };
-      case "setNames":
-      return { ...state, names: action.payload };
     case "setSets":
       return { ...state, sets: action.payload };
     case "setReps":
       return { ...state, reps: action.payload };
-    case "setCategory":
-      return { ...state, category: action.payload };
     case "setWeight":
       return { ...state, weight: action.payload };
+    case "setCategory": 
+      return { ...state, category: action.payload }
+    case "setExerciseType": 
+      return { ...state, exerciseType: action.payload }
+    
     default:
       throw new Error("Invalid action type");
   }

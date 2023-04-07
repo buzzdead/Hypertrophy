@@ -1,8 +1,8 @@
 import React from "react";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
-import ExerciseList from "./screens/ExerciseList";
+import ExerciseList from "./screens/Exercise/ExerciseList";
 import ProgressTracking from "./screens/ProgressTracking/ProgressTracking";
-import Settings from "./screens/Settings";
+import Settings from "./screens/Settings/Settings";
 import { colors } from "./utils/util";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 

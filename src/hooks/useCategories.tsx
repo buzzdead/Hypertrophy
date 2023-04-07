@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { fetchUniqueCategories } from "../api/realmAPI";
+import { fetchCategories } from "../api/realmAPI";
+import { CategorySchema } from "../config/realmConfig";
 
 export function useCategories() {
-    const [categories, setCategories] = useState<string[]>([])
+    const [categories, setCategories] = useState<CategorySchema[]>([])
 
   const loadCategories = async () => {
-    const uniqueCategories = await fetchUniqueCategories();
+    const uniqueCategories = await fetchCategories();
     setCategories(uniqueCategories);
   };
 

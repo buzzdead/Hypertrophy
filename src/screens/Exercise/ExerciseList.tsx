@@ -1,11 +1,12 @@
 import React, {useRef, useState} from "react";
 import {Button, FlatList, SafeAreaView, Text, TouchableOpacity, StyleSheet, View, ColorValue , RefreshControl} from "react-native";
 import {StackScreenProps} from "@react-navigation/stack";
-import {Exercise} from "../types";
-import {colors} from "../utils/util";
-import {useExercises} from "../hooks/useExercises";
-import {SideBar} from "./SideBar";
-import {useCategories} from "../hooks/useCategories";
+import {Exercise} from "../../../typings/types";
+import {colors} from "../../utils/util";
+import {useExercises} from "../../hooks/useExercises";
+import {SideBar} from "../../components/SideBar";
+import {useCategories} from "../../hooks/useCategories";
+import { CategorySchema } from "../../config/realmConfig";
 
 type Props = StackScreenProps<
   {
@@ -33,13 +34,23 @@ const ExerciseList: React.FC<Props> = ({navigation}) => {
     }, 2000); // This is a simulation of data fetching. Replace it with your own data fetching logic.
   };
   
-  const handleFilterChange = (selectedCategories: string[]) => {
-    if (selectedCategories.length === 0) {
+  const handleFilterChange = (selectedCategories: Optional<CategorySchema>[]) => {
+    console.log(selectedCategories, "aisdasidfj")
+    exercises.map(e => console.log(e?.type?.category?.id))
+    if(!selectedCategories) return
+    if (selectedCategories?.length === 0) {
       setFilteredExercises(exercises);
     } else {
-      setFilteredExercises(exercises.filter(exercise => selectedCategories.includes(exercise.category)));
+      setFilteredExercises(
+        exercises.filter(
+          exercise => selectedCategories?.some(
+            selectedCategory => selectedCategory?.id === exercise.type?.category?.id
+          )
+        )
+      );
     }
   };
+  
 
   const renderItem = (
     {item}: {item: Exercise; index: number},
@@ -52,10 +63,10 @@ const ExerciseList: React.FC<Props> = ({navigation}) => {
       <TouchableOpacity style={styles.item} onPress={() => navigation.navigate("Details", {exerciseId: item.id})}>
         <View style={{flexDirection: "column", width: "100%", gap: 15}}>
           <View style={{justifyContent: "space-between", flexDirection: "row"}}>
-            <Text style={{...styles.itemText, color: colors.accent}}>{item.name.toUpperCase()}</Text>
+            <Text style={{...styles.itemText, color: colors.accent}}>{item.type?.name?.toUpperCase()}</Text>
             <Text style={{fontStyle: "italic", color: colors.secondary}}>{item.date.toLocaleDateString()}</Text>
           </View>
-          <Text style={styles.itemText}>Category: <Text style={styles.itemText2}>{item.category}</Text></Text>
+          <Text style={styles.itemText}>Category: <Text style={styles.itemText2}>{item.type?.category?.name}</Text></Text>
           <Text style={styles.itemText}>
             Result: <Text style={styles.itemText2}>{item.sets} sets x {item.reps} reps</Text>
           </Text> 

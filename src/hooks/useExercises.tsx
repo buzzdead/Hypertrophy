@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import {Exercise} from "../types";
+import {Exercise} from "../../typings/types";
 import {fetchExercises} from "../api/realmAPI";
 
 export function useExercises() {

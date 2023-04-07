@@ -2,7 +2,7 @@
 import React, {useEffect, useState} from "react";
 import {StackScreenProps} from "@react-navigation/stack";
 import {fetchExerciseById} from "../../api/realmAPI";
-import {Exercise} from "../../types";
+import {Exercise} from "../../../typings/types";
 import ExerciseDetailsContent from "./ExerciseDetailsContent";
 import LoadingIndicator from "../../components/LoadingIndicator";
 import AddExercise from "../AddExercise/AddExercise";

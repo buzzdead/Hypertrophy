@@ -1,6 +1,6 @@
 import React from "react";
 import { SafeAreaView, Text, View, StyleSheet, TouchableOpacity } from "react-native";
-import { Exercise } from "../../types";
+import { Exercise } from "../../../typings/types";
 
 interface ExerciseDetailsContentProps {
   exercise: Exercise;
@@ -17,7 +17,7 @@ const ExerciseDetailsContent = ({ exercise, onEditPress }: ExerciseDetailsConten
       <View style={styles.content}>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>Title: </Text>
-          <Text style={styles.name}>{exercise.name}</Text>
+          <Text style={styles.name}>{exercise.type?.name}</Text>
         </View>
         <Text style={styles.setsAndReps}>
           {exercise.sets} sets x {exercise.reps} reps x {exercise.weight} kg

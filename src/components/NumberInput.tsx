@@ -9,32 +9,29 @@ interface NumberInputProps {
   onChange: (value: number) => void;
 }
 
-const NumberInput = ({value, onChange}: NumberInputProps) => {
+const NumberInput = ({value, onChange }: NumberInputProps) => {
   const [currentValue, setCurrentValue] = useState(value);
-  const xOffset = new Animated.Value(value * 50);
-  const flatListRef = useRef<FlatList>(null);
-
-  const handleScrollEvent = throttle(({ value: offsetX }) => {
-    const newValue = Math.round(offsetX / 50);
-    if (newValue !== currentValue) {
-      setCurrentValue(newValue);
-      onChange(newValue);
-    }
-  }, 100);
+  const [xOffset] = useState(() => new Animated.Value(currentValue * 50));
+  const flatListRef = useRef<FlatList>(null)
+  const arr = Array.from({ length: 50 }, (_, i) => i)
 
   useEffect(() => {
-    setCurrentValue(value);
-    xOffset.setValue(value * 50);
+    const handleScrollEvent = throttle(({ value: offsetX }) => {
+      const newValue = Math.round(offsetX / 50);
+      if (newValue !== currentValue) {
+        setCurrentValue(newValue);
+        onChange(newValue);
+      }
+    }, 10);
+  
+    const listenerId = xOffset.addListener(handleScrollEvent);
 
-    if (flatListRef.current) {
-      flatListRef.current.scrollToOffset({
-        offset: value * 50,
-        animated: true,
-      });
-    }
-  }, [flatListRef.current]);
-
-  xOffset.addListener(handleScrollEvent)
+  // Cleanup function, canceling any remaining throttled calls and removing the listener
+  return () => {
+    handleScrollEvent.cancel();
+    xOffset.removeListener(listenerId);
+  };
+}, [currentValue, onChange, xOffset]);
 
   const renderItem = ({ item, index }: { item: number; index: number }) => {
     const inputRange = [(index - 1) * 50, index * 50, (index + 1) * 50];
@@ -68,8 +65,8 @@ const NumberInput = ({value, onChange}: NumberInputProps) => {
       <View style={styles.borderedFlatList}>
       <View style={{ width: 150, overflow: "hidden"}}>
         <FlatList
-          ref={flatListRef}
-          data={Array.from({ length: 31 }, (_, i) => i)}
+         ref={flatListRef}
+          data={arr}
           renderItem={renderItem}
           keyExtractor={(item) => item.toString()}
           horizontal
@@ -77,8 +74,17 @@ const NumberInput = ({value, onChange}: NumberInputProps) => {
           decelerationRate="fast"
           onMomentumScrollEnd={handleScroll}
           showsHorizontalScrollIndicator={false}
-          contentOffset={{ x: value * 50, y: 0 }}
+          contentOffset={{ x: currentValue * 50, y: 0 }}
           style={{paddingLeft: 50, padding: 10}}
+          onLayout={() => {
+            if (flatListRef.current) {
+              setTimeout(() => 
+              flatListRef?.current?.scrollToOffset({
+                offset: currentValue * 50,
+                animated: true,
+              }), 30)
+            }
+          }}
         />
         </View>
       </View>
@@ -131,4 +137,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NumberInput;
+
+export default React.memo(NumberInput)

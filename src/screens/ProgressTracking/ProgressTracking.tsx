@@ -8,7 +8,8 @@ import {useExercises} from "../../hooks/useExercises";
 import {ChartData} from "./ChartData";
 import { colors } from "../../utils/util";
 import { useCategories } from "../../hooks/useCategories";
-import { SideBar } from "../SideBar";
+import { SideBar } from "../../components/SideBar";
+import { CategorySchema } from "../../config/realmConfig";
 
 const ProgressTracking = () => {
   const {exercises, refresh} = useExercises();
@@ -18,7 +19,7 @@ const ProgressTracking = () => {
   const [chartData, setChartData] = React.useState<number[]>([])
   const [maxExercises, setMaxExercises] = React.useState(0)
   const [startDate, setStartDate] = React.useState<Date>()
-  const [filteredCategories, setFilteredCategories] = React.useState<string[]>([])
+  const [filteredCategories, setFilteredCategories] = React.useState<CategorySchema[]>([])
 
   const _onRefresh = () => {
     setRefreshing(true);
@@ -36,11 +37,11 @@ const ProgressTracking = () => {
   const chartWidth = Dimensions.get("window").width * 0.9;
   const dataPointWidth = chartWidth / (chartData?.length || 1);
 
-  const handleFilterChange = (selectedCategories: string[]) => {
+  const handleFilterChange = (selectedCategories: CategorySchema[]) => {
     if (selectedCategories.length === 0) {
       setFilteredCategories(categories);
     } else {
-      setFilteredCategories(categories.filter(category => selectedCategories.includes(category)));
+      setFilteredCategories(categories.filter(category => selectedCategories.some(c => c.id === category.id)));
     }
   };
 

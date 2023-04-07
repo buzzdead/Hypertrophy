@@ -1,15 +1,16 @@
-import { Exercise } from "../../types";
+import { Exercise } from "../../../typings/types";
+import { CategorySchema } from "../../config/realmConfig";
 
 interface Props {
     exercises: Exercise[]
-    categories: string[]
+    categories: CategorySchema[]
 }
 
 export const ChartData = ({exercises, categories: category}: Props) => {
 
-  const getExercisesByDate = (exercises: Exercise[], categories: string[]) => {
+  const getExercisesByDate = (exercises: Exercise[], categories: CategorySchema[]) => {
       return exercises.reduce((accumulator: { date: string; exercises: Exercise[] }[], exercise) => {
-        if (categories.length !== 0 && !categories.includes(exercise.category)) {
+        if (categories.length !== 0 && !categories.some(c => c.id === exercise.type?.category?.id)) {
           return accumulator;
         }
         const exerciseDate = exercise.date.toDateString();

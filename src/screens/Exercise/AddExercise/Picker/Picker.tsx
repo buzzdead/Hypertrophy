@@ -2,24 +2,26 @@
 import React from "react";
 import { View, Modal, TouchableWithoutFeedback, TouchableOpacity, FlatList, StyleSheet } from "react-native";
 import { Text } from "react-native-paper";
+import { CategorySchema, ExerciseTypeSchema } from "../../../config/realmConfig";
 
 type PickerProps = {
   visible: boolean;
-  items: string[];
-  onSelect: (item: string) => void;
+  items: (CategorySchema | ExerciseTypeSchema)[];
+  onSelect: (item: CategorySchema | ExerciseTypeSchema) => void;
   onClose: () => void;
-  picker?: boolean
+  picker?: number
+  maxWidth?: number
 };
 
-const Picker: React.FC<PickerProps> = ({ visible, items, onSelect, onClose, picker }) => {
+const Picker: React.FC<PickerProps> = ({ visible, items, onSelect, onClose, picker, maxWidth }) => {
   return (
     <Modal visible={visible} transparent={true} animationType="fade" onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={onClose}>
         <View style={styles.modalOverlay} />
       </TouchableWithoutFeedback>
-      <View style={{...styles.pickerContainer, top: picker ? 200 : 100}}>
+      <View style={{...styles.pickerContainer, top: picker ? picker : 140, maxWidth: maxWidth, left: maxWidth ? 55 : 16}}>
         <FlatList
-          data={items.filter(item => item !== "default")}
+          data={items.filter(item => item.name !== "default")}
           renderItem={({ item }) => (
             <TouchableOpacity
               style={{ padding: 8 }}
@@ -28,10 +30,10 @@ const Picker: React.FC<PickerProps> = ({ visible, items, onSelect, onClose, pick
                 onClose();
               }}
             >
-              <Text>{item}</Text>
+              <Text>{item.name}</Text>
             </TouchableOpacity>
           )}
-          keyExtractor={item => item}
+          keyExtractor={item => item.name}
         />
       </View>
     </Modal>

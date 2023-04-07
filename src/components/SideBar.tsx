@@ -2,13 +2,14 @@
 import React, {useEffect, useState} from "react";
 import {Animated, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { CategorySchema } from "../config/realmConfig";
 
 const SidebarWidth = 150;
 const SidebarVisibleWidth = 30;
 
 interface SideBarProps {
-  categories: string[];
-  onFilterChange: (selectedCategories: string[]) => void;
+  categories: CategorySchema[];
+  onFilterChange: (selectedCategories: CategorySchema[]) => void;
   icon?: string
 }
 
@@ -19,16 +20,15 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, ico
 
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [translateX] = useState(new Animated.Value(-SidebarWidth));
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<CategorySchema[]>([]);
 
-  const handleCategoryPress = (category: string, index: number) => {
+  const handleCategoryPress = (category: CategorySchema, index: number) => {
+    if(!category) return
     const newSelectedCategories = selectedCategories.includes(category)
       ? selectedCategories.filter(c => c !== category)
       : [...selectedCategories, category];
-
     setSelectedCategories(newSelectedCategories);
     onFilterChange(newSelectedCategories);
-    console.log(selectedCategoryAnimations);
 
     Animated.timing(selectedCategoryAnimations[index], {
       toValue: newSelectedCategories.includes(category) ? 1 : 0,
@@ -86,7 +86,7 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, ico
       <Text style={styles.sidebarTitle}>Filter</Text>
       {categories.map((category, index) => (
         <Animated.View
-          key={category}
+          key={category?.name}
           style={[
             styles.sidebarItem,
             {
@@ -97,7 +97,7 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, ico
             },
           ]}>
           <TouchableOpacity onPress={() => handleCategoryPress(category, index)}>
-            <Text style={styles.sidebarItemText}>{category}</Text>
+            <Text style={styles.sidebarItemText}>{category?.name}</Text>
           </TouchableOpacity>
         </Animated.View>
       ))}

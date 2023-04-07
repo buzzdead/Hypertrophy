@@ -1,11 +1,11 @@
+import { ExerciseTypeSchema } from "../src/config/realmConfig";
+
 // types.ts
 export type Exercise = {
   id: number;
-  name: string;
-  names?: string[]
+  type: Nullable<ExerciseTypeSchema>
   sets: number;
   reps: number;
   weight: number | string
   date: Date;
-  category: string; // Add this line
 };
