@@ -1,14 +1,14 @@
 import React, {useReducer, useState} from "react";
 import {Button, SafeAreaView, StyleSheet, Text, TextInput, View} from "react-native";
 import PickerField from "./Picker/PickerField";
-import { extend } from "lodash";
-import { Exercise } from "../../../../typings/types";
-import { saveExercise, addExercise } from "../../../api/realmAPI";
+import {extend} from "lodash";
+import {Exercise} from "../../../../typings/types";
+import {saveExercise, addExercise} from "../../../api/realmAPI";
 import NumberInput from "../../../components/NumberInput";
-import { useCategories } from "../../../hooks/useCategories";
-import { useExerciseTypes } from "../../../hooks/useExerciseTypes";
-import exerciseListReducer, { ExerciseReducerType } from "../../../Reducer";
-import { colors } from "../../../utils/util";
+import {useCategories} from "../../../hooks/useCategories";
+import {useExerciseTypes} from "../../../hooks/useExerciseTypes";
+import exerciseListReducer, {ExerciseReducerType} from "../../../Reducer";
+import {colors} from "../../../utils/util";
 import CustomButton from "../../../components/CustomButton";
 
 type Props = {
@@ -25,7 +25,7 @@ const initialState: ExerciseReducerType = {
   exerciseType: null,
 };
 
-const renderNumberInput = (title: string, value: number, onChange: { (value: number): void; }) => {
+const renderNumberInput = (title: string, value: number, onChange: {(value: number): void}) => {
   return (
     <View style={styles.inputContainer}>
       <Text style={styles.touchFieldLabel}>{title}</Text>
@@ -35,7 +35,12 @@ const renderNumberInput = (title: string, value: number, onChange: { (value: num
 };
 
 const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
-  const newState = previousExercise ? extend({}, initialState, previousExercise, {category: previousExercise.type?.category, exerciseType: previousExercise.type}) : initialState
+  const newState = previousExercise
+    ? extend({}, initialState, previousExercise, {
+        category: previousExercise.type?.category,
+        exerciseType: previousExercise.type,
+      })
+    : initialState;
   const [state, dispatch] = useReducer(exerciseListReducer, newState);
   const [isWeightValid, setIsWeightValid] = useState(true);
   const categories = useCategories();
@@ -81,7 +86,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
     );
   };
 
-  console.log("rendering")
+  console.log("rendering");
   return (
     <SafeAreaView style={styles.container}>
       <PickerField
@@ -100,8 +105,25 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
         {renderNumberInput("Sets", state.sets, (value: any) => dispatch({type: "setSets", payload: value}))}
         {renderNumberInput("Reps", state.reps, (value: any) => dispatch({type: "setReps", payload: value}))}
       </View>
-      <View style={{paddingTop: 30}}>
-        <CustomButton titleColor={colors.summerDarkest} backgroundColor={colors.accent} disabled={!isWeightValid} title="Save" onPress={handleAddExercise} />
+      <View style={{paddingTop: 20, alignSelf: "center", flexDirection: "row", gap: 10}}>
+        <View style={{width: 180}}>
+          <CustomButton
+            titleColor={colors.summerWhite}
+            backgroundColor={colors.summerDark}
+            disabled={!isWeightValid}
+            title="Cancel"
+            onPress={handleAddExercise}
+          />
+        </View>
+        <View style={{width: 180}}>
+          <CustomButton
+            titleColor={colors.accent}
+            backgroundColor={colors.summerDark}
+            disabled={!isWeightValid}
+            title="Save"
+            onPress={handleAddExercise}
+          />
+        </View>
       </View>
     </SafeAreaView>
   );

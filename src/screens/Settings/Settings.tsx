@@ -17,35 +17,32 @@ type Props = {
 
 const Settings: React.FC<Props> = ({ navigation }) => {
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, gap: 10 }}>
       <ScrollView>
-        <View style={{ alignItems: "center", paddingTop: 20 }}>
-          <Text style={{ fontSize: 24, fontWeight: "bold" }}>Settings</Text>
-        </View>
         <View style={{ paddingHorizontal: 20, paddingTop: 20 }}>
-          <Text style={{ fontSize: 18, fontWeight: "bold" }}>Edit</Text>
+          <Text style={{ fontSize: 24, fontFamily: 'Roboto-Medium', color: colors.summerBlue, padding: 10 }}>Edit</Text>
           <View style={{ minWidth: 200, gap: 10 }}>
             <CustomButton
-              backgroundColor={colors.summerBlue}
-              titleColor={colors.summerDarkest}
+              backgroundColor={colors.summerDark}
+              titleColor={colors.summerWhite}
 
               title={"Edit Categories"}
               onPress={() => navigation.navigate("Categories")}
             />
             <CustomButton
-              backgroundColor={colors.summerBlue}
-              titleColor={colors.summerDarkest}
+              backgroundColor={colors.summerDark}
+              titleColor={colors.summerWhite}
 
               title={"Edit ExerciseTypes"}
               onPress={() => navigation.navigate("ExerciseTypes")}
             />
           </View>
-          <Text style={{ fontSize: 18, fontWeight: "bold", paddingTop: 20 }}>
-            Adjust Dates for Exercise List
+          <Text style={{ fontSize: 24, padding: 10, fontFamily: 'Robot-Medium', paddingTop: 20, color: colors.summerBlue}}>
+            Adjust Dates
           </Text>
           <CustomButton
-            backgroundColor={colors.summerBlue}
-            titleColor={colors.summerDarkest}
+            backgroundColor={colors.summerDark}
+            titleColor={colors.summerWhite}
             title={"Adjust Dates"}
             onPress={() => {/* Handle date adjustment */}}
           />

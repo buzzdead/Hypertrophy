@@ -42,16 +42,17 @@ const AddObject = ({isCategory}: Props) => {
 
 const styles = StyleSheet.create({
   addButton: {
-    width: 20,
-    height: 20,
-    backgroundColor: colors.primary,
+    width: 25,
+    height: 25,
+    backgroundColor: colors.summerDark,
     borderRadius: 4,
     justifyContent: "center",
     alignItems: "center",
   },
   addButtonText: {
     fontSize: 20,
-    color: "white",
+    fontWeight: 'bold',
+    color: colors.summerBlue,
     lineHeight: 22,
     textAlign: "center",
   },

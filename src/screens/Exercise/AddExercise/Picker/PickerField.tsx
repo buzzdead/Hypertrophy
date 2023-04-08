@@ -74,7 +74,7 @@ export const pickerStyles = StyleSheet.create({
     padding: 8
   },
   pickerInputText: {
-    color: "black",
+    color: colors.summerDarkest,
   },
   pickerDisplay: {
     padding: 10,

@@ -2,8 +2,8 @@
 import React, {useEffect, useState} from "react";
 import {Animated, ImageBackground, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { CategorySchema } from "../config/realmConfig";
-import { colors } from "../utils/util";
+import {CategorySchema} from "../config/realmConfig";
+import {colors} from "../utils/util";
 
 const SidebarWidth = 150;
 const SidebarVisibleWidth = 30;
@@ -11,7 +11,7 @@ const SidebarVisibleWidth = 30;
 interface SideBarProps {
   categories: CategorySchema[];
   onFilterChange: (selectedCategories: CategorySchema[]) => void;
-  icon?: string
+  icon?: string;
 }
 
 export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, icon}) => {
@@ -24,7 +24,7 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, ico
   const [selectedCategories, setSelectedCategories] = useState<CategorySchema[]>([]);
 
   const handleCategoryPress = (category: CategorySchema, index: number) => {
-    if(!category) return
+    if (!category) return;
     const newSelectedCategories = selectedCategories.includes(category)
       ? selectedCategories.filter(c => c !== category)
       : [...selectedCategories, category];
@@ -72,7 +72,6 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, ico
           ],
         },
       ]}>
-        <ImageBackground source={require('./bg2.png')} style={styles.image}>
       <View style={styles.sidebarEdgeIndicator}>
         <TouchableOpacity
           style={{...styles.sidebarEdge, zIndex: sidebarVisible ? 1001 : -1}}
@@ -94,7 +93,7 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, ico
             {
               backgroundColor: selectedCategoryAnimations[index]?.interpolate({
                 inputRange: [0, 1],
-                outputRange: ["transparent", colors.new],
+                outputRange: ["transparent", colors.sidebarColor],
               }),
             },
           ]}>
@@ -103,7 +102,6 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, ico
           </TouchableOpacity>
         </Animated.View>
       ))}
-      </ImageBackground>
     </Animated.View>
   );
 };
@@ -115,12 +113,14 @@ const styles = StyleSheet.create({
     right: -SidebarWidth + SidebarVisibleWidth,
     bottom: 0,
     zIndex: 1000,
+    height: "50%",
     width: SidebarWidth - SidebarVisibleWidth,
     elevation: 5, // Add box shadow on Android
     shadowColor: "#000", // Add box shadow on iOS
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
+    backgroundColor: colors.summerWhite,
   },
   sidebarTitle: {
     fontSize: 24,
@@ -138,13 +138,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     padding: 11.4,
     fontFamily: "Roboto-Bold",
-    color: "black",
-    textAlign: "center"
+    color: colors.summerDark,
+    textAlign: "center",
   },
   sidebarEdgeIndicator: {
     position: "absolute",
     top: 35,
-    left: -SidebarVisibleWidth -3,
+    left: -SidebarVisibleWidth - 3,
     zIndex: 1000,
     backgroundColor: "#f5f5f5",
     borderRadius: 4,
@@ -159,5 +159,5 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
     width: "100%",
     opacity: 0.95,
-  }
+  },
 });

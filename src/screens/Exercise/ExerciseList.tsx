@@ -72,18 +72,15 @@ const ExerciseList: React.FC<Props> = ({navigation}) => {
       <TouchableOpacity style={styles.item} onPress={() => navigation.navigate("Details", {exerciseId: item.id})}>
         <View style={{flexDirection: "column", width: "100%", gap: 15}}>
           <View style={{justifyContent: "space-between", flexDirection: "row"}}>
-            <Text style={{...styles.itemText, color: colors.error}}>{item.type?.name?.toUpperCase()}</Text>
-            <Text style={{fontStyle: "italic", color: colors.secondary}}>{item.date.toLocaleDateString()}</Text>
+            <Text style={{...styles.itemText, color: colors.shadow}}>{item.type?.name?.toUpperCase()}</Text>
+            <Text style={{fontStyle: "italic", color: colors.summerDarkest}}>{item.date.toLocaleDateString()}</Text>
           </View>
           <Text style={styles.itemText}>
             Category: <Text style={styles.itemText2}>{item.type?.category?.name}</Text>
           </Text>
-          <Text style={styles.itemText}>
-            Result:{" "}
             <Text style={styles.itemText2}>
-              {item.sets} sets x {item.reps} reps
+              Sets: {item.sets}   -   Reps: {item.reps}   -    Weight: {item.weight} kg
             </Text>
-          </Text>
         </View>
       </TouchableOpacity>
     );
@@ -91,7 +88,6 @@ const ExerciseList: React.FC<Props> = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ImageBackground source={require('./bg2.png')} style={styles.image}>
       <FlatList
         data={filteredExercises || exercises}
         renderItem={item => renderItem(item, navigation)}
@@ -106,16 +102,15 @@ const ExerciseList: React.FC<Props> = ({navigation}) => {
           />
         }
       />
-      <View style={{width: "100%"}}>
+      <View style={{width: '15%', padding: 5, marginLeft: 35, alignSelf: 'flex-end'}}>
         <CustomButton
-          title="Add new exercise"
-          titleColor={colors.error}
-          backgroundColor={colors.summerWhite}
-          borderColor={colors.error}
+          title="+"
+          fontSize={24}
+          titleColor={colors.accent}
+          backgroundColor={colors.summerDark}
           onPress={() => navigation.navigate("AddExercise", {previousExercise: null})}
         />
       </View>
-      </ImageBackground>
       <SideBar categories={categories} onFilterChange={handleFilterChange} />
     </SafeAreaView>
   );
@@ -133,8 +128,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.summerWhite,
+    borderBottomWidth: 0.5,
+    borderBottomColor: colors.summerDarkest,
     width: "100%",
   },
   itemText: {
@@ -143,15 +138,16 @@ const styles = StyleSheet.create({
     color: colors.summerDark
   },
   itemText2: {
-    fontSize: 14,
+    fontSize: 16,
     fontFamily: "Roboto-Medium",
-    color: colors.summerDarkest,
+    color: colors.summerDark,
   },
   image: {
     flex: 1,
     resizeMode: "cover",
     justifyContent: "center",
     width: "100%",
+    opacity: 0.75
   }
 });
 

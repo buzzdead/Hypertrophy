@@ -39,7 +39,7 @@ const App = () => {
           options={{
             title: "Add Exercise",
             headerTintColor: colors.onSecondary,
-            headerStyle: {backgroundColor: colors.accent},
+            headerStyle: {backgroundColor: colors.summerDark},
           }}
         />
         <Stack.Screen

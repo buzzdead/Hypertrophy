@@ -9,6 +9,7 @@ type CustomButtonProps = {
   onPress: () => void;
   disabled?: boolean
   borderColor?: string
+  fontSize?: number
 };
 
 const CustomButton: React.FC<CustomButtonProps> = ({
@@ -17,7 +18,8 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   backgroundColor,
   onPress,
   disabled,
-  borderColor
+  borderColor,
+  fontSize
 }) => {
   return (
     <TouchableOpacity
@@ -26,7 +28,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       onPress={onPress}
       activeOpacity={0.55}
     >
-      <Text style={[styles.buttonTitle, { color: titleColor }]}>{title}</Text>
+      <Text style={[styles.buttonTitle, { color: titleColor, fontSize: fontSize || 16 }]}>{title}</Text>
     </TouchableOpacity>
   );
 };

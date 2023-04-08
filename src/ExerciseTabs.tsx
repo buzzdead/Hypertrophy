@@ -34,7 +34,7 @@ const ExerciseTabs: React.FC<Props> = () => {
         options={{
           title: "Exercises",
           tabBarStyle: {backgroundColor: colors.summerDark},
-          headerTintColor: colors.accent,
+          headerTintColor: colors.summerWhite,
           headerStyle: {backgroundColor: colors.summerDark},
           tabBarIcon: ({color, size, focused}) => <MaterialCommunityIcons name="dumbbell" color={focused ? colors.accent : colors.summerWhite} size={size} />,
         }}
@@ -45,7 +45,7 @@ const ExerciseTabs: React.FC<Props> = () => {
         options={{
           title: "Progress",
           tabBarStyle: {backgroundColor: colors.summerDark},
-          headerTintColor: colors.accent,
+          headerTintColor: colors.summerWhite,
           headerStyle: {backgroundColor: colors.summerDark},
           tabBarIcon: ({color, size, focused}) => <MaterialCommunityIcons name="chart-line" color={focused ? colors.accent : colors.summerWhite} size={size} />,
         }}
@@ -56,7 +56,7 @@ const ExerciseTabs: React.FC<Props> = () => {
         options={{
           title: "Settings",
           tabBarStyle: {backgroundColor: colors.summerDark},
-          headerTintColor: colors.accent,
+          headerTintColor: colors.summerWhite,
           headerStyle: {backgroundColor: colors.summerDark},
           tabBarIcon: ({color, size, focused}) => (
             <MaterialCommunityIcons name="eye-settings-outline" color={focused ? colors.accent : colors.summerWhite} size={size} />
