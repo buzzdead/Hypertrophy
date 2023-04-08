@@ -9,6 +9,7 @@ import { useCategories } from "../../../hooks/useCategories";
 import { useExerciseTypes } from "../../../hooks/useExerciseTypes";
 import exerciseListReducer, { ExerciseReducerType } from "../../../Reducer";
 import { colors } from "../../../utils/util";
+import CustomButton from "../../../components/CustomButton";
 
 type Props = {
   navigation: any;
@@ -24,7 +25,7 @@ const initialState: ExerciseReducerType = {
   exerciseType: null,
 };
 
-const renderNumberInput = (title: string, value: number, onChange: (value: number) => void) => {
+const renderNumberInput = (title: string, value: number, onChange: { (value: number): void; }) => {
   return (
     <View style={styles.inputContainer}>
       <Text style={styles.touchFieldLabel}>{title}</Text>
@@ -96,11 +97,11 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
       />
       {renderWeightInput("Weight", state.weight, value => dispatch({type: "setWeight", payload: value}))}
       <View style={{flexDirection: "row", gap: 20, alignSelf: "center"}}>
-        {renderNumberInput("Sets", state.sets, value => dispatch({type: "setSets", payload: value}))}
-        {renderNumberInput("Reps", state.reps, value => dispatch({type: "setReps", payload: value}))}
+        {renderNumberInput("Sets", state.sets, (value: any) => dispatch({type: "setSets", payload: value}))}
+        {renderNumberInput("Reps", state.reps, (value: any) => dispatch({type: "setReps", payload: value}))}
       </View>
       <View style={{paddingTop: 30}}>
-        <Button disabled={!isWeightValid} title="Save" onPress={handleAddExercise} />
+        <CustomButton titleColor={colors.summerDarkest} backgroundColor={colors.accent} disabled={!isWeightValid} title="Save" onPress={handleAddExercise} />
       </View>
     </SafeAreaView>
   );

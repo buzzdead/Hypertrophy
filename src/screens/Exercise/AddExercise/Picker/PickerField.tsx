@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { CategorySchema, ExerciseTypeSchema } from "../../../config/realmConfig";
-import { colors } from "../../../utils/util";
 import Picker from "./Picker";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons/faCaretDown";
 import AddObject from "../Modal/AddObject";
+import { CategorySchema, ExerciseTypeSchema } from "../../../../config/realmConfig";
+import { colors } from "../../../../utils/util";
 
 type Props = {
   item: Nullable<CategorySchema | ExerciseTypeSchema>;

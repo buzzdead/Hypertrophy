@@ -5,10 +5,14 @@ const MyTheme = {
     colors: {
       ...DefaultTheme.colors,
       primary: '#3498db',
-      accent: '#2ecc71',
+      accent: '#00FE19',
       new: "#66CDAA",
-      test: "#F5FFFA",
-      test2: "#48D1CC",
+      summerDarkest: '#222831',
+      summerDark: '#393E46',
+      summerBlue: '#00ADB5',
+      summerWhite: '#EEEEEE',
+      summerButton: '#007EDA',
+
     }
   }
 

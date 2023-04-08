@@ -1,6 +1,6 @@
 import React from "react";
 import { SafeAreaView, Text, View, StyleSheet, TouchableOpacity } from "react-native";
-import { Exercise } from "../../../typings/types";
+import { Exercise } from "../../../../typings/types";
 
 interface ExerciseDetailsContentProps {
   exercise: Exercise;
@@ -77,6 +77,8 @@ const styles = StyleSheet.create({
   editButtonText: {
     color: "white",
     fontSize: 16,
+    minWidth: 100,
+    textAlign: "center"
   },
 });
 

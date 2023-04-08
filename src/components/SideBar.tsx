@@ -1,8 +1,9 @@
 // sidebar.tsx
 import React, {useEffect, useState} from "react";
-import {Animated, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Animated, ImageBackground, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { CategorySchema } from "../config/realmConfig";
+import { colors } from "../utils/util";
 
 const SidebarWidth = 150;
 const SidebarVisibleWidth = 30;
@@ -71,6 +72,7 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, ico
           ],
         },
       ]}>
+        <ImageBackground source={require('./bg2.png')} style={styles.image}>
       <View style={styles.sidebarEdgeIndicator}>
         <TouchableOpacity
           style={{...styles.sidebarEdge, zIndex: sidebarVisible ? 1001 : -1}}
@@ -92,7 +94,7 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, ico
             {
               backgroundColor: selectedCategoryAnimations[index]?.interpolate({
                 inputRange: [0, 1],
-                outputRange: ["transparent", "lightgreen"],
+                outputRange: ["transparent", colors.new],
               }),
             },
           ]}>
@@ -101,6 +103,7 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, ico
           </TouchableOpacity>
         </Animated.View>
       ))}
+      </ImageBackground>
     </Animated.View>
   );
 };
@@ -111,11 +114,8 @@ const styles = StyleSheet.create({
     top: 0,
     right: -SidebarWidth + SidebarVisibleWidth,
     bottom: 0,
-    backgroundColor: "#f5f5f5",
     zIndex: 1000,
     width: SidebarWidth - SidebarVisibleWidth,
-    borderLeftWidth: 1,
-    borderLeftColor: "#ccc",
     elevation: 5, // Add box shadow on Android
     shadowColor: "#000", // Add box shadow on iOS
     shadowOffset: {width: 0, height: 2},
@@ -130,8 +130,8 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   sidebarItem: {
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    borderBottomWidth: 0.25,
+    borderBottomColor: colors.summerWhite,
   },
   sidebarItemText: {
     fontSize: 14,
@@ -154,4 +154,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  image: {
+    flex: 1,
+    resizeMode: "cover",
+    width: "100%",
+    opacity: 0.95,
+  }
 });

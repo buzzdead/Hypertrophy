@@ -1,12 +1,24 @@
 import React, {useRef, useState} from "react";
-import {Button, FlatList, SafeAreaView, Text, TouchableOpacity, StyleSheet, View, ColorValue , RefreshControl} from "react-native";
+import {
+  Button,
+  FlatList,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  View,
+  ColorValue,
+  RefreshControl,
+  ImageBackground,
+} from "react-native";
 import {StackScreenProps} from "@react-navigation/stack";
 import {Exercise} from "../../../typings/types";
 import {colors} from "../../utils/util";
 import {useExercises} from "../../hooks/useExercises";
 import {SideBar} from "../../components/SideBar";
 import {useCategories} from "../../hooks/useCategories";
-import { CategorySchema } from "../../config/realmConfig";
+import {CategorySchema} from "../../config/realmConfig";
+import CustomButton from "../../components/CustomButton";
 
 type Props = StackScreenProps<
   {
@@ -22,7 +34,7 @@ const ExerciseList: React.FC<Props> = ({navigation}) => {
   const [filteredExercises, setFilteredExercises] = useState<Exercise[]>();
   const categories = useCategories();
   const [refreshing, setRefreshing] = useState(false);
-  
+
   const _onRefresh = () => {
     setRefreshing(true);
 
@@ -33,24 +45,21 @@ const ExerciseList: React.FC<Props> = ({navigation}) => {
       setRefreshing(false);
     }, 2000); // This is a simulation of data fetching. Replace it with your own data fetching logic.
   };
-  
+
   const handleFilterChange = (selectedCategories: Optional<CategorySchema>[]) => {
-    console.log(selectedCategories, "aisdasidfj")
-    exercises.map(e => console.log(e?.type?.category?.id))
-    if(!selectedCategories) return
+    console.log(selectedCategories, "aisdasidfj");
+    exercises.map(e => console.log(e?.type?.category?.id));
+    if (!selectedCategories) return;
     if (selectedCategories?.length === 0) {
       setFilteredExercises(exercises);
     } else {
       setFilteredExercises(
-        exercises.filter(
-          exercise => selectedCategories?.some(
-            selectedCategory => selectedCategory?.id === exercise.type?.category?.id
-          )
-        )
+        exercises.filter(exercise =>
+          selectedCategories?.some(selectedCategory => selectedCategory?.id === exercise.type?.category?.id),
+        ),
       );
     }
   };
-  
 
   const renderItem = (
     {item}: {item: Exercise; index: number},
@@ -63,13 +72,18 @@ const ExerciseList: React.FC<Props> = ({navigation}) => {
       <TouchableOpacity style={styles.item} onPress={() => navigation.navigate("Details", {exerciseId: item.id})}>
         <View style={{flexDirection: "column", width: "100%", gap: 15}}>
           <View style={{justifyContent: "space-between", flexDirection: "row"}}>
-            <Text style={{...styles.itemText, color: colors.accent}}>{item.type?.name?.toUpperCase()}</Text>
+            <Text style={{...styles.itemText, color: colors.error}}>{item.type?.name?.toUpperCase()}</Text>
             <Text style={{fontStyle: "italic", color: colors.secondary}}>{item.date.toLocaleDateString()}</Text>
           </View>
-          <Text style={styles.itemText}>Category: <Text style={styles.itemText2}>{item.type?.category?.name}</Text></Text>
           <Text style={styles.itemText}>
-            Result: <Text style={styles.itemText2}>{item.sets} sets x {item.reps} reps</Text>
-          </Text> 
+            Category: <Text style={styles.itemText2}>{item.type?.category?.name}</Text>
+          </Text>
+          <Text style={styles.itemText}>
+            Result:{" "}
+            <Text style={styles.itemText2}>
+              {item.sets} sets x {item.reps} reps
+            </Text>
+          </Text>
         </View>
       </TouchableOpacity>
     );
@@ -77,6 +91,7 @@ const ExerciseList: React.FC<Props> = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <ImageBackground source={require('./bg2.png')} style={styles.image}>
       <FlatList
         data={filteredExercises || exercises}
         renderItem={item => renderItem(item, navigation)}
@@ -85,12 +100,22 @@ const ExerciseList: React.FC<Props> = ({navigation}) => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={_onRefresh}
-            colors={['#9Bd35A', '#689F38']}
+            colors={["#9Bd35A", "#689F38"]}
             progressBackgroundColor="#fff"
             tintColor="#689F38"
-          />} />
-      <Button title="New Exercise" onPress={() => navigation.navigate("AddExercise", { previousExercise: null })} />
-
+          />
+        }
+      />
+      <View style={{width: "100%"}}>
+        <CustomButton
+          title="Add new exercise"
+          titleColor={colors.error}
+          backgroundColor={colors.summerWhite}
+          borderColor={colors.error}
+          onPress={() => navigation.navigate("AddExercise", {previousExercise: null})}
+        />
+      </View>
+      </ImageBackground>
       <SideBar categories={categories} onFilterChange={handleFilterChange} />
     </SafeAreaView>
   );
@@ -101,7 +126,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: colors.background,
   },
   item: {
     flexDirection: "row",
@@ -110,17 +134,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: colors.primary,
+    borderBottomColor: colors.summerWhite,
     width: "100%",
   },
   itemText: {
     fontSize: 16,
     fontFamily: "Roboto-Bold",
+    color: colors.summerDark
   },
   itemText2: {
     fontSize: 14,
     fontFamily: "Roboto-Medium",
-    color: colors.tertiary,
+    color: colors.summerDarkest,
+  },
+  image: {
+    flex: 1,
+    resizeMode: "cover",
+    justifyContent: "center",
+    width: "100%",
   }
 });
 

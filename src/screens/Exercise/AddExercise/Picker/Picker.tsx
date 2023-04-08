@@ -2,7 +2,7 @@
 import React from "react";
 import { View, Modal, TouchableWithoutFeedback, TouchableOpacity, FlatList, StyleSheet } from "react-native";
 import { Text } from "react-native-paper";
-import { CategorySchema, ExerciseTypeSchema } from "../../../config/realmConfig";
+import { CategorySchema, ExerciseTypeSchema } from "../../../../config/realmConfig";
 
 type PickerProps = {
   visible: boolean;
