@@ -20,4 +20,4 @@ The app has three main screens:
 3. Settings - The Settings screen (not yet implemented) will allow you to customize the app to suit your needs.
 
    <img src="images/Settings.png" alt="Settings" width="250"/>
-   <img src="images/Settings.png" alt="Categories" width="250"/>
+   <img src="images/Categories.png" alt="Categories" width="250"/>
