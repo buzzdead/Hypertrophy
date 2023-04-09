@@ -1,7 +1,7 @@
 import React, {useState, useMemo} from "react";
 import {FlatList, SafeAreaView, Text, StyleSheet, View, TouchableOpacity} from "react-native";
 import {useExercises} from "../../hooks/useExercises";
-import {colors} from "../../utils/util";
+import {colors, getWeekNumber} from "../../utils/util";
 import {Exercise} from "../../../typings/types";
 import { StackScreenProps } from "@react-navigation/stack";
 
@@ -18,13 +18,14 @@ const WeeklyExercises: React.FC<WeeklyExercisesProps> = ({navigation, filteredEx
     const groups: any[] = [];
 
     sortedExercises.forEach(exercise => {
-      const weekStart = new Date(exercise.date);
-      weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-      const weekKey = `${weekStart.getFullYear()}-${weekStart.getMonth()}-${weekStart.getDate()}`;
+      const weekStart = exercise?.date ? new Date(exercise.date) : new Date();
+      weekStart.setDate(weekStart.getDate() - ((weekStart.getDay() + 6) % 7));
+      const weekNumber = getWeekNumber(weekStart)
+      const weekKey = `${weekStart.getFullYear()}-W${weekNumber}`;
 
       let group = groups.find(g => g.weekKey === weekKey);
       if (!group) {
-        group = {weekKey, exercises: []};
+        group = {weekKey, weekNumber, exercises: []};
         groups.push(group);
       }
 
@@ -85,11 +86,12 @@ const WeeklyExercises: React.FC<WeeklyExercisesProps> = ({navigation, filteredEx
         keyExtractor={item => item.id.toString()}
       />
       <View style={styles.pagination}>
-        <Text style={styles.button} onPress={handlePrevPage}>
-          Previous
+        <Text style={[styles.button, {color: currentPage === 0 ? colors.summerDark : colors.summerBlue}]} onPress={handlePrevPage}>
+          {"<"}
         </Text>
-        <Text style={styles.button} onPress={handleNextPage}>
-          Next
+        <Text>Week{groupedExercises[currentPage]?.weekNumber}</Text>
+        <Text style={[styles.button, {color: currentPage === groupedExercises.length - 1 ? colors.summerDark : colors.summerBlue}]} onPress={handleNextPage}>
+          {">"}
         </Text>
       </View>
     </SafeAreaView>
@@ -104,22 +106,21 @@ const styles = StyleSheet.create({
   },
   pagination: {
     flexDirection: "row",
-    gap: 10,
+    gap: 3,
     alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
     width: "100%",
   },
   button: {
-    color: colors.summerDark,
-    fontSize: 16,
+    fontSize: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
     fontFamily: "Roboto-Bold",
   },
   item: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: colors.test3,
@@ -133,13 +134,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Roboto-Medium",
     color: colors.test5,
-  },
-  image: {
-    flex: 1,
-    resizeMode: "cover",
-    justifyContent: "center",
-    width: "100%",
-    opacity: 0.75,
   },
 });
 

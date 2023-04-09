@@ -40,10 +40,10 @@ const ExerciseList: React.FC<Props> = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
       <WeeklyExercises navigation={navigation} filteredExercises={filteredExercises || exercises} />
-      <View style={{width: "15%", padding: 5, bottom: 0, alignSelf: "flex-end", position: "absolute"}}>
+      <View style={{width: "10%", bottom: 3, right: -3, position: "absolute"}}>
         <CustomButton
           title="+"
-          fontSize={22}
+          fontSize={24}
           titleColor={colors.accent}
           backgroundColor={colors.summerDark}
           onPress={() => navigation.navigate("AddExercise", {previousExercise: null})}
@@ -59,32 +59,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-  },
-  item: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.test3,
-    width: "100%",
-  },
-  itemText: {
-    fontSize: 16,
-    fontFamily: "Roboto-Bold",
-  },
-  itemText2: {
-    fontSize: 16,
-    fontFamily: "Roboto-Medium",
-    color: colors.test5,
-  },
-  image: {
-    flex: 1,
-    resizeMode: "cover",
-    justifyContent: "center",
-    width: "100%",
-    opacity: 0.75,
   },
 });
 
