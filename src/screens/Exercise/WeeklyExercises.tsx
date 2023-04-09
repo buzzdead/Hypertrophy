@@ -1,6 +1,5 @@
 import React, {useState, useMemo} from "react";
 import {FlatList, SafeAreaView, Text, StyleSheet, View, TouchableOpacity} from "react-native";
-import {useExercises} from "../../hooks/useExercises";
 import {colors, getWeekNumber} from "../../utils/util";
 import {Exercise} from "../../../typings/types";
 import { StackScreenProps } from "@react-navigation/stack";

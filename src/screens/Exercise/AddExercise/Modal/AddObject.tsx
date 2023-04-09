@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {View, TouchableOpacity, Text, StyleSheet} from "react-native";
+import {View, StyleSheet} from "react-native";
 import { addCategory, addExerciseType } from "../../../../api/realmAPI";
 import CustomButton from "../../../../components/CustomButton";
 import { CategorySchema } from "../../../../config/realmConfig";

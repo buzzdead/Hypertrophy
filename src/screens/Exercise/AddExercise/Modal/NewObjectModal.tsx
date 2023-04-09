@@ -1,5 +1,3 @@
-import {faCaretDown} from "@fortawesome/free-solid-svg-icons/faCaretDown";
-import {FontAwesomeIcon} from "@fortawesome/react-native-fontawesome";
 import React, {useState} from "react";
 import {
   Modal,
@@ -13,9 +11,7 @@ import {
 } from "react-native";
 import {CategorySchema} from "../../../../config/realmConfig";
 import {useCategories} from "../../../../hooks/useCategories";
-import {colors} from "../../../../utils/util";
-import Picker from "../Picker/Picker";
-import PickerField, {pickerStyles} from "../Picker/PickerField";
+import PickerField from "../Picker/PickerField";
 
 type NewObjectModalProps = {
   visible: boolean;
@@ -28,10 +24,6 @@ const NewObjectModal = ({visible, onClose, onAdd, objectType}: NewObjectModalPro
   const [objectName, setObjectName] = useState("");
   const categories = objectType === "Exercise Type" ? useCategories() : null;
   const [category, setCategory] = useState<Nullable<CategorySchema>>();
-  const [pickerVisible, setPickerVisible] = useState(false);
-  const togglePicker = () => {
-    setPickerVisible(!pickerVisible);
-  };
 
   const handleAdd = () => {
     onAdd(objectName, objectType === "Category", category);

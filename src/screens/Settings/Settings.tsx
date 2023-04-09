@@ -1,6 +1,6 @@
 // screens/Settings.tsx
 import React from "react";
-import { Button, SafeAreaView, ScrollView, Text, View } from "react-native";
+import { SafeAreaView, ScrollView, Text, View } from "react-native";
 import { deleteCategory, deleteExerciseType } from "../../api/realmAPI";
 import { CategorySchema, ExerciseTypeSchema } from "../../config/realmConfig";
 import { colors } from "../../utils/util";

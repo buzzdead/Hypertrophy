@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {FlatList, SafeAreaView, Text, TouchableOpacity, StyleSheet, View, RefreshControl} from "react-native";
+import {SafeAreaView, StyleSheet, View} from "react-native";
 import {StackScreenProps} from "@react-navigation/stack";
 import {Exercise} from "../../../typings/types";
 import {colors} from "../../utils/util";
