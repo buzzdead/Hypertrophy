@@ -5,7 +5,6 @@ import ProgressTracking from "./screens/ProgressTracking/ProgressTracking";
 import Settings from "./screens/Settings/Settings";
 import {colors} from "./utils/util";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { View } from "react-native";
 
 type BottomTabParamList = {
   List: undefined;
@@ -20,23 +19,30 @@ type Props = {
   route: any;
 };
 
+const options = {
+  tabBarStyle: {backgroundColor: colors.summerDark},
+  headerTintColor: colors.summerWhite,
+  headerStyle: {backgroundColor: colors.summerDark},
+};
+
 const ExerciseTabs: React.FC<Props> = () => {
   return (
-    <Tab.Navigator screenOptions={{
-      tabBarActiveTintColor: colors.accent, // set the active icon color to primary color
-      headerTintColor: colors.summerWhite,
-      headerStyle: { backgroundColor: colors.summerDark },
-    }}>
+    <Tab.Navigator
+      screenOptions={{
+        tabBarActiveTintColor: colors.accent, // set the active icon color to primary color
+        headerTintColor: colors.summerWhite,
+        headerStyle: {backgroundColor: colors.summerDark},
+      }}>
       <Tab.Screen
         name="List"
         component={ExerciseList}
         initialParams={undefined}
         options={{
           title: "Exercises",
-          tabBarStyle: {backgroundColor: colors.summerDark},
-          headerTintColor: colors.summerWhite,
-          headerStyle: {backgroundColor: colors.summerDark},
-          tabBarIcon: ({color, size, focused}) => <MaterialCommunityIcons name="dumbbell" color={focused ? colors.accent : colors.summerWhite} size={size} />,
+          ...options,
+          tabBarIcon: ({size, focused}) => (
+            <MaterialCommunityIcons name="dumbbell" color={focused ? colors.accent : colors.summerWhite} size={size} />
+          ),
         }}
       />
       <Tab.Screen
@@ -44,10 +50,14 @@ const ExerciseTabs: React.FC<Props> = () => {
         component={ProgressTracking}
         options={{
           title: "Progress",
-          tabBarStyle: {backgroundColor: colors.summerDark},
-          headerTintColor: colors.summerWhite,
-          headerStyle: {backgroundColor: colors.summerDark},
-          tabBarIcon: ({color, size, focused}) => <MaterialCommunityIcons name="chart-line" color={focused ? colors.accent : colors.summerWhite} size={size} />,
+          ...options,
+          tabBarIcon: ({size, focused}) => (
+            <MaterialCommunityIcons
+              name="chart-line"
+              color={focused ? colors.accent : colors.summerWhite}
+              size={size}
+            />
+          ),
         }}
       />
       <Tab.Screen
@@ -55,11 +65,13 @@ const ExerciseTabs: React.FC<Props> = () => {
         component={Settings}
         options={{
           title: "Settings",
-          tabBarStyle: {backgroundColor: colors.summerDark},
-          headerTintColor: colors.summerWhite,
-          headerStyle: {backgroundColor: colors.summerDark},
-          tabBarIcon: ({color, size, focused}) => (
-            <MaterialCommunityIcons name="eye-settings-outline" color={focused ? colors.accent : colors.summerWhite} size={size} />
+          ...options,
+          tabBarIcon: ({size, focused}) => (
+            <MaterialCommunityIcons
+              name="eye-settings-outline"
+              color={focused ? colors.accent : colors.summerWhite}
+              size={size}
+            />
           ),
         }}
       />
