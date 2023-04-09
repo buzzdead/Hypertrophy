@@ -1,5 +1,5 @@
 import React, {useReducer, useState} from "react";
-import {Button, SafeAreaView, StyleSheet, Text, TextInput, View} from "react-native";
+import {SafeAreaView, StyleSheet, View} from "react-native";
 import PickerField from "./Picker/PickerField";
 import {extend} from "lodash";
 import {Exercise} from "../../../../typings/types";
@@ -10,6 +10,8 @@ import {useExerciseTypes} from "../../../hooks/useExerciseTypes";
 import exerciseListReducer, {ExerciseReducerType} from "../../../Reducer";
 import {colors} from "../../../utils/util";
 import CustomButton from "../../../components/CustomButton";
+import AddObject from "./Modal/AddObject";
+import Weight from "./Weight";
 
 type Props = {
   navigation: any;
@@ -23,15 +25,6 @@ const initialState: ExerciseReducerType = {
   date: new Date(),
   category: null,
   exerciseType: null,
-};
-
-const renderNumberInput = (title: string, value: number, onChange: {(value: number): void}) => {
-  return (
-    <View style={styles.inputContainer}>
-      <Text style={styles.touchFieldLabel}>{title}</Text>
-      <NumberInput value={value} onChange={onChange} />
-    </View>
-  );
 };
 
 const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
@@ -63,47 +56,45 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
     navigation.goBack();
   };
 
-  const renderWeightInput = (title: string, value: number | string, onChange: (value: number | string) => void) => {
-    const handleWeightChange = (text: string) => {
-      const weight = Number(text);
-      const isWeightNaN = isNaN(weight);
-      setIsWeightValid(!isWeightNaN);
-      onChange(text);
-    };
-    return (
-      <View style={styles.inputContainer}>
-        <Text style={styles.touchFieldLabel}>{title}</Text>
-        <View style={[styles.weightInputContainer, !isWeightValid && styles.invalidWeightInputContainer]}>
-          <TextInput
-            style={[styles.input, !isWeightValid && styles.invalidInput]}
-            value={String(value)}
-            onChangeText={handleWeightChange}
-          />
-          <Text style={{textAlign: "center", alignSelf: "center", fontSize: 24}}>Kg</Text>
-        </View>
-        {!isWeightValid && <Text style={styles.errorText}>Weight must be a number</Text>}
-      </View>
-    );
-  };
-
-  console.log("rendering");
   return (
     <SafeAreaView style={styles.container}>
-      <PickerField
-        item={state.category}
-        items={categories}
-        onChange={value => dispatch({type: "setCategory", payload: value})}
-      />
-      <PickerField
-        picker={220}
-        item={state.exerciseType}
-        items={exerciseTypesFromCategory}
-        onChange={value => dispatch({type: "setExerciseType", payload: value})}
-      />
-      {renderWeightInput("Weight", state.weight, value => dispatch({type: "setWeight", payload: value}))}
+      <View style={{flexDirection: "row", gap: 40}}>
+        <View style={{flex: 6}}>
+          <PickerField
+            item={state.category}
+            items={categories}
+            onChange={value => dispatch({type: "setCategory", payload: value})}
+          />
+        </View>
+        <View style={{flex: 1, justifyContent: "flex-end", paddingBottom: 15}}>
+          <AddObject isCategory />
+        </View>
+      </View>
+      <View style={{flexDirection: "row", gap: 40}}>
+        <View style={{flex: 6}}>
+          <PickerField
+            picker={220}
+            item={state.exerciseType}
+            items={exerciseTypesFromCategory}
+            onChange={value => dispatch({type: "setExerciseType", payload: value})}
+          />
+        </View>
+        <View style={{flex: 1, justifyContent: "flex-end", paddingBottom: 16}}>
+          <AddObject isCategory={false} />
+        </View>
+      </View>
+      <Weight title={"Weight"} value={state.weight} onChange={value => dispatch({type: "setWeight", payload: value})} />
       <View style={{flexDirection: "row", gap: 20, alignSelf: "center"}}>
-        {renderNumberInput("Sets", state.sets, (value: any) => dispatch({type: "setSets", payload: value}))}
-        {renderNumberInput("Reps", state.reps, (value: any) => dispatch({type: "setReps", payload: value}))}
+        <NumberInput
+          title={"Sets"}
+          value={state.sets}
+          onChange={(value: any) => dispatch({type: "setSets", payload: value})}
+        />
+        <NumberInput
+          title={"Reps"}
+          value={state.reps}
+          onChange={(value: any) => dispatch({type: "setReps", payload: value})}
+        />
       </View>
       <View style={{paddingTop: 20, alignSelf: "center", flexDirection: "row", gap: 10}}>
         <View style={{width: 180}}>
@@ -157,21 +148,6 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto-Black",
     padding: 8,
     fontSize: 24,
-  },
-  weightInputContainer: {
-    flexDirection: "row",
-    gap: 5,
-  },
-  invalidWeightInputContainer: {
-    borderColor: "red",
-  },
-  invalidInput: {
-    borderColor: "red",
-  },
-  errorText: {
-    color: "red",
-    fontSize: 12,
-    marginTop: 4,
   },
 });
 

@@ -6,20 +6,20 @@ import {LineChart, YAxis, XAxis} from "react-native-svg-charts";
 import * as shape from "d3-shape";
 import {useExercises} from "../../hooks/useExercises";
 import {ChartData} from "./ChartData";
-import { colors } from "../../utils/util";
-import { useCategories } from "../../hooks/useCategories";
-import { SideBar } from "../../components/SideBar";
-import { CategorySchema } from "../../config/realmConfig";
+import {colors} from "../../utils/util";
+import {useCategories} from "../../hooks/useCategories";
+import {SideBar} from "../../components/SideBar";
+import {CategorySchema} from "../../config/realmConfig";
 
 const ProgressTracking = () => {
   const {exercises, refresh} = useExercises();
-  const categories = useCategories()
+  const categories = useCategories();
 
   const [refreshing, setRefreshing] = React.useState(false);
-  const [chartData, setChartData] = React.useState<number[]>([])
-  const [maxExercises, setMaxExercises] = React.useState(0)
-  const [startDate, setStartDate] = React.useState<Date>()
-  const [filteredCategories, setFilteredCategories] = React.useState<CategorySchema[]>([])
+  const [chartData, setChartData] = React.useState<number[]>([]);
+  const [maxExercises, setMaxExercises] = React.useState(0);
+  const [startDate, setStartDate] = React.useState<Date>();
+  const [filteredCategories, setFilteredCategories] = React.useState<CategorySchema[]>([]);
 
   const _onRefresh = () => {
     setRefreshing(true);
@@ -28,11 +28,11 @@ const ProgressTracking = () => {
   };
 
   React.useLayoutEffect(() => {
-    const {chartData, maxExercises, exercisesByDate, theDate} = ChartData({exercises, categories: filteredCategories})
-    setChartData(chartData)
-    setMaxExercises(maxExercises)
-    setStartDate(theDate)
-  }, [exercises, filteredCategories])
+    const {chartData, maxExercises, exercisesByDate, theDate} = ChartData({exercises, categories: filteredCategories});
+    setChartData(chartData);
+    setMaxExercises(maxExercises);
+    setStartDate(theDate);
+  }, [exercises, filteredCategories]);
 
   const chartWidth = Dimensions.get("window").width * 0.9;
   const dataPointWidth = chartWidth / (chartData?.length || 1);
@@ -62,7 +62,7 @@ const ProgressTracking = () => {
             tintColor="#689F38"
           />
         }>
-          <Text style={styles.legend}># of exercises</Text>
+        <Text style={styles.legend}># of exercises</Text>
         <View style={styles.yAxis}>
           <YAxis
             data={chartData}
@@ -87,13 +87,13 @@ const ProgressTracking = () => {
           contentInset={{left: dataPointWidth / 2, right: dataPointWidth / 2}}
           svg={{fontSize: 10, fill: "grey"}}
         />
-        <View style={{flexDirection: 'row', gap: 100}}>
-        <Text style={{fontSize: 10, marginTop: 10, paddingLeft: 35}}>{startDate?.toLocaleDateString()}</Text>
-        <Text style={{...styles.legend, marginTop: 10, textAlign: "center"}}>Days</Text>
-        <Text style={{fontSize: 10, marginTop: 10, paddingLeft: 35}}>{(new Date()).toLocaleDateString()}</Text>
+        <View style={{flexDirection: "row", gap: 100}}>
+          <Text style={{fontSize: 10, marginTop: 10, paddingLeft: 35}}>{startDate?.toLocaleDateString()}</Text>
+          <Text style={{...styles.legend, marginTop: 10, textAlign: "center"}}>Days</Text>
+          <Text style={{fontSize: 10, marginTop: 10, paddingLeft: 35}}>{new Date().toLocaleDateString()}</Text>
         </View>
       </ScrollView>
-      <SideBar categories={categories} onFilterChange={handleFilterChange} icon={'chart-bar'} />
+      <SideBar categories={categories} onFilterChange={handleFilterChange} icon={"chart-bar"} />
     </SafeAreaView>
   );
 };
@@ -105,7 +105,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   legend: {
-    fontSize: 10, fontFamily: "Roboto-MediumItalic", color: colors.new
+    fontSize: 10,
+    fontFamily: "Roboto-MediumItalic",
+    color: colors.new,
   },
   yAxis: {
     justifyContent: "center",

@@ -39,7 +39,6 @@ const NewObjectModal = ({ visible, onClose, onAdd, objectType}: NewObjectModalPr
   };
 
   const handleOnChange = (value: CategorySchema) => {
-    console.log(value)
     setCategory(value)
   }
 

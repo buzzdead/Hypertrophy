@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import {View, TouchableOpacity, Text, StyleSheet} from "react-native";
 import { addCategory, addExerciseType } from "../../../../api/realmAPI";
+import CustomButton from "../../../../components/CustomButton";
 import { CategorySchema } from "../../../../config/realmConfig";
 import { colors } from "../../../../utils/util";
 import NewObjectModal from "./NewObjectModal";
@@ -27,9 +28,15 @@ const AddObject = ({isCategory}: Props) => {
 
   return (
     <View>
-      <TouchableOpacity style={styles.addButton} onPress={openModal}>
-        <Text style={styles.addButtonText}>+</Text>
-      </TouchableOpacity>
+      <View style={styles.addButton}>
+       <CustomButton
+          title="+"
+          fontSize={18}
+          titleColor={colors.summerBlue}
+          backgroundColor={colors.summerDark}
+          onPress={openModal}
+        />
+        </View>
       <NewObjectModal
         visible={modalVisible}
         onClose={closeModal}
@@ -42,12 +49,7 @@ const AddObject = ({isCategory}: Props) => {
 
 const styles = StyleSheet.create({
   addButton: {
-    width: 25,
-    height: 25,
-    backgroundColor: colors.summerDark,
-    borderRadius: 4,
-    justifyContent: "center",
-    alignItems: "center",
+    height: 45
   },
   addButtonText: {
     fontSize: 20,

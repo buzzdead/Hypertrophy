@@ -19,8 +19,8 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, ico
     categories.map(() => new Animated.Value(0)),
   );
 
-  const [sidebarVisible, setSidebarVisible] = useState(false);
-  const [translateX] = useState(new Animated.Value(-SidebarWidth));
+  const [sidebarVisible, setSidebarVisible] = useState(true);
+  const [translateX] = useState(new Animated.Value(0));
   const [selectedCategories, setSelectedCategories] = useState<CategorySchema[]>([]);
 
   const handleCategoryPress = (category: CategorySchema, index: number) => {

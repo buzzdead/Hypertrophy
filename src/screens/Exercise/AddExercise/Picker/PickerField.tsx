@@ -34,7 +34,6 @@ const PickerField = ({ item, items, onChange, setLoading, picker, addingObject }
       <View style={{ marginBottom: 16 }}>
         <View style={{flexDirection: 'row', justifyContent: "space-between", paddingBottom: 5}}>
         <Text style={pickerStyles.textFieldLabel}>{name}</Text>
-        {!addingObject && <AddObject isCategory={name === 'Category'} />}
         </View>
         <View style={pickerStyles.pickerInputContainer}>
           <TouchableOpacity style={pickerStyles.pickerInput} onPress={togglePicker}>
