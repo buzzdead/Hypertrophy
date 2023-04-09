@@ -1,8 +1,9 @@
 // CategoryPicker.tsx
 import React from "react";
-import { View, Modal, TouchableWithoutFeedback, TouchableOpacity, FlatList, StyleSheet } from "react-native";
+import { View, Modal, TouchableWithoutFeedback, TouchableHighlight, FlatList, StyleSheet } from "react-native";
 import { Text } from "react-native-paper";
 import { CategorySchema, ExerciseTypeSchema } from "../../../../config/realmConfig";
+import { colors } from "../../../../utils/util";
 
 type PickerProps = {
   visible: boolean;
@@ -23,15 +24,17 @@ const Picker: React.FC<PickerProps> = ({ visible, items, onSelect, onClose, pick
         <FlatList
           data={items.filter(item => item.name !== "default")}
           renderItem={({ item }) => (
-            <TouchableOpacity
+            <TouchableHighlight
+            underlayColor={colors.summerBlue}
               style={{ padding: 8 }}
               onPress={() => {
                 onSelect(item);
                 onClose();
               }}
+             
             >
               <Text>{item.name}</Text>
-            </TouchableOpacity>
+            </TouchableHighlight>
           )}
           keyExtractor={item => item.name}
         />

@@ -21,7 +21,7 @@ const AddObject = ({isCategory}: Props) => {
     setModalVisible(false);
   };
 
-  const handleAdd = (name: string, isCategory: boolean, category?: CategorySchema) => {
+  const handleAdd = (name: string, isCategory: boolean, category?: Nullable<CategorySchema>) => {
     isCategory ? addCategory(name) : addExerciseType(name, category!);
     closeModal();
   };
@@ -31,7 +31,7 @@ const AddObject = ({isCategory}: Props) => {
       <View style={styles.addButton}>
        <CustomButton
           title="+"
-          fontSize={18}
+          fontSize={24}
           titleColor={colors.summerBlue}
           backgroundColor={colors.summerDark}
           onPress={openModal}
@@ -49,7 +49,7 @@ const AddObject = ({isCategory}: Props) => {
 
 const styles = StyleSheet.create({
   addButton: {
-    height: 45
+    paddingBottom: 5
   },
   addButtonText: {
     fontSize: 20,

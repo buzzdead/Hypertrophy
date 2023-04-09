@@ -13,10 +13,10 @@ type Props = {
   picker?: number;
   onChange: (value: any) => void;
   setLoading?: () => void;
-  addingObject?: boolean
+  maxWidth?: number
 };
 
-const PickerField = ({ item, items, onChange, setLoading, picker, addingObject }: Props) => {
+const PickerField = ({ item, items, onChange, setLoading, picker, maxWidth }: Props) => {
   const [pickerVisible, setPickerVisible] = useState(false);
   const name = picker ? "Exercise Type" : "Category"
 
@@ -50,6 +50,7 @@ const PickerField = ({ item, items, onChange, setLoading, picker, addingObject }
         items={items}
         onSelect={(value) => handleOnChange(value)}
         onClose={togglePicker}
+        maxWidth={maxWidth}
       />
     </View>
   );
