@@ -100,6 +100,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
         <View style={{width: 180}}>
           <CustomButton
             titleColor={colors.summerWhite}
+            size="M"
             backgroundColor={colors.summerDark}
             disabled={!isWeightValid}
             title="Cancel"
@@ -109,6 +110,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
         <View style={{width: 180}}>
           <CustomButton
             titleColor={colors.accent}
+            size="M"
             backgroundColor={colors.summerDark}
             disabled={!isWeightValid}
             title="Save"
