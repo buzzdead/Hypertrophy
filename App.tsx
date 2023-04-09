@@ -29,8 +29,8 @@ const App = () => {
           component={ExerciseDetails}
           options={{
             title: "Exercise Details",
-            headerTintColor: colors.onSecondary,
-            headerStyle: {backgroundColor: colors.accent},
+            headerTintColor: colors.summerWhite,
+            headerStyle: {backgroundColor: colors.summerDark},
           }}
         />
         <Stack.Screen
@@ -38,7 +38,7 @@ const App = () => {
           component={AddExercise}
           options={{
             title: "Add Exercise",
-            headerTintColor: colors.onSecondary,
+            headerTintColor: colors.summerWhite,
             headerStyle: {backgroundColor: colors.summerDark},
           }}
         />
