@@ -12,7 +12,15 @@ const MyTheme = {
       summerBlue: '#00ADB5',
       summerWhite: '#EEEEEE',
       summerButton: '#007EDA',
-      sidebarColor: '#9a9e9a'
+      sidebarColor: '#9a9e9a',
+      test1: '#A9907E',
+      test2: '#ABC4AA',
+      test3: '#675D50',
+      test4: '#19A7CE',
+      test5: '#146C94',
+      test6: '#000000',
+      test7: '#FFBF9B',
+      test8: '#B46060',
 
     }
   }
