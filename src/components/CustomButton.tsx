@@ -3,10 +3,10 @@ import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { colors } from '../utils/util';
 
 type Size = "S" | "M" | "L"
-const SIZE_TO_PADDING: { [key in Size]: { paddingHorizontal: number, paddingVertical: number } } = {
-  S: { paddingHorizontal: 20, paddingVertical: 10 },
-  M: { paddingHorizontal: 40, paddingVertical: 20 },
-  L: { paddingHorizontal: 60, paddingVertical: 30 },
+const SIZE_TO_PADDING: { [key in Size]: { width: number, height: number } } = {
+  S: { width: 35, height: 35 },
+  M: { width: 175, height: 50 },
+  L: { width: 250, height: 50 },
 };
 
 type CustomButtonProps = {
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     justifyContent: "center",
     textAlign: "center",
-    fontFamily: 'Roboto-Bold'
+    fontFamily: 'Roboto-Bold',
   },
 });
 

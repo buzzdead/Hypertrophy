@@ -16,14 +16,17 @@ export function Categories() {
         <View style={deletionStyles.container}>
           {categories.map(c => {
             return (
-              <View style={deletionStyles.subContainer}>
+              <View key={c.name} style={deletionStyles.subContainer}>
                 <Text style={deletionStyles.title}>{c.name}</Text>
+                <View style={{alignSelf: "center"}}>
                 <CustomButton
-                  titleColor={colors.error}
+                size="L"
+                  titleColor={colors.summerBlue}
                   backgroundColor={colors.summerDark}
                   title={"Delete category"}
                   onPress={() => handleDelete(c)}
                 />
+                </View>
               </View>
             );
           })}
