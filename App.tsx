@@ -8,10 +8,11 @@ import AddExercise from "./src/screens/Exercise/AddExercise/AddExercise";
 import ExerciseDetails from "./src/screens/Exercise/ExerciseDetails/ExerciseDetails";
 import { ExerciseTypes } from "./src/screens/Settings/ExerciseTypes";
 import { Categories } from "./src/screens/Settings/Categories";
+import { Duplicate } from "./typings/types";
 
 type StackParamList = {
   Exercises: undefined;
-  Details: {exerciseId?: number};
+  Details: {exerciseId?: number, duplicates?: Duplicate[]};
   AddExercise: undefined;
   ExerciseTypes: undefined;
   Categories: undefined
