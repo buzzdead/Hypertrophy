@@ -9,24 +9,41 @@ import {
   TouchableWithoutFeedback,
   Text,
 } from "react-native";
-import {CategorySchema} from "../../../../config/realmConfig";
+import {CategorySchema, ExerciseTypeSchema} from "../../../../config/realmConfig";
 import {useCategories} from "../../../../hooks/useCategories";
 import PickerField from "../Picker/PickerField";
 
 type NewObjectModalProps = {
   visible: boolean;
   onClose: () => void;
-  onAdd: (name: string, isCategory: boolean, category?: Nullable<CategorySchema>) => void;
+  onAdd?: (name: string, isCategory: boolean, category?: Nullable<CategorySchema>) => void;
+  modalFunction?: (name: string, id: number, category?: CategorySchema) => void;
+  id?: number;
+  currentValue?: string;
+  currentCategory?: CategorySchema;
+  title?: string
   objectType: "Category" | "Exercise Type";
 };
 
-const NewObjectModal = ({visible, onClose, onAdd, objectType}: NewObjectModalProps) => {
-  const [objectName, setObjectName] = useState("");
+const NewObjectModal = ({
+  visible,
+  onClose,
+  onAdd,
+  objectType,
+  modalFunction,
+  id,
+  currentValue,
+  currentCategory,
+  title
+}: NewObjectModalProps) => {
+  const [objectName, setObjectName] = useState(currentValue || "");
   const categories = objectType === "Exercise Type" ? useCategories() : null;
-  const [category, setCategory] = useState<Nullable<CategorySchema>>();
+  const [category, setCategory] = useState<Optional<CategorySchema>>(currentCategory);
 
   const handleAdd = () => {
-    onAdd(objectName, objectType === "Category", category);
+    modalFunction && id
+      ? modalFunction(objectName, id, category)
+      : onAdd && onAdd(objectName, objectType === "Category", category);
   };
 
   const handleOnChange = (value: CategorySchema) => {
@@ -59,7 +76,7 @@ const NewObjectModal = ({visible, onClose, onAdd, objectType}: NewObjectModalPro
             <Text style={styles.closeText}>Close</Text>
           </TouchableOpacity>
           <View style={{flex: 1}}>
-            <Button title="Add" onPress={handleAdd} />
+            <Button title={title || "Add"} onPress={handleAdd} />
           </View>
         </View>
       </View>

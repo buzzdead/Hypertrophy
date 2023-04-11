@@ -12,9 +12,10 @@ interface SideBarProps {
   categories: CategorySchema[];
   onFilterChange: (selectedCategories: CategorySchema[]) => void;
   icon?: string;
+  currentPage?: number
 }
 
-export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, icon}) => {
+export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, icon, currentPage}) => {
   const [selectedCategoryAnimations, setSelectedCategoryAnimations] = useState(
     categories.map(() => new Animated.Value(0)),
   );
@@ -38,7 +39,16 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, ico
     }).start();
   };
   useEffect(() => {
+    onFilterChange(selectedCategories)
+  }, [currentPage])
+  useEffect(() => {
     setSelectedCategoryAnimations(categories.map(() => new Animated.Value(0)));
+    selectedCategories.length > 0 && setSelectedCategories(selectedCategories => {
+      const newSelectedCategories = selectedCategories.filter(cat => categories.includes(cat));
+      onFilterChange(newSelectedCategories);
+  
+      return newSelectedCategories;
+    });
   }, [categories]);
   const handleCloseSidebar = () => {
     Animated.timing(translateX, {
@@ -79,7 +89,7 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, ico
           <MaterialCommunityIcons
             adjustsFontSizeToFit
             name={icon || "tune-vertical"}
-            size={24}
+            size={28}
             color={sidebarVisible ? "green" : "red"}
           />
         </TouchableOpacity>
@@ -113,7 +123,7 @@ const styles = StyleSheet.create({
     right: -SidebarWidth + SidebarVisibleWidth,
     bottom: 0,
     zIndex: 1000,
-    height: "50%",
+    height: "75%",
     width: SidebarWidth - SidebarVisibleWidth,
     elevation: 5, // Add box shadow on Android
     shadowColor: "#000", // Add box shadow on iOS
@@ -146,7 +156,7 @@ const styles = StyleSheet.create({
     top: 35,
     left: -SidebarVisibleWidth - 3,
     zIndex: 1000,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: colors.summerWhite,
     borderRadius: 4,
   },
   sidebarEdge: {

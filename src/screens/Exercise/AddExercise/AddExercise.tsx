@@ -104,7 +104,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
             backgroundColor={colors.summerDark}
             disabled={!isWeightValid}
             title="Cancel"
-            onPress={handleAddExercise}
+            onPress={() => navigation.goBack()}
           />
         </View>
         <View style={{width: 180}}>

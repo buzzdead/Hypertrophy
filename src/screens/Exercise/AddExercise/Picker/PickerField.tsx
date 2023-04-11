@@ -39,7 +39,7 @@ const PickerField = ({ item, items, onChange, setLoading, picker, maxWidth }: Pr
             <Text style={pickerStyles.pickerInputText}>{item?.name || ""}</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={togglePicker} style={pickerStyles.pickerDisplay}>
-            <FontAwesomeIcon icon={faCaretDown} size={20} color={colors.primary} />
+            <FontAwesomeIcon icon={faCaretDown} size={20} color={colors.test5} />
           </TouchableOpacity>
         </View>
       </View>

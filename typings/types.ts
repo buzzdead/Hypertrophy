@@ -9,3 +9,6 @@ export type Exercise = {
   weight: number | string
   date: Date;
 };
+
+export type Duplicate = {sets: number; reps: number; weight: string | number}
+export type Exercises = {exercise: Exercise; duplicates: Duplicate[]};

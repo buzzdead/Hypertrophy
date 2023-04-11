@@ -1,7 +1,6 @@
 // screens/ProgressTracking.tsx
 import React from "react";
 import {SafeAreaView, View, ScrollView, RefreshControl, Dimensions, Text, StyleSheet} from "react-native";
-
 import {LineChart, YAxis, XAxis} from "react-native-svg-charts";
 import * as shape from "d3-shape";
 import {useExercises} from "../../hooks/useExercises";
@@ -28,7 +27,7 @@ const ProgressTracking = () => {
   };
 
   React.useLayoutEffect(() => {
-    const {chartData, maxExercises, exercisesByDate, theDate} = ChartData({exercises, categories: filteredCategories});
+    const {chartData, maxExercises, theDate} = ChartData({exercises, categories: filteredCategories});
     setChartData(chartData);
     setMaxExercises(maxExercises);
     setStartDate(theDate);

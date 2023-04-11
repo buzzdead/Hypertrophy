@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import {View, StyleSheet} from "react-native";
 import { addCategory, addExerciseType } from "../../../../api/realmAPI";
 import CustomButton from "../../../../components/CustomButton";
-import { CategorySchema } from "../../../../config/realmConfig";
+import { CategorySchema, ExerciseTypeSchema } from "../../../../config/realmConfig";
 import { colors } from "../../../../utils/util";
 import NewObjectModal from "./NewObjectModal";
 
@@ -32,7 +32,7 @@ const AddObject = ({isCategory}: Props) => {
        <CustomButton
           title="+"
           fontSize={24}
-          titleColor={colors.summerBlue}
+          titleColor={colors.accent}
           backgroundColor={colors.summerDark}
           onPress={openModal}
         />

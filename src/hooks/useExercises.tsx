@@ -3,7 +3,8 @@ import { useFocusEffect } from '@react-navigation/native';
 import {Exercise} from "../../typings/types";
 import {fetchExercises} from "../api/realmAPI";
 
-export function useExercises() {
+
+export function useExercises(finishLoading?: (loading: boolean) => void) {
   const [exercises, setExercises] = useState<Exercise[]>([]);
 
   const loadExercises = async () => {
@@ -11,13 +12,15 @@ export function useExercises() {
     setExercises(exerciseArray);
   };
 
-  const refresh = () => {
-    loadExercises()
+  const refresh = async () => {
+    await loadExercises()
+    finishLoading && finishLoading(false)
   }
 
   useFocusEffect(
     useCallback(() => {
       loadExercises();
+      finishLoading && finishLoading(false)
       return () => {};
     }, []),
   );

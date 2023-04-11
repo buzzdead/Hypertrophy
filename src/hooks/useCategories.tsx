@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import { useState, useEffect, useCallback } from "react";
 import { fetchCategories } from "../api/realmAPI";
 import { CategorySchema } from "../config/realmConfig";
 
@@ -10,9 +11,12 @@ export function useCategories() {
     setCategories(uniqueCategories);
   };
 
-  useEffect(() => {
-    loadCategories();
-  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadCategories();
+    }, [])
+  );
 
   return categories
 }

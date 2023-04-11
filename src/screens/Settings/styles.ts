@@ -4,7 +4,7 @@ import { colors } from "../../utils/util";
 export const deletionStyles = StyleSheet.create({
     container: {
         padding: 50,
-        gap: 10
+        gap: 20
     },
     subContainer: {
         flexDirection: "column", 
@@ -12,6 +12,6 @@ export const deletionStyles = StyleSheet.create({
         gap: 5,
     },
     title: {
-        textAlign: 'center', minWidth: 175, fontFamily: 'Roboto-Bold', fontSize: 16, color: colors.summerDarkest
+        textAlign: "center", minWidth: 175, fontFamily: 'Roboto-Bold', fontSize: 18, color: colors.summerDarkest, marginBottom: 10, textDecorationLine: "underline"
     }
 })
