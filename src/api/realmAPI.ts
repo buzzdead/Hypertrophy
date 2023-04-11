@@ -51,7 +51,6 @@ export async function addCategory(category: string) {
 }
 
 export async function deleteCategory(category: CategorySchema) {
-  const categories = realm.objects<CategorySchema>("Category");
   const exerciseTypes = realm.objects<ExerciseTypeSchema>("ExerciseType").filter(et => et.category.id === category.id);
   const exercises = realm.objects<ExerciseSchema>("Exercise").filter(e => exerciseTypes.some(et => et.id === e.type.id))
   
@@ -59,6 +58,17 @@ export async function deleteCategory(category: CategorySchema) {
     realm.delete(exercises)
     realm.delete(exerciseTypes)
     realm.delete(category)
+  })
+}
+
+export async function editCategory(categoryId: number, categoryName: string) {
+  const categoryToEdit = realm.objects<CategorySchema>("Category").find(c => c.id === categoryId)
+  if (!categoryToEdit) {
+    throw new Error(`Category with ID ${categoryId} not found`)
+  }
+
+  realm.write(() => {
+    categoryToEdit.name = categoryName
   })
 }
 
@@ -71,6 +81,19 @@ export async function deleteExerciseType(exerciseType: ExerciseTypeSchema) {
     realm.delete(exerciseTypes)
   })
 }
+
+export async function editExerciseType(exerciseTypeId: number, exerciseTypeName: string, category: CategorySchema) {
+  const exerciseTypeToEdit = realm.objects<ExerciseTypeSchema>("ExerciseType").find(c => c.id === exerciseTypeId)
+  if (!exerciseTypeToEdit) {
+    throw new Error(`Category with ID ${exerciseTypeName} not found`)
+  }
+
+  // Update categoryToEdit with the properties of category
+  realm.write(() => {
+    exerciseTypeToEdit.name = exerciseTypeName
+    exerciseTypeToEdit.category = category
+  })
+} 
 
 export async function addExerciseType(exerciseType: string, category: CategorySchema) {
   if(!category) return
