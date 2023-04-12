@@ -23,6 +23,7 @@ type NewObjectModalProps = {
   currentCategory?: CategorySchema;
   title?: string
   objectType: "Category" | "Exercise Type";
+  name: "Exercise Type" | "Category"
 };
 
 const NewObjectModal = ({
@@ -34,7 +35,8 @@ const NewObjectModal = ({
   id,
   currentValue,
   currentCategory,
-  title
+  title,
+  name
 }: NewObjectModalProps) => {
   const [objectName, setObjectName] = useState(currentValue || "");
   const categories = objectType === "Exercise Type" ? useCategories() : null;
@@ -64,6 +66,7 @@ const NewObjectModal = ({
         />
         {categories && (
           <PickerField
+          name={name}
             item={category!}
             items={categories}
             onChange={value => handleOnChange(value)}
@@ -107,6 +110,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: "30%",
     left: "10%",
+    gap: 10,
     right: "10%",
   },
   input: {

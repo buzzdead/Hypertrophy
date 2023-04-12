@@ -62,24 +62,26 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
         <View style={{flex: 6}}>
           <PickerField
             item={state.category}
+            name={"Category"}
             items={categories}
             onChange={value => dispatch({type: "setCategory", payload: value})}
           />
         </View>
-        <View style={{flex: 1, justifyContent: "flex-end", paddingBottom: 15}}>
+        <View style={{flex: 1, justifyContent: "flex-end", paddingBottom: 9}}>
           <AddObject isCategory />
         </View>
       </View>
       <View style={{flexDirection: "row", gap: 40}}>
         <View style={{flex: 6}}>
           <PickerField
+            name={"Category"}
             picker={220}
             item={state.exerciseType}
             items={exerciseTypesFromCategory}
             onChange={value => dispatch({type: "setExerciseType", payload: value})}
           />
         </View>
-        <View style={{flex: 1, justifyContent: "flex-end", paddingBottom: 16}}>
+        <View style={{flex: 1, justifyContent: "flex-end", paddingBottom: 9}}>
           <AddObject isCategory={false} />
         </View>
       </View>

@@ -12,6 +12,7 @@ type Props = {
 
 const AddObject = ({isCategory}: Props) => {
   const [modalVisible, setModalVisible] = useState(false);
+  const name = isCategory ? "Exercise Type" : "Category"
 
   const openModal = () => {
     setModalVisible(true);
@@ -38,6 +39,7 @@ const AddObject = ({isCategory}: Props) => {
         />
         </View>
       <NewObjectModal
+      name={name}
         visible={modalVisible}
         onClose={closeModal}
         onAdd={handleAdd}

@@ -60,6 +60,7 @@ export function ExerciseTypes() {
                 <View style={{alignSelf: "center", gap: 10}}>
                 <CustomButton
                     size="L"
+                    fontSize={20}
                     titleColor={colors.summerWhite}
                     backgroundColor={colors.summerDark}
                     title={"Edit exercise type"}
@@ -67,7 +68,8 @@ export function ExerciseTypes() {
                   />
                   <CustomButton
                     size="L"
-                    titleColor={colors.summerBlue}
+                    fontSize={20}
+                    titleColor={colors.error}
                     backgroundColor={colors.summerDark}
                     title={"Delete exercise type"}
                     onPress={() => handleDelete(c)}
@@ -75,6 +77,7 @@ export function ExerciseTypes() {
                 </View>
                 {visible && (
                   <NewObjectModal
+                  name="Category"
                     visible={visible}
                     modalFunction={onEdit}
                     id={c.id}

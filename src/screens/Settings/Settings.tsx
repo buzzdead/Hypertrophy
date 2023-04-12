@@ -1,13 +1,30 @@
 // screens/Settings.tsx
 import React from "react";
-import { SafeAreaView, ScrollView, Text, View } from "react-native";
+import { Alert, SafeAreaView, ScrollView, Text, View } from "react-native";
 import { deleteCategory, deleteExerciseType, editCategory, editExerciseType } from "../../api/realmAPI";
 import { CategorySchema, ExerciseTypeSchema } from "../../config/realmConfig";
 import { colors } from "../../utils/util";
 import CustomButton from "../../components/CustomButton";
 
-export const handleDelete = (o: CategorySchema | ExerciseTypeSchema) => {
-  o instanceof CategorySchema ? deleteCategory(o) : deleteExerciseType(o);
+export const handleDelete = async (o: CategorySchema | ExerciseTypeSchema) => {
+  Alert.alert(
+    "Delete",
+    "Are you sure you want to delete?",
+    [
+      {
+        text: "Yes",
+        onPress: () => {
+          o instanceof CategorySchema ? deleteCategory(o) : deleteExerciseType(o);
+        },
+      },
+      {
+        text: "No",
+        onPress: () => {},
+        style: "cancel",
+      },
+    ],
+    { cancelable: false }
+  );
 };
 
 export const handleEdit = (id: number, name: string, category?: CategorySchema) => {

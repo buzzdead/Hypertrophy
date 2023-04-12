@@ -63,12 +63,14 @@ export function Categories() {
                     size="L"
                     titleColor={colors.summerWhite}
                     backgroundColor={colors.summerDark}
+                    fontSize={20}
                     title={"Edit category"}
                     onPress={() => onOpen(c.id)}
                   />
                   <CustomButton
                     size="L"
-                    titleColor={colors.summerBlue}
+                    titleColor={colors.error}
+                    fontSize={20}
                     backgroundColor={colors.summerDark}
                     title={"Delete category"}
                     onPress={() => handleDelete(c)}
@@ -76,6 +78,7 @@ export function Categories() {
                 </View>
                 {visible && (
                   <NewObjectModal
+                  name="Category"
                     visible={visible}
                     modalFunction={onEdit}
                     id={c.id}

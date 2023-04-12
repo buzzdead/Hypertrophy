@@ -1,16 +1,17 @@
 import { useFocusEffect } from "@react-navigation/native";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { fetchCategories } from "../api/realmAPI";
 import { CategorySchema } from "../config/realmConfig";
 
+
 export function useCategories() {
-    const [categories, setCategories] = useState<CategorySchema[]>([])
+  const [categories, setCategories] = useState<CategorySchema[]>([])
 
   const loadCategories = async () => {
     const uniqueCategories = await fetchCategories();
-    setCategories(uniqueCategories);
+    const validCategories = uniqueCategories.filter((cat) => cat.isValid());
+    setCategories(validCategories);
   };
-
 
   useFocusEffect(
     useCallback(() => {
@@ -18,5 +19,5 @@ export function useCategories() {
     }, [])
   );
 
-  return categories
+  return categories;
 }

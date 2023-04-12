@@ -12,12 +12,12 @@ type Props = {
   picker?: number;
   onChange: (value: any) => void;
   setLoading?: () => void;
+  name: "Exercise Type" | "Category"
   maxWidth?: number
 };
 
-const PickerField = ({ item, items, onChange, setLoading, picker, maxWidth }: Props) => {
+const PickerField = ({ item, items, onChange, setLoading, picker, maxWidth, name }: Props) => {
   const [pickerVisible, setPickerVisible] = useState(false);
-  const name = picker ? "Exercise Type" : "Category"
 
   const togglePicker = () => {
     setPickerVisible(!pickerVisible);
