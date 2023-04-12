@@ -10,5 +10,10 @@ export type Exercise = {
   date: Date;
 };
 
-export type Duplicate = {sets: number; reps: number; weight: string | number}
-export type Exercises = {exercise: Exercise; duplicates: Duplicate[]};
+export type Duplicate = { sets: number; reps: number; weight: string | number }
+export type ExerciseWithDuplicates = { exercise: Exercise; duplicates: Duplicate[] };
+export interface IGroup {
+  weekKey: string;
+  weekNumber: number;
+  exercises: Array<ExerciseWithDuplicates>;
+}

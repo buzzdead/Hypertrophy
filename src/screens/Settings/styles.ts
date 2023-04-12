@@ -12,6 +12,6 @@ export const deletionStyles = StyleSheet.create({
         gap: 5,
     },
     title: {
-        textAlign: "center", minWidth: 175, fontFamily: 'Roboto-Bold', fontSize: 18, color: colors.summerDarkest, marginBottom: 10, textDecorationLine: "underline"
+        textAlign: "center", minWidth: 175, fontFamily: 'Roboto-Bold', fontSize: 22, color: colors.summerDarkest, marginBottom: 10,
     }
 })
