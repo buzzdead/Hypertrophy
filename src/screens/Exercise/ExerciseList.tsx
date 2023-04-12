@@ -34,7 +34,7 @@ const ExerciseList: React.FC<Props> = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
       <WeeklyExercises navigation={navigation} exercises={exercises} onRefresh={_onRefresh} refreshing={loading} page={currentPage}/>
-      <View style={{width: "10%", bottom: 3, right: -3, position: "absolute"}}>
+      <View style={{width: "10%", bottom: 5, right: 5, position: "absolute"}}>
         <CustomButton
           title="+"
           fontSize={24}
