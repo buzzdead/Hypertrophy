@@ -4,7 +4,7 @@ import { colors } from '../utils/util';
 
 type Size = "S" | "SM" | "M" | "L"
 const SIZE_TO_PADDING: { [key in Size]: { width: number, height: number } } = {
-  S: { width: 35, height: 35 },
+  S: { width: 42, height: 42 },
   SM: {width: 135, height: 40},
   M: { width: 175, height: 50 },
   L: { width: 250, height: 50 },
