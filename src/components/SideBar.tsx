@@ -1,6 +1,6 @@
 // sidebar.tsx
 import React, {useEffect, useState} from "react";
-import {Animated, ImageBackground, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Animated, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import {CategorySchema} from "../config/realmConfig";
 import {colors} from "../utils/util";
@@ -42,11 +42,10 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, ico
     onFilterChange(selectedCategories)
   }, [currentPage])
   useEffect(() => {
+    if(selectedCategories.length > 0) return
     setSelectedCategoryAnimations(categories.map(() => new Animated.Value(0)));
     selectedCategories.length > 0 && setSelectedCategories(selectedCategories => {
       const newSelectedCategories = selectedCategories.filter(cat => categories.includes(cat));
-      onFilterChange(newSelectedCategories);
-  
       return newSelectedCategories;
     });
   }, [categories]);
