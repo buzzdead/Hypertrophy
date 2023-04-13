@@ -3,6 +3,7 @@ import {Text, View} from "react-native";
 import {ScrollView} from "react-native-gesture-handler";
 import {SafeAreaView} from "react-native-safe-area-context";
 import CustomButton from "../../components/CustomButton";
+import { CategorySchema } from "../../config/realmConfig";
 import {useCategories} from "../../hooks/useCategories";
 import {colors} from "../../utils/util";
 import NewObjectModal from "../Exercise/AddExercise/Modal/NewObjectModal";
@@ -10,8 +11,9 @@ import {handleDelete, handleEdit} from "./Settings";
 import {deletionStyles} from "./styles";
 
 export function Categories() {
-  const categories = useCategories();
+  const {categories, refresh} = useCategories();
   const [modalVisible, setModalVisible] = useState<{visible: boolean; id: number}[]>([]);
+  const validCategories = categories.filter(c => c.isValid())
 
   const onEdit = (name: string, id: number) => {
     handleEdit(id, name);
@@ -42,17 +44,22 @@ export function Categories() {
     );
   };
   useEffect(() => {
-    const mVisibles = categories.map(c => {
+    const mVisibles = validCategories.map(c => {
       return {visible: false, id: c.id};
     });
     setModalVisible(mVisibles);
   }, [categories]);
 
+  const onDelete = async (c: CategorySchema) => {
+    await handleDelete(c);
+    refresh();
+  }
+
   return (
     <SafeAreaView>
       <ScrollView keyboardShouldPersistTaps="handled">
         <View style={deletionStyles.container}>
-          {categories.map(c => {
+          {validCategories.map(c => {
             const visible = modalVisible.find(m => m.id === c.id)?.visible || false;
             const onCloseCurrent = () => onClose(c.id);
             return (
@@ -73,7 +80,7 @@ export function Categories() {
                     fontSize={20}
                     backgroundColor={colors.summerDark}
                     title={"Delete category"}
-                    onPress={() => handleDelete(c)}
+                    onPress={() => onDelete(c)}
                   />
                 </View>
                 {visible && (

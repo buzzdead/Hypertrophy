@@ -12,7 +12,7 @@ import {CategorySchema} from "../../config/realmConfig";
 
 const ProgressTracking = () => {
   const {exercises, refresh} = useExercises();
-  const categories = useCategories();
+  const {categories} = useCategories();
 
   const [refreshing, setRefreshing] = React.useState(false);
   const [chartData, setChartData] = React.useState<number[]>([]);

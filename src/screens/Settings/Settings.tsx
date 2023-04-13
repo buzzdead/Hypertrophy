@@ -6,26 +6,32 @@ import { CategorySchema, ExerciseTypeSchema } from "../../config/realmConfig";
 import { colors } from "../../utils/util";
 import CustomButton from "../../components/CustomButton";
 
-export const handleDelete = async (o: CategorySchema | ExerciseTypeSchema) => {
-  Alert.alert(
-    "Delete",
-    "Are you sure you want to delete?",
-    [
-      {
-        text: "Yes",
-        onPress: () => {
-          o instanceof CategorySchema ? deleteCategory(o) : deleteExerciseType(o);
+export const handleDelete = (o: CategorySchema | ExerciseTypeSchema): Promise<void> => {
+  return new Promise((resolve) => {
+    Alert.alert(
+      "Delete",
+      "Are you sure you want to delete?",
+      [
+        {
+          text: "Yes",
+          onPress: () => {
+            o instanceof CategorySchema ? deleteCategory(o) : deleteExerciseType(o);
+            resolve();
+          },
         },
-      },
-      {
-        text: "No",
-        onPress: () => {},
-        style: "cancel",
-      },
-    ],
-    { cancelable: false }
-  );
+        {
+          text: "No",
+          onPress: () => {
+            resolve();
+          },
+          style: "cancel",
+        },
+      ],
+      { cancelable: false }
+    );
+  });
 };
+
 
 export const handleEdit = (id: number, name: string, category?: CategorySchema) => {
   category ? editExerciseType(id, name, category) : editCategory(id, name)

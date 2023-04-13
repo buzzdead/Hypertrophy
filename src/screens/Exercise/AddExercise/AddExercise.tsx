@@ -36,8 +36,8 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
     : initialState;
   const [state, dispatch] = useReducer(exerciseListReducer, newState);
   const [isWeightValid, setIsWeightValid] = useState(true);
-  const categories = useCategories();
-  const exerciseTypesFromCategory = useExerciseTypes({category: state.category});
+  const {categories} = useCategories();
+  const {memoizedExerciseTypes: exerciseTypesFromCategory} = useExerciseTypes({category: state.category});
 
   const handleAddExercise = async () => {
     const exercise: Exercise = {

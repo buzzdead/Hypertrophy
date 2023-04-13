@@ -3,7 +3,7 @@ import {Text, View} from "react-native";
 import {ScrollView} from "react-native-gesture-handler";
 import {SafeAreaView} from "react-native-safe-area-context";
 import CustomButton from "../../components/CustomButton";
-import {CategorySchema} from "../../config/realmConfig";
+import {CategorySchema, ExerciseTypeSchema} from "../../config/realmConfig";
 import {useExerciseTypes} from "../../hooks/useExerciseTypes";
 import {colors} from "../../utils/util";
 import NewObjectModal from "../Exercise/AddExercise/Modal/NewObjectModal";
@@ -11,13 +11,18 @@ import {handleDelete, handleEdit} from "./Settings";
 import {deletionStyles} from "./styles";
 
 export function ExerciseTypes() {
-  const exerciesTypes = useExerciseTypes({category: null, showAll: true});
+  const {memoizedExerciseTypes, refresh} = useExerciseTypes({category: null, showAll: true});
+  const validExerciseTypes = memoizedExerciseTypes.filter(e => e.isValid())
   const [modalVisible, setModalVisible] = useState<{visible: boolean; id: number}[]>([]);
 
   const onEdit = (name: string, id: number, category?: CategorySchema) => {
     handleEdit(id, name, category);
     onClose(id);
   };
+  const onDelete = async (exerciseType: ExerciseTypeSchema) => {
+    await handleDelete(exerciseType)
+    refresh()
+  }
   const onOpen = (id: number) => {
     setModalVisible(
       modalVisible.map(m => {
@@ -42,16 +47,16 @@ export function ExerciseTypes() {
     );
   };
   useEffect(() => {
-    const mVisibles = exerciesTypes.map(c => {
+    const mVisibles = validExerciseTypes.map(c => {
       return {visible: false, id: c.id};
     });
     setModalVisible(mVisibles);
-  }, [exerciesTypes]);
+  }, [memoizedExerciseTypes]);
   return (
     <SafeAreaView>
       <ScrollView keyboardShouldPersistTaps="handled">
         <View style={deletionStyles.container}>
-          {exerciesTypes.map(c => {
+          {validExerciseTypes.map(c => {
             const visible = modalVisible.find(m => m.id === c.id)?.visible || false;
             const onCloseCurrent = () => onClose(c.id);
             return (

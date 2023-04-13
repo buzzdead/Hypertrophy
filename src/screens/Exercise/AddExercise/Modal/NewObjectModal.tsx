@@ -39,7 +39,7 @@ const NewObjectModal = ({
   name
 }: NewObjectModalProps) => {
   const [objectName, setObjectName] = useState(currentValue || "");
-  const categories = objectType === "Exercise Type" ? useCategories() : null;
+  const {categories} = useCategories()
   const [category, setCategory] = useState<Optional<CategorySchema>>(currentCategory);
 
   const handleAdd = () => {
@@ -64,7 +64,7 @@ const NewObjectModal = ({
           placeholder={`${objectType} Name`}
           style={styles.input}
         />
-        {categories && (
+        {objectType === "Exercise Type" && (
           <PickerField
           name={name}
             item={category!}
