@@ -2,7 +2,7 @@
 import React from "react";
 import {NavigationContainer} from "@react-navigation/native";
 import {createStackNavigator} from "@react-navigation/stack";
-import ExerciseTabs from "./src/ExerciseTabs";
+import Tabs from "./src/Tabs";
 import {colors} from "./src/utils/util";
 import AddExercise from "./src/screens/Exercise/AddExercise/AddExercise";
 import ExerciseDetails from "./src/screens/Exercise/ExerciseDetails/ExerciseDetails";
@@ -24,7 +24,7 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Exercises" component={ExerciseTabs} options={{headerShown: false}} />
+        <Stack.Screen name="Exercises" component={Tabs} options={{headerShown: false}} />
         <Stack.Screen
           name="Details"
           component={ExerciseDetails}

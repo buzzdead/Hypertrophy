@@ -5,16 +5,16 @@ import { colors } from "../../../utils/util";
 interface Props {
     title: string
     value: number | string
-    onChange: (value: number | string) => void
+    onChange: (value: string | number, validWeight: boolean) => void
 }
 
 const Weight: React.FC<Props> = ({title, value, onChange}) => {
     const [isWeightValid, setIsWeightValid] = useState(true);
     const handleWeightChange = (text: string) => {
       const weight = Number(text);
-      const isWeightNaN = isNaN(weight);
-      setIsWeightValid(!isWeightNaN);
-      onChange(text);
+      const invalidWeight = isNaN(weight) || text === "";
+      setIsWeightValid(!invalidWeight);
+      onChange(text, !invalidWeight);
     };
     return (
       <View style={styles.inputContainer}>

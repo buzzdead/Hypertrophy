@@ -10,7 +10,7 @@ import {useCategories} from "../../hooks/useCategories";
 import {SideBar} from "../../components/SideBar";
 import {CategorySchema} from "../../config/realmConfig";
 import {usePanHandler} from "../../hooks/usePanHandler";
-import {ExerciseListUI} from "./ExerciseListUI";
+import {ExerciseListBtm} from "./ExerciseListBtm";
 
 type ExeciseListProps = StackScreenProps<
   {
@@ -80,7 +80,7 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
         refreshing={exercisesLoading || categoriesLoading}
         groupedExercises={filterExercises}
       />
-      <ExerciseListUI
+      <ExerciseListBtm
         currentWeek={groupedExercises[currentPage]?.weekNumber}
         currentPage={currentPage}
         maxPage={groupedExercises.length - 1}

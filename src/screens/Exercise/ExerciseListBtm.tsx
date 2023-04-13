@@ -4,7 +4,7 @@ import {SafeAreaView, View, Text, StyleSheet} from "react-native";
 import CustomButton from "../../components/CustomButton";
 import {colors} from "../../utils/util";
 
-interface ExerciseListUIProps {
+interface ExerciseListBtmProps {
   currentWeek: number;
   handlePrevPage: () => void;
   handleNextPage: () => void;
@@ -13,7 +13,7 @@ interface ExerciseListUIProps {
   navigation: StackScreenProps<any, "List">["navigation"];
 }
 
-export const ExerciseListUI: React.FC<ExerciseListUIProps> = ({
+export const ExerciseListBtm: React.FC<ExerciseListBtmProps> = ({
   currentWeek,
   currentPage,
   handleNextPage,

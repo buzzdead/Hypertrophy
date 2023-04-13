@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Text, View} from "react-native";
+import {StyleSheet, Text, View} from "react-native";
 import {ScrollView} from "react-native-gesture-handler";
 import {SafeAreaView} from "react-native-safe-area-context";
 import CustomButton from "../../components/CustomButton";
@@ -8,11 +8,10 @@ import {useExerciseTypes} from "../../hooks/useExerciseTypes";
 import {colors} from "../../utils/util";
 import NewObjectModal from "../Exercise/AddExercise/Modal/NewObjectModal";
 import {handleDelete, handleEdit} from "./Settings";
-import {deletionStyles} from "./styles";
 
 export function ExerciseTypes() {
   const {memoizedExerciseTypes, refresh} = useExerciseTypes({category: null, showAll: true});
-  const validExerciseTypes = memoizedExerciseTypes.filter(e => e.isValid())
+  const validExerciseTypes = memoizedExerciseTypes.filter(e => e.isValid());
   const [modalVisible, setModalVisible] = useState<{visible: boolean; id: number}[]>([]);
 
   const onEdit = (name: string, id: number, category?: CategorySchema) => {
@@ -20,9 +19,9 @@ export function ExerciseTypes() {
     onClose(id);
   };
   const onDelete = async (exerciseType: ExerciseTypeSchema) => {
-    await handleDelete(exerciseType)
-    refresh()
-  }
+    await handleDelete(exerciseType);
+    refresh();
+  };
   const onOpen = (id: number) => {
     setModalVisible(
       modalVisible.map(m => {
@@ -55,15 +54,15 @@ export function ExerciseTypes() {
   return (
     <SafeAreaView>
       <ScrollView keyboardShouldPersistTaps="handled">
-        <View style={deletionStyles.container}>
+        <View style={styles.container}>
           {validExerciseTypes.map(c => {
             const visible = modalVisible.find(m => m.id === c.id)?.visible || false;
             const onCloseCurrent = () => onClose(c.id);
             return (
-              <View key={c.name} style={deletionStyles.subContainer}>
-                <Text style={deletionStyles.title}>{c.name}</Text>
-                <View style={{alignSelf: "center", gap: 10}}>
-                <CustomButton
+              <View key={c.name} style={styles.subContainer}>
+                <Text style={styles.title}>{c.name}</Text>
+                <View style={styles.buttonContainer}>
+                  <CustomButton
                     size="L"
                     fontSize={20}
                     titleColor={colors.summerWhite}
@@ -77,12 +76,12 @@ export function ExerciseTypes() {
                     titleColor={colors.error}
                     backgroundColor={colors.summerDark}
                     title={"Delete exercise type"}
-                    onPress={() => handleDelete(c)}
+                    onPress={() => onDelete(c)}
                   />
                 </View>
                 {visible && (
                   <NewObjectModal
-                  name="Category"
+                    name="Category"
                     visible={visible}
                     modalFunction={onEdit}
                     id={c.id}
@@ -101,3 +100,27 @@ export function ExerciseTypes() {
     </SafeAreaView>
   );
 }
+
+export const styles = StyleSheet.create({
+  container: {
+    padding: 50,
+    gap: 20,
+  },
+  subContainer: {
+    flexDirection: "column",
+    justifyContent: "center",
+    gap: 5,
+  },
+  title: {
+    textAlign: "center",
+    minWidth: 175,
+    fontFamily: "Roboto-Bold",
+    fontSize: 22,
+    color: colors.summerDarkest,
+    marginBottom: 10,
+  },
+  buttonContainer: {
+    alignSelf: "center",
+    gap: 10,
+  },
+});

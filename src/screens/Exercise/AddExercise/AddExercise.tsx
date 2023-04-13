@@ -25,6 +25,7 @@ const initialState: ExerciseReducerType = {
   date: new Date(),
   category: null,
   exerciseType: null,
+  validWeight: true
 };
 
 const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
@@ -35,7 +36,6 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
       })
     : initialState;
   const [state, dispatch] = useReducer(exerciseListReducer, newState);
-  const [isWeightValid, setIsWeightValid] = useState(true);
   const {categories} = useCategories();
   const {memoizedExerciseTypes: exerciseTypesFromCategory} = useExerciseTypes({category: state.category});
 
@@ -54,6 +54,11 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
       await addExercise(exercise);
     }
     navigation.goBack();
+  };
+
+  const onWeightChange = (value: number | string, validWeight: boolean) => {
+    dispatch({type: "setWeight", payload: {value, validWeight}})
+
   };
 
   return (
@@ -85,7 +90,11 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
           <AddObject isCategory={false} />
         </View>
       </View>
-      <Weight title={"Weight"} value={state.weight} onChange={value => dispatch({type: "setWeight", payload: value})} />
+      <Weight
+        title={"Weight"}
+        value={state.weight}
+        onChange={(value: string | number, validWeight: boolean) => onWeightChange(value, validWeight)}
+      />
       <View style={{flexDirection: "row", gap: 20, alignSelf: "center"}}>
         <NumberInput
           title={"Sets"}
@@ -104,17 +113,16 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
             titleColor={colors.summerWhite}
             size="M"
             backgroundColor={colors.summerDark}
-            disabled={!isWeightValid}
             title="Cancel"
             onPress={() => navigation.goBack()}
           />
         </View>
         <View style={{width: 180}}>
           <CustomButton
-            titleColor={colors.accent}
+            titleColor={state.validWeight ? colors.accent : colors.summerWhite}
             size="M"
             backgroundColor={colors.summerDark}
-            disabled={!isWeightValid}
+            disabled={!state.validWeight}
             title="Save"
             onPress={handleAddExercise}
           />

@@ -25,7 +25,7 @@ const options = {
   headerStyle: {backgroundColor: colors.summerDark},
 };
 
-const ExerciseTabs: React.FC<Props> = () => {
+const Tabs: React.FC<Props> = () => {
   return (
     <Tab.Navigator
       screenOptions={{
@@ -79,4 +79,4 @@ const ExerciseTabs: React.FC<Props> = () => {
   );
 };
 
-export default ExerciseTabs;
+export default Tabs;
