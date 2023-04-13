@@ -21,3 +21,4 @@ The app has three main screens:
 
    <img src="images/Settings.png" alt="Settings" width="250"/>
    <img src="images/Categories.png" alt="Categories" width="250"/>
+   <img src="images/ExerciseTypes.png" alt="Exercise Types" width="250"/>
