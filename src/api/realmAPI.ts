@@ -118,6 +118,13 @@ export async function fetchExerciseById(id: number) {
   return exercise;
 }
 
+export async function deleteExercise(exercise: Exercise) {
+  const exerciseSchema = realm.objectForPrimaryKey<ExerciseSchema>("Exercise", exercise.id);
+  realm.write(() => {
+    realm.delete(exerciseSchema)
+  })
+}
+
 export async function fetchCategories() {
   const categories = realm.objects<CategorySchema>("Category");
   const categoriesArray = Array.from(categories);

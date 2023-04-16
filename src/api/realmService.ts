@@ -13,7 +13,7 @@ class RealmService {
     const exercises = this.realm.objects<ExerciseSchema>("Exercise");
     console.log(categories.length, exerciseTypes.length, exercises.length)
 
-    /* if(categories.length === 0 && exerciseTypes.length === 0 && exercises.length === 0){
+    if(categories.length === 0 && exerciseTypes.length === 0 && exercises.length === 0){
     this.realm.write(() => {
       this.realm.delete(categories);
       this.realm.delete(exerciseTypes);
@@ -164,7 +164,7 @@ class RealmService {
     for (const exercise of exercisesData) {
       const exerciseType = exercise.type;
       this.realm.create<ExerciseSchema>("Exercise", {
-        id: this.realm.objects<ExerciseSchema>("Exercise").length, // Add this line
+        id: this.realm.objects<ExerciseSchema>("Exercise").length + 1, // Add this line
         type: exerciseType as ExerciseTypeSchema,
         sets: exercise.sets,
         reps: exercise.reps,
@@ -172,7 +172,7 @@ class RealmService {
         date: exercise.date,
       });
     }
-  })} */}
+  })}}
     
     
 
