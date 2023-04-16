@@ -2,10 +2,11 @@ import { useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import {Exercise} from "../../typings/types";
 import {fetchExercises} from "../api/realmAPI";
+import { ExerciseSchema } from '../config/realmConfig';
 
 
-export function useExercises(finishLoading?: (loading: boolean) => void) {
-  const [exercises, setExercises] = useState<Exercise[]>([]);
+export function useExercises() {
+  const [exercises, setExercises] = useState<ExerciseSchema[]>([]);
   const [loading, setLoading] = useState(true)
 
   const loadExercises = async () => {
