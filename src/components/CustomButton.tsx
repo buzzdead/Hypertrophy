@@ -1,6 +1,8 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { colors } from '../utils/util';
+import Contingent from './Contingent';
+import LoadingIndicator from './LoadingIndicator';
 
 type Size = "S" | "SM" | "M" | "L"
 const SIZE_TO_PADDING: { [key in Size]: { width: number, height: number } } = {
@@ -18,6 +20,7 @@ type CustomButtonProps = {
   disabled?: boolean
   borderColor?: string
   fontSize?: number
+  loading?: boolean
   size?: Size
 };
 
@@ -30,6 +33,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   borderColor,
   fontSize,
   size="S",
+  loading=false,
 }) => {
   return (
     <TouchableOpacity
@@ -38,7 +42,10 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       onPress={onPress}
       activeOpacity={0.75}
     >
+      <Contingent shouldRender={!loading}>
       <Text style={[styles.buttonTitle, { color: titleColor, fontSize: fontSize || 16 }]}>{title}</Text>
+      <LoadingIndicator />
+      </Contingent>
     </TouchableOpacity>
   );
 };
