@@ -18,6 +18,7 @@ const ProgressTracking = () => {
   const [chartData, setChartData] = React.useState<number[]>([]);
   const [maxExercises, setMaxExercises] = React.useState(0);
   const [startDate, setStartDate] = React.useState<Date>();
+  const [chartWidth, setChartWidth] = React.useState(Dimensions.get("window").width * 0.9)
   const [filteredCategories, setFilteredCategories] = React.useState<CategorySchema[]>([]);
 
   const _onRefresh = () => {
@@ -33,7 +34,6 @@ const ProgressTracking = () => {
     setStartDate(theDate);
   }, [exercises, filteredCategories]);
 
-  const chartWidth = Dimensions.get("window").width * 0.9;
   const dataPointWidth = chartWidth / (chartData?.length || 1);
 
   const handleFilterChange = (selectedCategories: CategorySchema[]) => {
@@ -74,7 +74,7 @@ const ProgressTracking = () => {
           />
 
           <LineChart
-            style={{flex: 1, marginLeft: 16}}
+            style={{flex: 1, marginLeft: 8}}
             data={chartData}
             svg={{stroke: colors.primary}}
             contentInset={{top: 20, bottom: 40}}
