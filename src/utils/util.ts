@@ -1,5 +1,6 @@
 import {DefaultTheme} from 'react-native-paper'
 import { Exercise, ExerciseWithDuplicates, IGroup } from '../../typings/types';
+import { ExerciseSchema } from '../config/realmConfig';
 
 const MyTheme = {
     ...DefaultTheme,
@@ -22,6 +23,7 @@ const MyTheme = {
       test6: '#000000',
       test7: '#FFBF9B',
       test8: '#B46060',
+      
 
     }
   }
@@ -34,7 +36,7 @@ export const getWeekNumber = (date: Date) => {
   return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
 };
 
-export const groupExercisesByWeek = (sortedExercises: Exercise[]) => {
+export const groupExercisesByWeek = (sortedExercises: ExerciseSchema[]) => {
   const groups: IGroup[] = [];
 
     sortedExercises.forEach(exercise => {
