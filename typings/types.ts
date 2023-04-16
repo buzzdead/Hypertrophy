@@ -1,4 +1,4 @@
-import { ExerciseTypeSchema } from "../src/config/realmConfig";
+import { ExerciseSchema, ExerciseTypeSchema } from "../src/config/realmConfig";
 
 // types.ts
 export type Exercise = {
@@ -11,7 +11,7 @@ export type Exercise = {
 };
 
 export type Duplicate = { sets: number; reps: number; weight: string | number }
-export type ExerciseWithDuplicates = { exercise: Exercise; duplicates: Duplicate[] };
+export type ExerciseWithDuplicates = { exercise: ExerciseSchema; duplicates: Duplicate[] };
 export interface IGroup {
   weekKey: string;
   weekNumber: number;
