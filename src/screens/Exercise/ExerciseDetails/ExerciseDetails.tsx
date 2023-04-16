@@ -6,6 +6,8 @@ import {fetchExerciseById} from "../../../api/realmAPI";
 import {Duplicate, Exercise} from "../../../../typings/types";
 import LoadingIndicator from "../../../components/LoadingIndicator";
 import AddExercise from "../AddExercise/AddExercise";
+import Contingent from "../../../components/Contingent";
+import { Text, View } from "react-native";
 
 type Props = StackScreenProps<
   {
@@ -18,6 +20,7 @@ type Props = StackScreenProps<
 const ExerciseDetails: React.FC<Props> = ({navigation, route}) => {
   const [exercise, setExercise] = useState<Nullable<Exercise>>(null);
   const [editExercise, setEditExercise] = useState(false);
+  const [deleted, setDeleted] = useState(false)
 
   useEffect(() => {
     const exerciseId = route.params.exerciseId;
@@ -33,19 +36,25 @@ const ExerciseDetails: React.FC<Props> = ({navigation, route}) => {
   }
 
   function handleEditPress() {
-    // Navigate to the edit screen with the exercise ID as a parameter
     setEditExercise(true);
   }
 
-  return exercise ? (
-    editExercise ? (
+  const onClose = () => {
+    setDeleted(true)
+    setTimeout(() => navigation.goBack(), 1000)
+  }
+
+  if(deleted) return <View style={{justifyContent: 'center', alignContent: 'center'}}><Text style={{textAlign: 'center'}}>Exercise Deleted</Text></View>
+
+  return (
+    <Contingent shouldRender={exercise !== null}>
+      <Contingent shouldRender={editExercise}>
       <AddExercise navigation={navigation} previousExercise={exercise} />
-    ) : (
-      <ExerciseDetailsContent exercise={exercise} onEditPress={handleEditPress} duplicates={route.params.duplicates} />
-    )
-  ) : (
-    <LoadingIndicator />
-  );
-};
+      <ExerciseDetailsContent exercise={exercise!} onEditPress={handleEditPress} duplicates={route.params.duplicates} onClose={onClose}/>
+      </Contingent>
+      <LoadingIndicator />
+    </Contingent>
+  )
+}
 
 export default ExerciseDetails;
