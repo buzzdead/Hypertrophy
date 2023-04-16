@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {FlatList, SafeAreaView, StyleSheet, RefreshControl} from "react-native";
 import {colors} from "../../utils/util";
 import {ExerciseWithDuplicates} from "../../../typings/types";
@@ -19,10 +19,20 @@ const WeeklyExercises: React.FC<WeeklyExercisesProps> = ({
   groupedExercises
 }) => {
 
+  const [currentExercises, setCurrentExercises] = useState<ExerciseWithDuplicates[]>([])
+  useEffect(() => {
+    if(!groupedExercises || groupedExercises === undefined) {
+      const newExercises = currentExercises.filter(e => e.exercise.isValid())
+      setCurrentExercises(newExercises)
+    }
+    setCurrentExercises(groupedExercises?.filter(e => e.exercise.isValid()))
+  }, [groupedExercises])
+
+
   return (
     <SafeAreaView style={styles.container} >
       <FlatList
-        data={groupedExercises || []}
+        data={currentExercises || []}
         renderItem={({item}) => <ExerciseItem item={item} navigation={navigation} />}
         keyExtractor={item => item.exercise.id.toString()}
         refreshControl={
