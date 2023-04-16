@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {SafeAreaView, StyleSheet} from "react-native";
 import {StackScreenProps} from "@react-navigation/stack";
 import {Exercise, ExerciseWithDuplicates, IGroup} from "../../../typings/types";
@@ -24,6 +24,7 @@ type ExeciseListProps = StackScreenProps<
 const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   const {categories, refresh: categoriesRefresh, loading: categoriesLoading} = useCategories();
   const {exercises, refresh: exercisesRefresh, loading: exercisesLoading} = useExercises();
+  const [groupedExercises, setGroupedExercises] = useState<IGroup[]>([])
 
   const [filterExercises, setFilteredExercises] = useState<ExerciseWithDuplicates[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(0);
@@ -33,11 +34,15 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
     exercisesRefresh();
   };
 
-  const groupedExercises: IGroup[] = useMemo(() => {
+  useEffect(() => {
     const sortedExercises = [...exercises].sort((a, b) => a.date.getTime() - b.date.getTime());
     const groups = groupExercisesByWeek(sortedExercises);
-    return groups;
+    setGroupedExercises(groups)
   }, [exercises]);
+
+  useEffect(() => {
+    _onRefresh()
+  }, [])
 
   const handleNextPage = () => {
     if (currentPage < groupedExercises.length - 1) {
@@ -50,6 +55,14 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
       setCurrentPage(currentPage - 1);
     }
   };
+
+  const handleGoToLastPage = () => {
+    setCurrentPage(groupedExercises.length - 1)
+  }
+
+  const handleGoToFirstPage = () => {
+    setCurrentPage(0)
+  }
 
   const handleFilterChange = useCallback(
     (selectedCategories: Optional<CategorySchema>[]) => {
@@ -70,7 +83,7 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   const {panResponder} = usePanHandler({handlePrevPage, handleNextPage, currentPage, groupedExercises});
 
   if (categoriesLoading || exercisesLoading) return <LoadingIndicator />;
-  console.log("rendering exerciselist123");
+  console.log("rendering exerciselist")
   return (
     <SafeAreaView style={styles.container} {...panResponder?.panHandlers}>
       <SideBar categories={categories} onFilterChange={handleFilterChange} currentPage={currentPage} />
@@ -86,6 +99,8 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
         maxPage={groupedExercises.length - 1}
         handleNextPage={handleNextPage}
         handlePrevPage={handlePrevPage}
+        handleGoToLastPage={handleGoToLastPage}
+        handleGoToFirstPage={handleGoToFirstPage}
         navigation={navigation}
       />
     </SafeAreaView>

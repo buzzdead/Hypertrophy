@@ -8,6 +8,8 @@ interface ExerciseListBtmProps {
   currentWeek: number;
   handlePrevPage: () => void;
   handleNextPage: () => void;
+  handleGoToLastPage: () => void;
+  handleGoToFirstPage: () => void
   maxPage: number;
   currentPage: number;
   navigation: StackScreenProps<any, "List">["navigation"];
@@ -18,12 +20,22 @@ export const ExerciseListBtm: React.FC<ExerciseListBtmProps> = ({
   currentPage,
   handleNextPage,
   handlePrevPage,
+  handleGoToLastPage,
+  handleGoToFirstPage,
   maxPage,
   navigation,
 }) => {
   return (
     <SafeAreaView>
       <View style={styles.pagination}>
+      <CustomButton
+          titleColor={currentPage === 0 ? colors.summerDark : colors.summerBlue}
+          onPress={handleGoToFirstPage}
+          backgroundColor={colors.summerWhite}
+          size="S"
+          fontSize={26}
+          title={"<<"}
+        />
         <CustomButton
           size="S"
           titleColor={currentPage === 0 ? colors.summerDark : colors.summerBlue}
@@ -41,8 +53,16 @@ export const ExerciseListBtm: React.FC<ExerciseListBtmProps> = ({
           fontSize={26}
           title={">"}
         />
+         <CustomButton
+          titleColor={currentPage === maxPage ? colors.summerDark : colors.summerBlue}
+          onPress={handleGoToLastPage}
+          backgroundColor={colors.summerWhite}
+          size="S"
+          fontSize={26}
+          title={">>"}
+        />
       </View>
-      <View style={{width: "10%", bottom: 5, right: 5, position: "absolute"}}>
+      <View style={{width: "10%", bottom: 2, right: 2, position: "absolute"}}>
         <CustomButton
           title="+"
           fontSize={24}
@@ -58,6 +78,7 @@ export const ExerciseListBtm: React.FC<ExerciseListBtmProps> = ({
 const styles = StyleSheet.create({
   pagination: {
     flexDirection: "row",
+    backgroundColor: colors.summerWhite,
     gap: 3,
     alignItems: "center",
     justifyContent: "center",
