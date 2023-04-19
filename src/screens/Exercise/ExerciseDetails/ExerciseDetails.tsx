@@ -47,8 +47,8 @@ const ExerciseDetails: React.FC<Props> = ({navigation, route}) => {
   if(deleted) return <View style={{justifyContent: 'center', alignContent: 'center'}}><Text style={{textAlign: 'center'}}>Exercise Deleted</Text></View>
 
   return (
-    <Contingent shouldRender={exercise !== null}>
-      <Contingent shouldRender={editExercise}>
+    <Contingent style={{width: '100%', height: '100%'}} shouldRender={exercise !== null}>
+      <Contingent style={{width: '100%', height: '100%'}} shouldRender={editExercise}>
       <AddExercise navigation={navigation} previousExercise={exercise} />
       <ExerciseDetailsContent exercise={exercise!} onEditPress={handleEditPress} duplicates={route.params.duplicates} onClose={onClose}/>
       </Contingent>
