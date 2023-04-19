@@ -14,7 +14,8 @@ export async function findAllDuplicateExercises(exercise: Exercise) {
 export async function addExercise(exercise: Exercise) {
   const { type, sets, reps, date, weight } = exercise;  
   if (exercise.weight === "") exercise.weight = 0;
-  const id = realm.objects("Exercise").length + 1;
+  const maxId = realm.objects("Exercise").max("id");
+  const id = (maxId ? Number(maxId) + 1 : 1);
 
   realm.write(() => {
     realm.create("Exercise", {
