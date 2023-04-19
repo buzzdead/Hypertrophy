@@ -8,7 +8,7 @@ const realm = realmService.getRealm();
 
 export async function findAllDuplicateExercises(exercise: Exercise) {
   const exercises = realm.objects<ExerciseSchema>("Exercise");
-  return exercises.filter(e => e.type.name === exercise.type?.name && e.date.getDay() === exercise.date.getDay() && e.date.getMonth() === exercise.date.getMonth())
+  return exercises.filter(e => (e.type.name === exercise.type?.name && e.date.getFullYear() === exercise.date.getFullYear() && e.date.getMonth() === exercise.date.getMonth() && e.date.getDate() === exercise.date.getDate()))
 }
 
 export async function addExercise(exercise: Exercise) {
