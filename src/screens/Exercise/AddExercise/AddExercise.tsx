@@ -1,4 +1,4 @@
-import React, {useReducer, useState} from "react";
+import React, {useEffect, useReducer} from "react";
 import {SafeAreaView, StyleSheet, View} from "react-native";
 import PickerField from "./Picker/PickerField";
 import {extend} from "lodash";
@@ -38,6 +38,15 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
   const [state, dispatch] = useReducer(exerciseListReducer, newState);
   const {categories} = useCategories();
   const {memoizedExerciseTypes: exerciseTypesFromCategory} = useExerciseTypes({category: state.category});
+
+  useEffect(() => {
+    if(!previousExercise)
+    dispatch({type: "setCategory", payload: categories[0]})
+  }, [categories])
+  useEffect(() => {
+    if(previousExercise && previousExercise.type?.category.id === state.category?.id) return
+    dispatch({type: "setExerciseType", payload: exerciseTypesFromCategory[0]})
+  }, [exerciseTypesFromCategory])
 
   const handleAddExercise = async () => {
     const exercise: Exercise = {
