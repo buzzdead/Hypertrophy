@@ -6,8 +6,13 @@ import RealmService from "./realmService";
 const realmService = RealmService.getInstance();
 const realm = realmService.getRealm();
 
+export async function findAllDuplicateExercises(exercise: Exercise) {
+  const exercises = realm.objects<ExerciseSchema>("Exercise");
+  return exercises.filter(e => e.type.name === exercise.type?.name && e.date.getDay() === exercise.date.getDay() && e.date.getMonth() === exercise.date.getMonth())
+}
+
 export async function addExercise(exercise: Exercise) {
-  const { type, sets, reps, date, weight } = exercise;
+  const { type, sets, reps, date, weight } = exercise;  
   if (exercise.weight === "") exercise.weight = 0;
   const id = realm.objects("Exercise").length + 1;
 
