@@ -83,7 +83,7 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   const {panResponder} = usePanHandler({handlePrevPage, handleNextPage, currentPage, groupedExercises});
 
   if (categoriesLoading || exercisesLoading) return <LoadingIndicator />;
-  console.log("rendering exerciselist")
+  console.log("rendering exerciselisasdft")
   return (
     <SafeAreaView style={styles.container} {...panResponder?.panHandlers}>
       <SideBar categories={categories} onFilterChange={handleFilterChange} currentPage={currentPage} />
