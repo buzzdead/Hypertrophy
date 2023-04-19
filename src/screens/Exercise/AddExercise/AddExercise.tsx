@@ -35,7 +35,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
         exerciseType: previousExercise.type,
       })
     : initialState;
-    
+
   const [state, dispatch] = useReducer(exerciseListReducer, newState);
   const {categories} = useCategories();
   const {memoizedExerciseTypes: exerciseTypesFromCategory} = useExerciseTypes({category: state.category});
@@ -55,7 +55,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
       type: state.exerciseType,
       reps: state.reps,
       weight: Number(state.weight),
-      date: new Date(),
+      date: previousExercise?.date || new Date(),
     };
     if (previousExercise) {
       await saveExercise({...exercise, id: previousExercise.id});

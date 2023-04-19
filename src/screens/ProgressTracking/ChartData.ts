@@ -28,7 +28,7 @@ export const ChartData = ({exercises, categories: category}: Props) => {
   const startTimestamp = Math.min(...chartDates.map(date => date.getTime()));
   const startDate = new Date(startTimestamp).getTime();
   const endTimestamp = new Date().getTime();
-  const numDays = Math.round((endTimestamp - startTimestamp) / (1000 * 3600 * 24));
+  const numDays = Math.round((endTimestamp - startTimestamp) / (1000 * 3600 * 24)) + 1;
 
 const dates = exercises.map(e => e.date)
 dates.sort((a: Date, b: Date): number => {
@@ -36,7 +36,7 @@ dates.sort((a: Date, b: Date): number => {
 });
 const theDate = dates[0]
 
-  const shouldDisplayWeekly = numDays > 21;
+  const shouldDisplayWeekly = numDays > 35;
   const numWeeks = shouldDisplayWeekly ? Math.ceil(numDays / 7) : 0;
 
   const weeklyChartData = Array.from({ length: numWeeks }, (_, i) => {
