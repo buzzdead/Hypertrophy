@@ -1,27 +1,30 @@
-import React from "react";
+import React, {useState} from "react";
 import {SafeAreaView, Text, View, StyleSheet, FlatList} from "react-native";
 import {Duplicate, Exercise} from "../../../../typings/types";
 import CustomButton from "../../../components/CustomButton";
 import {colors} from "../../../utils/util";
 import Contingent from "../../../components/Contingent";
-import { deleteExercise } from "../../../api/realmAPI";
+import {deleteExercise, findAllDuplicateExercises} from "../../../api/realmAPI";
+import DuplicateModal from "./DuplicateModal";
 
 interface ExerciseDetailsContentProps {
   exercise: Exercise;
   onEditPress: () => void;
   duplicates?: Duplicate[];
-  onClose: () => void
+  onClose: () => void;
 }
 
 const ExerciseDetailsContent = ({
   exercise,
   onEditPress,
   duplicates,
-  onClose
+  onClose,
 }: ExerciseDetailsContentProps): React.ReactElement => {
-  const [loading, setLoading] = React.useState(false)
+  const [loading, setLoading] = React.useState(false);
+  const [currentExercise, setCurrentExercise] = useState(exercise);
+  const [duplicateExercises, setDuplicateExercises] = useState<Exercise[]>([]);
   // Check if the exercise was created less than a day ago
-  const lessThanADayAgo = Date.now() - new Date(exercise.date).getTime() < 24 * 60 * 60 * 1000;
+  const lessThanADayAgo = Date.now() - new Date(exercise.date).getTime() < 764 * 60 * 60 * 1000;
 
   const renderDuplicate = (duplicate: Duplicate) => {
     return (
@@ -31,32 +34,70 @@ const ExerciseDetailsContent = ({
     );
   };
 
-  const handleDelete = async () => {
-    setLoading(true)
-    setTimeout(async () => await deleteExercise(exercise).then(() => onClose()), 1000)
-  }
+  const handleDelete = async (duplicateExercise?: Exercise) => {
+    setLoading(true);
+    setTimeout(async () => await deleteExercise(duplicateExercise || exercise).then(() => onClose()), 1000);
+  };
+
+  const handleDelete2 = async () => {
+    if (!duplicates || duplicates?.length === 0) await handleDelete();
+    else {
+      const duplicateExercises = await findAllDuplicateExercises(exercise);
+      setDuplicateExercises(duplicateExercises);
+    }
+  };
+
+  const handlePressDuplicate = (exercise: Exercise) => {
+    setCurrentExercise(exercise);
+    setDuplicateExercises([]);
+    handleDelete(exercise);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.dateContainer}>
-        <Text style={styles.date}>{exercise.date.toLocaleDateString()}</Text>
+        <Text style={styles.date}>{currentExercise.date.toLocaleDateString()}</Text>
       </View>
       <View style={styles.contentWrapper}>
         <View style={styles.titleContainer}>
           <Text style={styles.title}></Text>
-          <Text style={styles.name}>{exercise.type?.name}</Text>
+          <Text style={styles.name}>{currentExercise.type?.name}</Text>
         </View>
         <Text style={styles.setsAndReps}>
-          {exercise.sets} sets of {exercise.reps} reps, with {exercise.weight} kg
+          {currentExercise.sets} sets of {currentExercise.reps} reps, with {currentExercise.weight} kg
         </Text>
         <FlatList
           data={duplicates || []}
           renderItem={({item}) => renderDuplicate(item)}
           keyExtractor={(item, id) => id.toString()}
         />
-        <Contingent style={{gap: 10, marginTop: 10, flexDirection: 'row'}} shouldRender={lessThanADayAgo} disableTernary>
-          <CustomButton size={"M"} onPress={onEditPress} title={"Edit"} backgroundColor={colors.summerDark} titleColor={colors.accent}/>
-          <CustomButton size={"M"} onPress={async () => await handleDelete()} title={"Delete"} loading={loading} backgroundColor={colors.summerDark} titleColor={colors.error}/>
+        <Contingent
+          style={{gap: 10, marginTop: 10, flexDirection: "row"}}
+          shouldRender={lessThanADayAgo}
+          disableTernary>
+          <CustomButton
+            size={"M"}
+            onPress={onEditPress}
+            title={"Edit"}
+            backgroundColor={colors.summerDark}
+            titleColor={colors.accent}
+          />
+          <Contingent shouldRender={duplicateExercises.length > 1}>
+            <DuplicateModal
+              visible={duplicateExercises.length > 1}
+              onClose={() => setDuplicateExercises([])}
+              onPress={exercise => handlePressDuplicate(exercise)}
+              duplicateExercises={duplicateExercises}
+            />
+            <CustomButton
+              size={"M"}
+              onPress={async () => await handleDelete2()}
+              title={"Delete"}
+              loading={loading}
+              backgroundColor={colors.summerDark}
+              titleColor={colors.error}
+            />
+          </Contingent>
         </Contingent>
       </View>
     </SafeAreaView>

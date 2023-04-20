@@ -17,7 +17,7 @@ interface ContingentProps {
  *
  * Default shouldRender: false
  */
-export default function Contingent({ children, shouldRender = false, disableTernary = false, style }: ContingentProps) {
+export default function Contingent({ children, shouldRender = false, disableTernary = false, style}: ContingentProps) {
   const childElements = React.Children.toArray(children);
   const isTernaryRender = childElements.length === 2;
 

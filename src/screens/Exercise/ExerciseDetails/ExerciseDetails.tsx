@@ -69,7 +69,7 @@ const ExerciseDetails: React.FC<Props> = ({navigation, route}) => {
         <Contingent style={{width: "100%", height: "100%"}} shouldRender={duplicateExercises.length > 1}>
           <DuplicateModal
             duplicateExercises={duplicateExercises}
-            onClose={() => setDuplicateExercises([])}
+            onClose={() => setEditExercise(false)}
             visible={duplicateExercises.length > 1}
             onPress={(exercise: Exercise) => handlePressDuplicate(exercise)}
           />
