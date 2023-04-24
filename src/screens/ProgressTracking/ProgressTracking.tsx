@@ -1,7 +1,7 @@
 // screens/ProgressTracking.tsx
-import React from "react";
+import React, { useState } from "react";
 import {SafeAreaView, View, ScrollView, RefreshControl, Dimensions, Text, StyleSheet} from "react-native";
-import {LineChart, YAxis, XAxis} from "react-native-svg-charts";
+import {LineChart, YAxis, XAxis, BarChart} from "react-native-svg-charts";
 import * as shape from "d3-shape";
 import {useExercises} from "../../hooks/useExercises";
 import {ChartData} from "./ChartData";
@@ -9,16 +9,20 @@ import {colors} from "../../utils/util";
 import {useCategories} from "../../hooks/useCategories";
 import {SideBar} from "../../components/SideBar";
 import {CategorySchema} from "../../config/realmConfig";
+import CustomButton from "../../components/CustomButton";
+import { useScreenOrientation } from "../../hooks/useScreenOrientation";
 
 const ProgressTracking = () => {
   const {exercises, refresh} = useExercises();
   const {categories} = useCategories();
+  const screenOrientation = useScreenOrientation()
 
   const [refreshing, setRefreshing] = React.useState(false);
   const [chartData, setChartData] = React.useState<number[]>([]);
   const [maxExercises, setMaxExercises] = React.useState(0);
   const [startDate, setStartDate] = React.useState<Date>();
   const [chartWidth, setChartWidth] = React.useState(Dimensions.get("window").width * 0.9)
+  const [mode, setMode] = useState<'Weekly' | 'Daily'>('Daily')
   const [filteredCategories, setFilteredCategories] = React.useState<CategorySchema[]>([]);
 
   const _onRefresh = () => {
@@ -28,11 +32,11 @@ const ProgressTracking = () => {
   };
 
   React.useLayoutEffect(() => {
-    const {chartData, maxExercises, theDate} = ChartData({exercises, categories: filteredCategories});
+    const {chartData, maxExercises, theDate} = ChartData({exercises, categories: filteredCategories, mode});
     setChartData(chartData);
     setMaxExercises(maxExercises);
     setStartDate(theDate);
-  }, [exercises, filteredCategories]);
+  }, [exercises, filteredCategories, mode]);
 
   const dataPointWidth = chartWidth / (chartData?.length || 1);
 
@@ -45,12 +49,9 @@ const ProgressTracking = () => {
   };
 
   return (
-    <SafeAreaView style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
-      <Text style={styles.header}>
-        This is the graph of exercises spread out from the day you started exercising till today
-      </Text>
+    <SafeAreaView style={{flex: 1, justifyContent: "center", alignItems: screenOrientation.isLandscape ? 'flex-start' : "center"}}>
       <ScrollView
-        style={{paddingTop: 80}}
+        style={{paddingTop: screenOrientation.isLandscape ? 0 : 160}}
         contentContainerStyle={{flexGrow: 1}}
         refreshControl={
           <RefreshControl
@@ -65,6 +66,7 @@ const ProgressTracking = () => {
         <View style={styles.yAxis}>
           <YAxis
             data={chartData}
+            style={{marginRight: 10}}
             contentInset={{top: 20, bottom: 40}}
             svg={{
               fill: "grey",
@@ -72,26 +74,33 @@ const ProgressTracking = () => {
             }}
             numberOfTicks={maxExercises}
           />
-
-          <LineChart
-            style={{flex: 1, marginLeft: 8}}
+          <BarChart
+            style={{flex: 1}}
             data={chartData}
-            svg={{stroke: colors.primary}}
-            contentInset={{top: 20, bottom: 40}}
-            curve={shape.curveCatmullRom}></LineChart>
+            contentInset={{top: 20, bottom: 20}}
+            svg={{ fill: colors.summerBlue }} // Set the fill color for the bars
+        spacingInner={0.1}
+        spacingOuter={0.2}
+        gridMin={0}
+            curve={shape.curveBasis}></BarChart>
         </View>
         <XAxis
-          style={styles.xAxis}
+          style={{...styles.xAxis, width: screenOrientation.isLandscape ? 650 : 330, left: 5}}
           data={chartData}
-          contentInset={{left: dataPointWidth / 2, right: dataPointWidth / 2}}
+          
+          contentInset={{left: dataPointWidth / 2 + 10, right: dataPointWidth / 2}}
           svg={{fontSize: 10, fill: "grey"}}
         />
         <View style={{flexDirection: "row", gap: 100}}>
-          <Text style={{fontSize: 10, marginTop: 10, paddingLeft: 35}}>{startDate?.toLocaleDateString()}</Text>
-          <Text style={{...styles.legend, marginTop: 10, textAlign: "center"}}>Days</Text>
-          <Text style={{fontSize: 10, marginTop: 10, paddingLeft: 35}}>{new Date().toLocaleDateString()}</Text>
+          <Text style={{...styles.legend, fontSize: 10, marginTop: 10, paddingLeft: 35}}>{startDate?.toLocaleDateString()}</Text>
+          <Text style={{...styles.legend, marginTop: 10, textAlign: "center"}}>{mode}</Text>
+          <Text style={{...styles.legend, fontSize: 10, marginTop: 10, paddingLeft: 35}}>{new Date().toLocaleDateString()}</Text>
         </View>
       </ScrollView>
+      <View style={[styles.buttons, screenOrientation.isLandscape ? styles.buttonsLandScape : styles.buttonsNormal]}>
+      <CustomButton size={screenOrientation.isLandscape ? 'S' : 'M'} title={screenOrientation.isLandscape ? 'W' : 'Weekly'} backgroundColor={colors.summerDark} titleColor={mode === 'Weekly' ? colors.summerBlue : colors.summerWhite} onPress={() => setMode('Weekly')} disabled={mode === 'Weekly'}/>
+      <CustomButton size={screenOrientation.isLandscape ? 'S' : 'M'} title={screenOrientation.isLandscape ? 'D' : 'Daily'} backgroundColor={colors.summerDark} titleColor={mode === 'Daily' ? colors.summerBlue : colors.summerWhite} onPress={() => setMode('Daily')} disabled={mode === 'Daily'}/>
+      </View>
       <SideBar categories={categories} onFilterChange={handleFilterChange} icon={"chart-bar"} />
     </SafeAreaView>
   );
@@ -114,12 +123,27 @@ const styles = StyleSheet.create({
     padding: 20,
     flex: 2,
     maxHeight: 300,
+    marginLeft: 10
   },
   xAxis: {
     marginTop: -25,
     marginLeft: 30,
     width: 350,
   },
+  buttons: {
+    position: 'absolute',
+    gap: 10,
+  },
+  buttonsLandScape: {
+    right: 5,
+    bottom: 5,
+    flexDirection: 'column'
+  },
+  buttonsNormal: {
+    bottom: 10,
+    alignSelf: "center",
+    flexDirection: 'row'
+  }
 });
 
 export default ProgressTracking;
