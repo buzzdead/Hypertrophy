@@ -1,5 +1,5 @@
 import React, {useEffect, useReducer} from "react";
-import {SafeAreaView, StyleSheet, View} from "react-native";
+import {SafeAreaView, ScrollView, StyleSheet, View} from "react-native";
 import PickerField from "./Picker/PickerField";
 import {extend} from "lodash";
 import {Exercise} from "../../../../typings/types";
@@ -71,6 +71,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <ScrollView>
       <View style={{flexDirection: "row", gap: 40}}>
         <View style={{flex: 6}}>
           <PickerField
@@ -136,6 +137,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
           />
         </View>
       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };

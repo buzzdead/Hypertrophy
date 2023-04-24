@@ -62,7 +62,7 @@ export const ExerciseListBtm: React.FC<ExerciseListBtmProps> = ({
           title={">>"}
         />
       </View>
-      <View style={{width: "10%", bottom: 2, right: 2, position: "absolute"}}>
+      <View style={{bottom: 2, right: 2, position: "absolute"}}>
         <CustomButton
           title="+"
           fontSize={24}

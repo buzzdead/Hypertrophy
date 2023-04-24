@@ -33,7 +33,7 @@ const ExerciseItem: React.FC<ExerciseItemProps> = ({item, navigation}) => {
       <View style={styles.subContainer}>
       <View style={{gap: 10}}>
         <View style={styles.topContainer}>
-          <Text style={{...styles.itemText, fontSize: 16, color: colors.summerDark}}>{item.exercise.type?.name}</Text>
+          <Text style={{...styles.itemText, fontSize: 15, color: colors.test5}}>{item.exercise.type?.name}</Text>
           <Text style={{fontStyle: "italic", color: colors.test6}}>{item.exercise.date.toLocaleDateString()}</Text>
         </View>
         <Text style={[styles.itemText, {color: colors.summerDarkest, fontFamily: 'Roboto-Regular'}]}>
