@@ -55,6 +55,7 @@ package-lock.json
 
 # Bundle artifact
 *.jsbundle
+index.android.bundle
 
 # Ruby / CocoaPods
 /ios/Pods/
