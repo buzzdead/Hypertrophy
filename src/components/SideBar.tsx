@@ -102,7 +102,7 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, ico
             {
               backgroundColor: selectedCategoryAnimations[index]?.interpolate({
                 inputRange: [0, 1],
-                outputRange: ["transparent", colors.sidebarColor],
+                outputRange: ["transparent", colors.new],
               }),
             },
           ]}>
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     padding: 11.4,
     fontFamily: "Roboto-Bold",
-    color: colors.summerDark,
+    color: colors.summerDarkest,
     textAlign: "center",
   },
   sidebarEdgeIndicator: {

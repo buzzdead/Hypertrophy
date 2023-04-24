@@ -1,6 +1,6 @@
 import {DefaultTheme} from 'react-native-paper'
 import { Exercise, ExerciseWithDuplicates, IGroup } from '../../typings/types';
-import { ExerciseSchema } from '../config/realmConfig';
+import { CategorySchema, ExerciseSchema } from '../config/realmConfig';
 
 const MyTheme = {
     ...DefaultTheme,
@@ -35,6 +35,22 @@ export const getWeekNumber = (date: Date) => {
   const pastDaysOfYear = (date.valueOf() - firstDayOfYear.valueOf()) / 86400000;
   return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
 };
+
+export const getExercisesByDate = (exercises: Exercise[], categories: CategorySchema[]) => {
+  return exercises.reduce((accumulator: { date: string; exercises: Exercise[] }[], exercise) => {
+    if (categories.length !== 0 && !categories.some(c => c.id === exercise.type?.category?.id)) {
+      return accumulator;
+    }
+    const exerciseDate = exercise.date.toDateString();
+    const existingEntryIndex = accumulator.findIndex(entry => entry.date === exerciseDate);
+    if (existingEntryIndex !== -1) {
+      accumulator[existingEntryIndex].exercises.push(exercise);
+    } else {
+      accumulator.push({ date: exerciseDate, exercises: [exercise] });
+    }
+    return accumulator;
+  }, []);
+}
 
 export const groupExercisesByWeek = (sortedExercises: ExerciseSchema[]) => {
   const groups: IGroup[] = [];
