@@ -102,7 +102,7 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, ico
             {
               backgroundColor: selectedCategoryAnimations[index]?.interpolate({
                 inputRange: [0, 1],
-                outputRange: ["transparent", colors.new],
+                outputRange: ["transparent", colors.test1],
               }),
             },
           ]}>

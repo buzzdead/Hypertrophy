@@ -8,9 +8,9 @@ interface Props {
     mode?: 'Daily' | 'Weekly'
 }
 
-export const ChartData = ({exercises, categories: category, mode='Daily'}: Props) => {
+export const ChartData = ({exercises, categories, mode='Daily'}: Props) => {
 
-  const exercisesByDate = getExercisesByDate(exercises, category);
+  const exercisesByDate = getExercisesByDate(exercises, categories);
 
   const chartDates = exercises.map(entry => new Date(entry.date));
   const startTimestamp = Math.min(...chartDates.map(date => date.getTime()));
@@ -27,7 +27,8 @@ const theDate = dates[0]
 
 
   const shouldDisplayWeekly = mode === 'Weekly';
-  const weeklyGroupedExercises: IGroup[] = groupExercisesByWeek(exercises)
+  const currentExercises = exercises.filter(exercise => categories.some(cat => cat.id === exercise.type.category.id))
+  const weeklyGroupedExercises: IGroup[] = groupExercisesByWeek(currentExercises)
 
   const weeklyChartData = weeklyGroupedExercises.map(group =>
     group.exercises.reduce((acc, exercise) => acc + exercise.duplicates.length + 1, 0)
