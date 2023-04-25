@@ -40,7 +40,6 @@ class RealmService {
     { name: "Dips", category: createdCategories[0]},
 
     // Back
-    { name: "Deadlift", category: createdCategories[1]},
     { name: "Bent-Over Row", category: createdCategories[1]},
     { name: "Pull-Up", category: createdCategories[1]},
     { name: "Chin-Up", category: createdCategories[1]},
@@ -89,7 +88,6 @@ class RealmService {
 { name: "Lunges", category: createdCategories[6]},
 { name: "Step-Up", category: createdCategories[6]},
 { name: "Kickbacks", category: createdCategories[6]},
-{ name: "Deadlift", category: createdCategories[6]},
 
 // Calves
 { name: "Standing Calf Raise", category: createdCategories[7]},
@@ -159,6 +157,36 @@ class RealmService {
 
       { type: createdExerciseTypes[8], sets: 3, reps: 10, weight: 17.5, date: new Date("2023-04-04") },
       { type: createdExerciseTypes[6], sets: 3, reps: 7, weight: 15, date: new Date("2023-04-04") },
+      { type: createdExerciseTypes[10], sets: 3, reps: 10, weight: 40, date: new Date("2023-04-04")},
+      { type: createdExerciseTypes[6], sets: 3, reps: 10, weight: 12.5, date: new Date("2023-04-04")},
+      { type: createdExerciseTypes[11], sets: 3, reps: 10, weight: 50, date: new Date("2023-04-04")},
+      { type: createdExerciseTypes[0], sets: 3, reps: 10, weight: 14, date: new Date("2023-04-04")},
+      { type: createdExerciseTypes[12], sets: 3, reps: 10, weight: 40, date: new Date("2023-04-05") },
+      { type: createdExerciseTypes[18], sets: 3, reps: 10, weight: 46, date: new Date("2023-04-05") },
+      { type: createdExerciseTypes[2], sets: 3, reps: 10, weight: 15, date: new Date("2023-04-05") },
+      { type: createdExerciseTypes[7], sets: 3, reps: 8, weight: 14, date: new Date("2023-04-05") },
+      { type: createdExerciseTypes[13], sets: 3, reps: 7, weight: 60, date: new Date("2023-04-05") },
+      { type: createdExerciseTypes[10], sets: 2, reps: 8, weight: 45, date: new Date("2023-04-05") },
+      { type: createdExerciseTypes[18], sets: 3, reps: 10, weight: 46, date: new Date("2023-04-07") },
+      { type: createdExerciseTypes[6], sets: 3, reps: 10, weight: 12.5, date: new Date("2023-04-07") },
+      { type: createdExerciseTypes[0], sets: 3, reps: 10, weight: 17.5, date: new Date("2023-04-07") },
+      { type: createdExerciseTypes[1], sets: 3, reps: 10, weight: 20, date: new Date("2023-04-07") },
+      { type: createdExerciseTypes[6], sets: 2, reps: 6, weight: 17.5, date: new Date("2023-04-07") },
+      { type: createdExerciseTypes[14], sets: 3, reps: 10, weight: 46, date: new Date("2023-04-07") },
+      { type: createdExerciseTypes[9], sets: 3, reps: 8, weight: 50, date: new Date("2023-04-07") },
+      { type: createdExerciseTypes[16], sets: 2, reps: 12, weight: 130, date: new Date("2023-04-09") },
+      { type: createdExerciseTypes[6], sets: 2, reps: 15, weight: 0, date: new Date("2023-04-09") },
+      { type: createdExerciseTypes[7], sets: 3, reps: 10, weight: 40, date: new Date("2023-04-10") },
+      { type: createdExerciseTypes[8], sets: 3, reps: 12, weight: 25, date: new Date("2023-04-12") },
+      { type: createdExerciseTypes[9], sets: 4, reps: 8, weight: 60, date: new Date("2023-04-14") },
+      { type: createdExerciseTypes[10], sets: 3, reps: 12, weight: 30, date: new Date("2023-04-16") },
+      { type: createdExerciseTypes[11], sets: 5, reps: 5, weight: 80, date: new Date("2023-04-18") },
+      { type: createdExerciseTypes[12], sets: 4, reps: 6, weight: 70, date: new Date("2023-04-20") },
+      { type: createdExerciseTypes[13], sets: 3, reps: 12, weight: 10, date: new Date("2023-04-22") },
+      { type: createdExerciseTypes[14], sets: 2, reps: 15, weight: 0, date: new Date("2023-04-23") },
+      { type: createdExerciseTypes[15], sets: 3, reps: 10, weight: 35, date: new Date("2023-04-24") },
+      { type: createdExerciseTypes[16], sets: 2, reps: 12, weight: 130, date: new Date("2023-04-09") }
+      
     ];
     
     for (const exercise of exercisesData) {
