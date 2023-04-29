@@ -35,8 +35,7 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   };
 
   useEffect(() => {
-    const sortedExercises = [...exercises].sort((a, b) => a.date.getTime() - b.date.getTime());
-    const groups = groupExercisesByWeek(sortedExercises);
+    const groups = groupExercisesByWeek(exercises);
     setGroupedExercises(groups)
   }, [exercises]);
 

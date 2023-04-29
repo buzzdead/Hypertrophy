@@ -81,21 +81,21 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
             onChange={value => dispatch({type: "setCategory", payload: value})}
           />
         </View>
-        <View style={{flex: 1, justifyContent: "flex-end", paddingBottom: 9}}>
+        <View style={{flex: 1, justifyContent: "flex-end", paddingBottom: 11}}>
           <AddObject isCategory />
         </View>
       </View>
       <View style={{flexDirection: "row", gap: 40}}>
         <View style={{flex: 6}}>
           <PickerField
-            name={"Category"}
+            name={"Exercise Type"}
             picker={220}
             item={state.exerciseType}
             items={exerciseTypesFromCategory}
             onChange={value => dispatch({type: "setExerciseType", payload: value})}
           />
         </View>
-        <View style={{flex: 1, justifyContent: "flex-end", paddingBottom: 9}}>
+        <View style={{flex: 1, justifyContent: "flex-end", paddingBottom: 11}}>
           <AddObject isCategory={false} />
         </View>
       </View>
@@ -146,6 +146,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     margin: 16,
+    paddingTop: 20,
   },
   inputContainer: {
     marginBottom: 16,

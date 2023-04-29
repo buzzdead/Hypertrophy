@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, StyleSheet } from "react-native";
+import { View, Text, TextInput, StyleSheet, Image } from "react-native";
 import { colors } from "../../../utils/util";
 
 interface Props {
@@ -18,7 +18,8 @@ const Weight: React.FC<Props> = ({title, value, onChange}) => {
     };
     return (
       <View style={styles.inputContainer}>
-        <Text style={styles.touchFieldLabel}>{title}</Text>
+       
+        
         <View style={[styles.weightInputContainer, !isWeightValid && styles.invalidWeightInputContainer]}>
           <TextInput
             style={[styles.input, !isWeightValid && styles.invalidInput]}
@@ -26,7 +27,9 @@ const Weight: React.FC<Props> = ({title, value, onChange}) => {
             onChangeText={handleWeightChange}
           />
           <Text style={{textAlign: "center", alignSelf: "center", fontSize: 24}}>Kg</Text>
+           
         </View>
+        <Image source={require('../../../../assets/images/weights.png')} style={{width: '20%', height: '100%', position: 'absolute', top: -60}}/>
         {!isWeightValid && <Text style={styles.errorText}>Weight must be a number</Text>}
       </View>
     );
@@ -35,8 +38,10 @@ const Weight: React.FC<Props> = ({title, value, onChange}) => {
   const styles = StyleSheet.create({
     inputContainer: {
       marginBottom: 16,
-      flexDirection: "column",
+      marginTop: 60,
+      flexDirection: "row",
       alignItems: "center",
+      justifyContent: 'center',
       marginRight: 10,
     },
     touchFieldLabel: {

@@ -188,7 +188,6 @@ class RealmService {
       { type: createdExerciseTypes[16], sets: 2, reps: 12, weight: 130, date: new Date("2023-04-09") }
       
     ];
-    
     for (const exercise of exercisesData) {
       const exerciseType = exercise.type;
       this.realm.create<ExerciseSchema>("Exercise", {
@@ -200,6 +199,7 @@ class RealmService {
         date: exercise.date,
       });
     }
+  
   })}}
     
     

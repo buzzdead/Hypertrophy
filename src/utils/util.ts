@@ -80,3 +80,31 @@ export const groupExercisesByWeek = (sortedExercises: ExerciseSchema[]) => {
 
     return groups;
 }
+
+export type Month = {numerical: number, name: string};
+
+const months: Month[] = [
+  {numerical: 0, name: "January"},
+  {numerical: 1, name: "February"},
+  {numerical: 2, name: "March"},
+  {numerical: 3, name: "April"},
+  {numerical: 4, name: "May"},
+  {numerical: 5, name: "June"},
+  {numerical: 6, name: "July"},
+  {numerical: 7, name: "August"},
+  {numerical: 8, name: "September"},
+  {numerical: 9, name: "October"},
+  {numerical: 10, name: "November"},
+  {numerical: 11, name: "December"}
+];
+
+export const getAvailableMonths = (exercises: ExerciseSchema[]): Month[] => {
+  const availableMonths: Month[] = []
+  exercises.forEach(e => {
+    if(!availableMonths.find(m => m.numerical === e.date.getMonth())){
+      const month = months.find(m => m.numerical === e.date.getMonth())
+      month && availableMonths.push(month)
+    }
+  })
+  return availableMonths
+}

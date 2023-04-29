@@ -1,49 +1,49 @@
-import { Exercise, IGroup } from "../../../typings/types";
 import { CategorySchema, ExerciseSchema } from "../../config/realmConfig";
-import { getExercisesByDate, groupExercisesByWeek } from "../../utils/util";
 
 interface Props {
     exercises: ExerciseSchema[]
     categories: CategorySchema[]
     mode?: 'Daily' | 'Weekly'
+    month: number
+    year: string
+    lastHalf?: boolean
 }
 
-export const ChartData = ({exercises, categories, mode='Daily'}: Props) => {
+export const ChartData = ({exercises, categories, month, year, lastHalf = false, mode='Daily'}: Props) => {
+  const startDate = new Date(parseInt(year), month, 1);
 
-  const exercisesByDate = getExercisesByDate(exercises, categories);
+const endDate = new Date(parseInt(year), month + 1, 0);
 
-  const chartDates = exercises.map(entry => new Date(entry.date));
-  const startTimestamp = Math.min(...chartDates.map(date => date.getTime()));
-  const startDate = new Date(startTimestamp).getTime();
-  const endTimestamp = new Date().getTime();
-  const numDays = 20 || Math.round((endTimestamp - startTimestamp) / (1000 * 3600 * 24)) + 1;
+console.log("Start:", startDate.getDate() + '/' + (startDate.getMonth() + 1) + '/' + startDate.getFullYear(), "End:", endDate.toLocaleDateString());
 
-const dates = exercises.map(e => e.date)
-dates.sort((a: Date, b: Date): number => {
-  return new Date(a).getTime() - new Date(b).getTime();
-});
+  const daysInMonth = endDate.getDate(); // Number of days in the given month
+  const halfMonth = Math.floor(daysInMonth / 2); // Half of the month, rounded up
 
-const theDate = dates[0]
+  let updatedLastHalf: Optional<boolean> = lastHalf
+
+  const currentExercises = exercises.filter(e => e.date.getMonth() === month && e.date.getFullYear() === parseInt(year))
 
 
-  const shouldDisplayWeekly = mode === 'Weekly';
-  const currentExercises = exercises.filter(exercise => categories.some(cat => cat.id === exercise.type.category.id))
-  const weeklyGroupedExercises: IGroup[] = groupExercisesByWeek(currentExercises)
+  const categorised = categories.length === 0 ? currentExercises : currentExercises.filter(e => categories.some(cat => cat.id === e.type.category.id))
 
-  const weeklyChartData = weeklyGroupedExercises.map(group =>
-    group.exercises.reduce((acc, exercise) => acc + exercise.duplicates.length + 1, 0)
-  );
-  console.log(weeklyChartData)
-
-  const chartData = shouldDisplayWeekly ? weeklyChartData : Array.from({ length: numDays }, (_, i) => {
-    const date = new Date(startDate + i * 24 * 3600 * 1000);
-    const dateString = date.toDateString();
-    const index = exercisesByDate.findIndex(entry => entry.date === dateString);
-    const numExercises = index !== -1 ? exercisesByDate[index].exercises.length : 0;
-    return numExercises;
+  const odd = daysInMonth % 2 === 1 && lastHalf ? 2 : 1
+  const tickValues: number[] = []
+  let chartData = Array(halfMonth + odd).fill(0).map((_, index) => {
+    let fixedIndex = lastHalf ? index + halfMonth : index
+    const filteredExercises = categorised.filter(e => e.date.getDate() === fixedIndex);
+    tickValues.push(fixedIndex)
+    return filteredExercises.length || 0;
   });
+  if(Math.max(...chartData) === 0) {
+    updatedLastHalf = !lastHalf
+    chartData = Array(halfMonth + odd).fill(0).map((_, index) => {
+      let fixedIndex = updatedLastHalf ? index + halfMonth : index
+      const filteredExercises = categorised.filter(e => e.date.getDate() === fixedIndex);
+      tickValues.push(fixedIndex)
+      return filteredExercises.length || 0;
+    });
+  }
 
-  const maxExercises = exercisesByDate.reduce((max, entry) => Math.max(max, entry.exercises.length), 0);
-
-  return {chartData, maxExercises, exercisesByDate, theDate}
+  return { chartData, maxExercises: Math.max(...chartData), tickValues: tickValues, updatedLastHalf };
+ 
 }
