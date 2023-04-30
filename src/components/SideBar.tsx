@@ -12,10 +12,9 @@ interface SideBarProps {
   categories: CategorySchema[];
   onFilterChange: (selectedCategories: CategorySchema[]) => void;
   icon?: string;
-  currentPage?: number
 }
 
-export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, icon, currentPage}) => {
+export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, icon}) => {
   const [selectedCategoryAnimations, setSelectedCategoryAnimations] = useState(
     categories.map(() => new Animated.Value(0)),
   );
@@ -38,9 +37,6 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, ico
       useNativeDriver: false,
     }).start();
   };
-  useEffect(() => {
-    onFilterChange(selectedCategories)
-  }, [currentPage])
   useEffect(() => {
     if(selectedCategories.length > 0) return
     setSelectedCategoryAnimations(categories.map(() => new Animated.Value(0)));

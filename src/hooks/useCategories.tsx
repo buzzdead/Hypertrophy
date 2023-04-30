@@ -25,6 +25,7 @@ export function useCategories() {
     useCallback(() => {
       setLoading(true)
       loadCategories();
+      return () => {};
     }, [])
   );
 

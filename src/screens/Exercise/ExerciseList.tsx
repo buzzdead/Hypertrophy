@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {SafeAreaView, StyleSheet} from "react-native";
 import {StackScreenProps} from "@react-navigation/stack";
 import {Exercise, ExerciseWithDuplicates, IGroup} from "../../../typings/types";
@@ -21,13 +21,19 @@ type ExeciseListProps = StackScreenProps<
   "List"
 >;
 
+interface State {
+  filteredExercises: ExerciseWithDuplicates[]
+  currentPage: number
+  seleectedCategories: CategorySchema[]
+}
+
 const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   const {categories, refresh: categoriesRefresh, loading: categoriesLoading} = useCategories();
   const {exercises, refresh: exercisesRefresh, loading: exercisesLoading} = useExercises();
   const [groupedExercises, setGroupedExercises] = useState<IGroup[]>([])
-
-  const [filterExercises, setFilteredExercises] = useState<ExerciseWithDuplicates[]>([]);
-  const [currentPage, setCurrentPage] = useState<number>(0);
+  const [loading, setLoading] = useState(true)
+  const [state, setState] = useState<State>({filteredExercises: [], currentPage: 0, seleectedCategories: []})
+  const currentPageRef = useRef(state.currentPage)
 
   const _onRefresh = () => {
     categoriesRefresh();
@@ -35,6 +41,8 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   };
 
   useEffect(() => {
+    if(exercisesLoading) return
+    console.log("groups")
     const groups = groupExercisesByWeek(exercises);
     setGroupedExercises(groups)
   }, [exercises]);
@@ -43,58 +51,79 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
     _onRefresh()
   }, [])
 
-  const handleNextPage = () => {
-    if (currentPage < groupedExercises.length - 1) {
-      setCurrentPage(currentPage + 1);
+  const handleNextPage = (currentPage?: number) => {
+    const newCurrent = typeof currentPage === 'number' ? currentPage : state.currentPage
+    if (newCurrent < groupedExercises.length - 1) {
+      const filtered = updateFilteredExercises(newCurrent + 1)
+      setState({...state, filteredExercises: filtered, currentPage: newCurrent + 1})
     }
   };
 
-  const handlePrevPage = () => {
-    if (currentPage > 0) {
-      setCurrentPage(currentPage - 1);
+  const handlePrevPage = (currentPage?: number) => {
+    const newCurrent = typeof currentPage === 'number' ? currentPage : state.currentPage
+    if (newCurrent > 0) {
+      const filtered = updateFilteredExercises(newCurrent - 1)
+      setState({...state, filteredExercises: filtered, currentPage: newCurrent - 1})
     }
   };
 
   const handleGoToLastPage = () => {
-    setCurrentPage(groupedExercises.length - 1)
+    const filtered = updateFilteredExercises(groupedExercises.length - 1)
+    setState({...state, filteredExercises: filtered, currentPage: groupedExercises.length - 1})
   }
 
   const handleGoToFirstPage = () => {
-    setCurrentPage(0)
+    const filtered = updateFilteredExercises(0)
+    setState({...state, filteredExercises: filtered, currentPage: 0})
   }
 
-  const handleFilterChange = useCallback(
-    (selectedCategories: Optional<CategorySchema>[]) => {
-      const filtered =
-        selectedCategories.length === 0
-          ? groupedExercises[currentPage]?.exercises
-          : groupedExercises[currentPage]?.exercises?.filter(exercise =>
-              selectedCategories?.some(
-                selectedCategory => selectedCategory?.id === exercise.exercise.type?.category?.id,
-              ),
-            );
+  const updateFilteredExercises = (cPage: number, currentSelectedCategories?: CategorySchema[]) => {
+    const newCategories = currentSelectedCategories ? currentSelectedCategories : state.seleectedCategories
+    const filtered =
+    newCategories.length === 0
+      ? groupedExercises[cPage]?.exercises
+      : groupedExercises[cPage]?.exercises?.filter(exercise =>
+          newCategories?.some(
+            selectedCategory => selectedCategory?.id === exercise.exercise.type?.category?.id,
+          ),
+        );
 
-      setFilteredExercises(filtered);
-    },
-    [groupedExercises, currentPage],
-  );
+  return filtered
+  }
 
-  const {panResponder} = usePanHandler({handlePrevPage, handleNextPage, currentPage, groupedExercises});
+  useEffect(() => {
+    if(groupedExercises.length === 0) return
+    console.log("updatefilterdexercises")
+    loading && setLoading(false)
+    setState({...state, filteredExercises: updateFilteredExercises(state.currentPage)})
+  }, [groupedExercises])
 
-  if (categoriesLoading || exercisesLoading) return <LoadingIndicator />;
+  // Nake selectedCategories a state... Then when flipping pages just filter directly instead of useEffect in sidebar!
+  const handleFilterChange = (selected: CategorySchema[]) => {
+    const filtered = updateFilteredExercises(state.currentPage, selected)
+    setState({...state, seleectedCategories: selected, filteredExercises: filtered})
+  }
+
+  useEffect(() => {
+    currentPageRef.current = state.currentPage
+  }, [state.currentPage])
+
+  const {panResponder} = usePanHandler({handlePrevPage, handleNextPage, categories: state.seleectedCategories, currentPageRef, groupedExercises: groupedExercises});
+
+  if (categoriesLoading || exercisesLoading || loading) return <LoadingIndicator />;
   console.log("rendering exerciselisasdft")
   return (
     <SafeAreaView style={styles.container} {...panResponder?.panHandlers}>
-      <SideBar categories={categories} onFilterChange={handleFilterChange} currentPage={currentPage} />
+      <SideBar categories={categories} onFilterChange={handleFilterChange} />
       <WeeklyExercises
         navigation={navigation}
         onRefresh={_onRefresh}
         refreshing={exercisesLoading || categoriesLoading}
-        groupedExercises={filterExercises}
+        groupedExercises={state.filteredExercises}
       />
       <ExerciseListBtm
-        currentWeek={groupedExercises[currentPage]?.weekNumber}
-        currentPage={currentPage}
+        currentWeek={groupedExercises[state.currentPage]?.weekNumber}
+        currentPage={state.currentPage}
         maxPage={groupedExercises.length - 1}
         handleNextPage={handleNextPage}
         handlePrevPage={handlePrevPage}
