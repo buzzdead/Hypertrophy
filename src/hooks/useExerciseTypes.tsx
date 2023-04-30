@@ -15,7 +15,7 @@ export function useExerciseTypes({category, showAll}: Props) {
   const loadCategories = async () => {
     if(showAll) {const types = await fetchExerciseTypes(); setExerciseTypes(types); return;}
     if (category === null) return;
-    const exerciseTypes = await fetchExerciseTypesByCategory(category?.name);
+    const exerciseTypes = await fetchExerciseTypesByCategory(category?.id);
     setExerciseTypes(exerciseTypes);
   };
 

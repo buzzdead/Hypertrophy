@@ -9,6 +9,7 @@ import {colors} from "../../utils/util";
 import NewObjectModal from "../Exercise/AddExercise/Modal/NewObjectModal";
 import {handleDelete, handleEdit} from "./Settings";
 
+// Add pagination
 export function ExerciseTypes() {
   const {memoizedExerciseTypes, refresh} = useExerciseTypes({category: null, showAll: true});
   const validExerciseTypes = memoizedExerciseTypes.filter(e => e.isValid());

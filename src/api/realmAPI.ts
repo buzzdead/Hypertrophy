@@ -1,5 +1,5 @@
 // realmAPI.ts
-import { CategorySchema, ExerciseSchema, ExerciseTypeSchema } from "../config/realmConfig";
+import { CategorySchema, ExerciseSchema, ExerciseTypeSchema, MonthSchema } from "../config/realmConfig";
 import { Exercise } from "../../typings/types";
 import RealmService from "./realmService";
 
@@ -12,12 +12,18 @@ export async function findAllDuplicateExercises(exercise: Exercise) {
 }
 
 export async function addExercise(exercise: Exercise) {
-  const { type, sets, reps, date, weight } = exercise;  
+  const { type, sets, reps, date, weight } = exercise; 
   if (exercise.weight === "") exercise.weight = 0;
   const maxId = realm.objects("Exercise").max("id");
+  const months = Array.from(realm.objects("Month")) as MonthSchema[]
+  const eMonth = exercise.date.getMonth()
+  const eYear = exercise.date.getFullYear().toString()
+  const month: Optional<MonthSchema> = months.find(m => m.year === eYear && m.month === eMonth);
+
   const id = (maxId ? Number(maxId) + 1 : 1);
 
   realm.write(() => {
+    if(month !== undefined) month.exerciseCount += 1
     realm.create("Exercise", {
       id,
       type,
@@ -57,8 +63,8 @@ export async function addCategory(category: string) {
 }
 
 export async function deleteCategory(category: CategorySchema) {
-  const exerciseTypes = realm.objects<ExerciseTypeSchema>("ExerciseType").filter(et => et.category.id === category.id);
-  const exercises = realm.objects<ExerciseSchema>("Exercise").filter(e => exerciseTypes.some(et => et.id === e.type.id))
+  const exerciseTypes = realm.objects<ExerciseTypeSchema>("ExerciseType").filtered('category.id = $0', category.id);
+  const exercises = realm.objects<ExerciseSchema>("Exercise").filtered('type.id IN $0', exerciseTypes.map(et => et.id));
   
   realm.write(() => {
     realm.delete(exercises)
@@ -66,6 +72,7 @@ export async function deleteCategory(category: CategorySchema) {
     realm.delete(category)
   })
 }
+
 
 export async function editCategory(categoryId: number, categoryName: string) {
   const categoryToEdit = realm.objects<CategorySchema>("Category").find(c => c.id === categoryId)
@@ -79,8 +86,8 @@ export async function editCategory(categoryId: number, categoryName: string) {
 }
 
 export async function deleteExerciseType(exerciseType: ExerciseTypeSchema) {
-  const exerciseTypes = realm.objects<ExerciseTypeSchema>("ExerciseType").find(e => e.id === exerciseType.id)
-  const exercises = realm.objects<ExerciseSchema>("Exercise").filter(e => (e.id === exerciseType.id))
+  const exerciseTypes = realm.objects<ExerciseTypeSchema>("ExerciseType").filtered('category.id = $0', exerciseType.id);
+  const exercises = realm.objects<ExerciseSchema>("Exercise").filtered('type.id IN $0', exerciseTypes.map(et => et.id));
   
   realm.write(() => {
     realm.delete(exercises)
@@ -88,10 +95,16 @@ export async function deleteExerciseType(exerciseType: ExerciseTypeSchema) {
   })
 }
 
+export async function fetchMonths() {
+  const months = realm.objects<MonthSchema>("Month")
+  const array = Array.from(months)
+  return array
+}
+
 export async function editExerciseType(exerciseTypeId: number, exerciseTypeName: string, category: CategorySchema) {
-  const exerciseTypeToEdit = realm.objects<ExerciseTypeSchema>("ExerciseType").find(c => c.id === exerciseTypeId)
+  const exerciseTypeToEdit = realm.objectForPrimaryKey<ExerciseTypeSchema>("ExerciseType", exerciseTypeId)
   if (!exerciseTypeToEdit) {
-    throw new Error(`Category with ID ${exerciseTypeName} not found`)
+    throw new Error(`Exercise Type with ID ${exerciseTypeId} not found`)
   }
 
   // Update categoryToEdit with the properties of category
@@ -113,10 +126,19 @@ export async function addExerciseType(exerciseType: string, category: CategorySc
   })
 }
 
-export async function fetchExercises() {
-  const exercises = realm.objects<ExerciseSchema>("Exercise");
-  const exercisesArray = Array.from(exercises);
-  return exercisesArray;
+export async function fetchExercises(limitBy?: {by: 'Month', when: number}) {
+  let exercises = realm.objects<ExerciseSchema>("Exercise");
+
+  if (limitBy && limitBy.by === 'Month') {
+    const month = limitBy.when;
+    const year = new Date().getFullYear(); // or use a specific year if needed
+    const startDate = new Date(year, month, 2);
+
+const endDate = new Date(year, month + 1, 1); 
+    exercises = exercises.filtered("date >= $0 AND date < $1", startDate, endDate);
+  }
+
+  return Array.from(exercises);
 }
 
 export async function fetchExerciseById(id: number) {
@@ -126,7 +148,13 @@ export async function fetchExerciseById(id: number) {
 
 export async function deleteExercise(exercise: Exercise) {
   const exerciseSchema = realm.objectForPrimaryKey<ExerciseSchema>("Exercise", exercise.id);
+  const months = Array.from(realm.objects("Month")) as MonthSchema[]
+  const eMonth = exercise.date.getMonth()
+  const eYear = exercise.date.getFullYear().toString()
+  const month: Optional<MonthSchema> = months.find(m => m.year === eYear && m.month === eMonth);
   realm.write(() => {
+    if(month !== undefined) month.exerciseCount -= 1
+    if(month?.exerciseCount === 0) realm.delete(month)
     realm.delete(exerciseSchema)
   })
 }
@@ -143,8 +171,8 @@ export async function fetchExerciseTypes() {
   return exerciseTypesArray;
 }
 
-export async function fetchExerciseTypesByCategory(category: string) {
-  const exerciseTypes = realm.objects<ExerciseTypeSchema>("ExerciseType").filter(e => e.category.name === category);
+export async function fetchExerciseTypesByCategory(categoryId: number) {
+  const exerciseTypes = realm.objects<ExerciseTypeSchema>("ExerciseType").filtered('category.id = $0', categoryId);
   const exerciseTypesArray = Array.from(exerciseTypes);
   return exerciseTypesArray;
 }

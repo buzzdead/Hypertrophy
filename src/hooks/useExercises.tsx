@@ -4,12 +4,12 @@ import {fetchExercises} from "../api/realmAPI";
 import { ExerciseSchema } from '../config/realmConfig';
 
 
-export function useExercises() {
+export function useExercises(limitBy?: {by: 'Month', when: number} ) {
   const [exercises, setExercises] = useState<ExerciseSchema[]>([]);
   const [loading, setLoading] = useState(true)
 
   const loadExercises = async () => {
-    const exerciseArray = await fetchExercises();
+    const exerciseArray = limitBy ? await fetchExercises(limitBy) : await fetchExercises();
     const validExercises = exerciseArray.filter(e => e.isValid())
     setExercises(validExercises);
     setLoading(false)

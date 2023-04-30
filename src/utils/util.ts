@@ -1,6 +1,6 @@
 import {DefaultTheme} from 'react-native-paper'
 import { Exercise, ExerciseWithDuplicates, IGroup } from '../../typings/types';
-import { CategorySchema, ExerciseSchema } from '../config/realmConfig';
+import { CategorySchema, ExerciseSchema, MonthSchema } from '../config/realmConfig';
 
 const MyTheme = {
     ...DefaultTheme,
@@ -54,32 +54,38 @@ export const getExercisesByDate = (exercises: Exercise[], categories: CategorySc
 
 export const groupExercisesByWeek = (sortedExercises: ExerciseSchema[]) => {
   const groups: IGroup[] = [];
+  const groupsByWeekKey: { [weekKey: string]: IGroup } = {};
 
-    sortedExercises.forEach(exercise => {
-      const weekStart = exercise?.date ? new Date(exercise.date) : new Date();
-      weekStart.setDate(weekStart.getDate() - ((weekStart.getDay() + 6) % 7));
-      const weekNumber = getWeekNumber(weekStart);
-      const weekKey = `${weekStart.getFullYear()}-W${weekNumber}`;
+  sortedExercises.forEach(exercise => {
+    const weekStart = exercise?.date ? new Date(exercise.date) : new Date();
+    weekStart.setDate(weekStart.getDate() - ((weekStart.getDay() + 6) % 7));
+    const weekNumber = getWeekNumber(weekStart);
+    const weekKey = `${weekStart.getFullYear()}-W${weekNumber}`;
 
-      let group = groups.find(g => g.weekKey === weekKey);
-      if (!group) {
-        group = {weekKey, weekNumber, exercises: []};
-        groups.push(group);
-      }
-      const duplicate = group.exercises.find(
-        (other: ExerciseWithDuplicates) =>
-          other.exercise.type?.id === exercise.type?.id &&
-          other.exercise.date.getDay() === exercise.date.getDay() &&
-          other.exercise.date.getMonth() === exercise.date.getMonth() &&
-          other.exercise.date.getFullYear() === exercise.date.getFullYear(),
-      );
-      duplicate
-        ? duplicate.duplicates.push({sets: exercise.sets, reps: exercise.reps, weight: exercise.weight})
-        : group.exercises.push({exercise: exercise, duplicates: []});
-    });
+    let group = groupsByWeekKey[weekKey];
+    if (!group) {
+      group = {weekKey, weekNumber, exercises: []};
+      groupsByWeekKey[weekKey] = group;
+      groups.push(group);
+    }
+    
+    const duplicate = group.exercises.find(
+      (other: ExerciseWithDuplicates) =>
+        other.exercise.type?.id === exercise.type?.id &&
+        other.exercise.date.getDay() === exercise.date.getDay() &&
+        other.exercise.date.getMonth() === exercise.date.getMonth() &&
+        other.exercise.date.getFullYear() === exercise.date.getFullYear(),
+    );
+    duplicate
+      ? duplicate.duplicates.push({sets: exercise.sets, reps: exercise.reps, weight: exercise.weight})
+      : group.exercises.push({exercise: exercise, duplicates: []});
+  });
 
-    return groups;
+  return groups;
 }
+
+
+
 
 export type Month = {numerical: number, name: string};
 
@@ -98,11 +104,11 @@ const months: Month[] = [
   {numerical: 11, name: "December"}
 ];
 
-export const getAvailableMonths = (exercises: ExerciseSchema[]): Month[] => {
+export const getAvailableMonths = (storedMonths: MonthSchema[]): Month[] => {
   const availableMonths: Month[] = []
-  exercises.forEach(e => {
-    if(!availableMonths.find(m => m.numerical === e.date.getMonth())){
-      const month = months.find(m => m.numerical === e.date.getMonth())
+  storedMonths.forEach(e => {
+    if(!availableMonths.find(m => m.numerical === e.month)){
+      const month = months.find(m => m.numerical === e.month)
       month && availableMonths.push(month)
     }
   })

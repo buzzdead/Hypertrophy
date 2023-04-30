@@ -53,13 +53,53 @@ export class ExerciseSchema extends Realm.Object {
   weight!: number;
 }
 
+export class MonthSchema extends Realm.Object {
+  static schema = {
+    name: "Month",
+    primaryKey: "id",
+    properties: {
+      id: { type: "int?", indexed: true, optional: true},
+      year: "string",
+      month: "int",
+      exerciseCount: "int",
+    },
+  };
+
+  id!: number;
+  year!: string;
+  month!: number;
+  exerciseCount!: number;
+}
+
 const realmConfig: Realm.Configuration = {
-  schema: [ExerciseSchema, ExerciseTypeSchema, CategorySchema],
-  schemaVersion: 6,
+  schema: [ExerciseSchema, ExerciseTypeSchema, CategorySchema, MonthSchema],
+  schemaVersion: 10,
   onMigration: migration,
 };
 
-function migration(oldRealm: Realm, newRealm: Realm) {  
+function migration(oldRealm: Realm, newRealm: Realm) {
+  const exercises = oldRealm.objects("Exercise");
+  if(oldRealm.schemaVersion < 10){
+  for (let i = 0; i < exercises.length; i++) {
+    const exercise = exercises[i] as ExerciseSchema; // cast to ExerciseSchema type
+    const date = exercise.date; // should not produce an error now
+    const month = date.getMonth();
+    const year = date.getFullYear().toString();
+
+    // Find or create the corresponding MonthSchema object
+    
+    let monthObj = newRealm.objects("Month").filtered("year == $0 AND month == $1", year, month)[0] as MonthSchema;
+
+    if (!monthObj) {
+      const id = newRealm.objects("Month").length + 1
+      const newMonth = {id: id, year: year, month: month, exerciseCount: 1};
+      newRealm.create("Month", newMonth);
+    } else {
+      monthObj.exerciseCount++;
+    }
+  }}
 }
+
+
 
 export default realmConfig;
