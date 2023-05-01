@@ -25,14 +25,13 @@ interface State {
   filteredExercises: ExerciseWithDuplicates[]
   currentPage: number
   seleectedCategories: CategorySchema[]
+  groupedExercises: IGroup[]
 }
 
 const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   const {categories, refresh: categoriesRefresh, loading: categoriesLoading} = useCategories();
   const {exercises, refresh: exercisesRefresh, loading: exercisesLoading} = useExercises();
-  const [groupedExercises, setGroupedExercises] = useState<IGroup[]>([])
-  const [loading, setLoading] = useState(true)
-  const [state, setState] = useState<State>({filteredExercises: [], currentPage: 0, seleectedCategories: []})
+  const [state, setState] = useState<State>({filteredExercises: [], currentPage: 0, seleectedCategories: [], groupedExercises: []})
   const currentPageRef = useRef(state.currentPage)
 
   const _onRefresh = () => {
@@ -42,8 +41,8 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
 
   useEffect(() => {
     const groups = groupExercisesByWeek(exercises);
-    if(groupedExercises.length > groups.length) handlePrevPage()
-    setGroupedExercises(groups)
+    if(state.groupedExercises.length > groups.length) handlePrevPage()
+    setState({...state, groupedExercises: groups, filteredExercises: updateFilteredExercises(state.currentPage, state.seleectedCategories, groups)})
   }, [exercises]);
 
   useEffect(() => {
@@ -52,7 +51,7 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
 
   const handleNextPage = (currentPage?: number) => {
     const newCurrent = typeof currentPage === 'number' ? currentPage : state.currentPage
-    if (newCurrent < groupedExercises.length - 1) {
+    if (newCurrent < state.groupedExercises.length - 1) {
       const filtered = updateFilteredExercises(newCurrent + 1)
       setState({...state, filteredExercises: filtered, currentPage: newCurrent + 1})
     }
@@ -67,8 +66,8 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   };
 
   const handleGoToLastPage = () => {
-    const filtered = updateFilteredExercises(groupedExercises.length - 1)
-    setState({...state, filteredExercises: filtered, currentPage: groupedExercises.length - 1})
+    const filtered = updateFilteredExercises(state.groupedExercises.length - 1)
+    setState({...state, filteredExercises: filtered, currentPage: state.groupedExercises.length - 1})
   }
 
   const handleGoToFirstPage = () => {
@@ -76,12 +75,13 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
     setState({...state, filteredExercises: filtered, currentPage: 0})
   }
 
-  const updateFilteredExercises = (cPage: number, currentSelectedCategories?: CategorySchema[]) => {
+  const updateFilteredExercises = (cPage: number, currentSelectedCategories?: CategorySchema[], groups?: IGroup[]) => {
     const newCategories = currentSelectedCategories ? currentSelectedCategories : state.seleectedCategories
+    const newGroups = groups ? groups : state.groupedExercises
     const filtered =
     newCategories.length === 0
-      ? groupedExercises[cPage]?.exercises
-      : groupedExercises[cPage]?.exercises?.filter(exercise =>
+      ? newGroups[cPage]?.exercises
+      : newGroups[cPage]?.exercises?.filter(exercise =>
           newCategories?.some(
             selectedCategory => selectedCategory?.id === exercise.exercise.type?.category?.id,
           ),
@@ -90,13 +90,6 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   return filtered
   }
 
-  useEffect(() => {
-    if(groupedExercises.length === 0) return
-    loading && setLoading(false)
-    setState({...state, filteredExercises: updateFilteredExercises(state.currentPage)})
-  }, [groupedExercises])
-
-  // Nake selectedCategories a state... Then when flipping pages just filter directly instead of useEffect in sidebar!
   const handleFilterChange = (selected: CategorySchema[]) => {
     const filtered = updateFilteredExercises(state.currentPage, selected)
     setState({...state, seleectedCategories: selected, filteredExercises: filtered})
@@ -106,10 +99,11 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
     currentPageRef.current = state.currentPage
   }, [state.currentPage])
 
-  const {panResponder} = usePanHandler({handlePrevPage, handleNextPage, categories: state.seleectedCategories, currentPageRef, groupedExercises: groupedExercises});
-
-  if (categoriesLoading || exercisesLoading || loading) return <LoadingIndicator />;
+  // Figure out a way to fix rerendering cause of this
+  const panResponder = usePanHandler({handlePrevPage, handleNextPage, categories, groupedExercises: state.groupedExercises, currentPageRef});
+  if (categoriesLoading || exercisesLoading) return <LoadingIndicator />;
   console.log("rendering exerciselisasdft")
+
   return (
     <SafeAreaView style={styles.container} {...panResponder?.panHandlers}>
       <SideBar categories={categories} onFilterChange={handleFilterChange} />
@@ -120,9 +114,9 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
         groupedExercises={state.filteredExercises}
       />
       <ExerciseListBtm
-        currentWeek={groupedExercises[state.currentPage]?.weekNumber}
+        currentWeek={state.groupedExercises[state.currentPage]?.weekNumber}
         currentPage={state.currentPage}
-        maxPage={groupedExercises.length - 1}
+        maxPage={state.groupedExercises.length - 1}
         handleNextPage={handleNextPage}
         handlePrevPage={handlePrevPage}
         handleGoToLastPage={handleGoToLastPage}

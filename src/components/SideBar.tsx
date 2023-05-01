@@ -98,7 +98,7 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, ico
             {
               backgroundColor: selectedCategoryAnimations[index]?.interpolate({
                 inputRange: [0, 1],
-                outputRange: ["transparent", colors.categories.Arms],
+                outputRange: ["transparent", 'grey'],
               }),
             },
           ]}>
@@ -118,7 +118,6 @@ const styles = StyleSheet.create({
     right: -SidebarWidth + SidebarVisibleWidth,
     bottom: 0,
     zIndex: 1000,
-    height: "75%",
     width: SidebarWidth - SidebarVisibleWidth,
     elevation: 5, // Add box shadow on Android
     shadowColor: "#000", // Add box shadow on iOS

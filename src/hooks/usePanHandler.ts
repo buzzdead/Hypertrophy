@@ -32,5 +32,5 @@ export const usePanHandler = ({handlePrevPage, handleNextPage, categories, group
         setPanResponder(responder);
       }, [categories, groupedExercises]);
 
-      return {panResponder}
+      return panResponder
 }

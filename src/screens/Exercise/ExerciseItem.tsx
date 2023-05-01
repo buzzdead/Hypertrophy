@@ -20,7 +20,7 @@ const ExerciseItem: React.FC<ExerciseItemProps> = ({item, navigation}) => {
           <Text style={{...styles.itemText2, color: colors.summerDarkest}}>{duplicate.reps + " repetitions"}</Text>
         </View>
         <View>
-          <Text style={{...styles.itemText2, color: colors.summerDarkest, fontFamily: 'Roboto-Medium'}}>{" (" + duplicate.weight} kg{")"}</Text>
+          <Text style={{...styles.itemText2, color: colors.summerDarkest, fontFamily: 'Roboto-MediumItalic'}}>{" (" + duplicate.weight} kg{")"}</Text>
         </View>
       </View>
     );
@@ -39,7 +39,7 @@ const ExerciseItem: React.FC<ExerciseItemProps> = ({item, navigation}) => {
           <Text style={{fontStyle: "italic", color: colors.summerDarkest}}>{item.exercise.date.toLocaleDateString()}</Text>
         </View>
         <Text style={[styles.itemText, {color: colors.summerDarkest, fontFamily: 'Roboto-Regular'}]}>
-          <Text style={{...styles.itemText2, color: "green", fontSize: 15}}>{item.exercise.type?.category?.name}</Text>
+          <Text style={{...styles.itemText2, color: colors.categories[item.exercise.type.category.name as abc || 'Default'], fontSize: 15}}>{item.exercise.type?.category?.name}</Text>
         </Text>
         <View style={{flexDirection: "row"}}>
           <View >
@@ -48,8 +48,8 @@ const ExerciseItem: React.FC<ExerciseItemProps> = ({item, navigation}) => {
           <View style={{minWidth: 95}}>
             <Text style={{...styles.itemText2, color: colors.summerDark}}>{item.exercise.reps + " repetitions"}</Text>
           </View>
-          <View >
-          <Text style={{...styles.itemText2, color: colors.summerDarkest, fontFamily: 'Roboto-Medium'}}>{" (" + item.exercise.weight} kg{")"}</Text>
+          <View>
+          <Text style={{...styles.itemText2, color: colors.summerDark, fontFamily: 'Roboto-MediumItalic'}}>{" (" + item.exercise.weight} kg{")"}</Text>
         </View>
         </View>
         </View>
@@ -85,11 +85,11 @@ const styles = StyleSheet.create({
   },
   itemText: {
     fontSize: 15,
-    fontFamily: "Roboto-Black",
+    fontFamily: "Roboto-Medium",
   },
   itemText2: {
     fontSize: 14,
-    fontFamily: "Roboto-Black",
+    fontFamily: "Roboto-Medium",
     color: colors.summerDarkest,
   },
 });

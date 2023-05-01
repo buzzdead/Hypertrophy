@@ -12,6 +12,7 @@ import {colors} from "../../../utils/util";
 import CustomButton from "../../../components/CustomButton";
 import AddObject from "./Modal/AddObject";
 import Weight from "./Weight";
+import LoadingIndicator from "../../../components/LoadingIndicator";
 
 type Props = {
   navigation: any;
@@ -37,7 +38,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
     : initialState;
 
   const [state, dispatch] = useReducer(exerciseListReducer, newState);
-  const {categories} = useCategories();
+  const {categories, loading: categoriesLoading} = useCategories();
   const {memoizedExerciseTypes: exerciseTypesFromCategory} = useExerciseTypes({category: state.category});
 
   useEffect(() => {
@@ -68,6 +69,9 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
   const onWeightChange = (value: number | string, validWeight: boolean) => {
     dispatch({type: "setWeight", payload: {value, validWeight}});
   };
+
+  if(categoriesLoading) return <LoadingIndicator />
+  console.log("rendering add exercise")
 
   return (
     <SafeAreaView style={styles.container}>
