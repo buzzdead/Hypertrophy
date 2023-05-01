@@ -49,7 +49,7 @@ const ProgressTracking = () => {
   console.log("rendering progress")
 
   return (
-    <SafeAreaView style={{width: "100%", height: "100%", justifyContent: "center", gap: 60}}>
+    <SafeAreaView style={{width: "100%", height: "100%", justifyContent: "center", alignItems: "center", gap: 60}}>
       <VictoryChart>
         <VictoryAxis
           style={{axisLabel: {padding: 30, fontSize: 16}}}
@@ -57,7 +57,7 @@ const ProgressTracking = () => {
           tickFormat={id => (state?.days ? state.days[id] : id)}
           label={"Days in month"}
         />
-        <VictoryAxis dependentAxis label={"Exercises"} tickCount={state?.maxExercises || 1} />
+        <VictoryAxis dependentAxis label={"Exercises"} tickCount={state?.maxExercises || 1} tickFormat={(i) => Math.round(i)}/>
         <VictoryGroup offset={20}>
           <VictoryBar 
             data={state?.chartData}
@@ -73,6 +73,7 @@ const ProgressTracking = () => {
       <ChartNavigation
       updateChart={updateChart}
       categories={filteredCategories.length > 0 ? filteredCategories : categories}
+      isLandScape={screenOrientation.isLandscape}
       />
       <ProgressTrackingBtm mode={mode} landScapeOrientation={screenOrientation.isLandscape} changeMode={setMode} />
       <SideBar categories={categories} onFilterChange={handleFilterChange} icon={"chart-bar"} />

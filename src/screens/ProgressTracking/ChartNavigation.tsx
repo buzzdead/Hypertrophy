@@ -1,6 +1,7 @@
 import React, {useLayoutEffect, useState} from "react";
-import {Text, View} from "react-native";
+import {StyleSheet, Text, View} from "react-native";
 import { fetchExercises, fetchMonths } from "../../api/realmAPI";
+import Contingent from "../../components/Contingent";
 import CustomButton from "../../components/CustomButton";
 import {CategorySchema, ExerciseSchema, MonthSchema} from "../../config/realmConfig";
 import {colors, getAvailableMonths, Month} from "../../utils/util";
@@ -10,6 +11,7 @@ import {Chart} from "./ProgressTracking";
 interface Props {
   updateChart: (chart: Chart) => void;
   categories: CategorySchema[];
+  isLandScape: boolean
 }
 
 interface State {
@@ -20,7 +22,7 @@ interface State {
   months: MonthSchema[]
 }
 
-export const ChartNavigation: React.FC<Props> = ({updateChart, categories}) => {
+export const ChartNavigation: React.FC<Props> = ({updateChart, categories, isLandScape}) => {
   const [state, setState] = useState<State>({currentMonth: 0, lastHalf: false, availableMonths: [], exercises: [], months: []});
 
 
@@ -78,7 +80,8 @@ export const ChartNavigation: React.FC<Props> = ({updateChart, categories}) => {
   console.log("rendering navigation");
 
   return (
-    <View style={{flexDirection: "row", justifyContent: "center", gap: 10}}>
+    <View style={{flexDirection: "row", justifyContent: "center", gap: 10, position: isLandScape ? 'absolute' : 'relative'}}>
+      <View style={isLandScape && styles.contingentButtonLeft}>
       <CustomButton
         size="S"
         titleColor={state.currentMonth === 0 && !state.lastHalf ? colors.summerDark : colors.summerBlue}
@@ -87,6 +90,8 @@ export const ChartNavigation: React.FC<Props> = ({updateChart, categories}) => {
         onPress={handlePrev}
         title={"<"}
       />
+      </View>
+      <Contingent shouldRender={!isLandScape}>
       <Text
         style={{
           textAlignVertical: "center",
@@ -97,6 +102,8 @@ export const ChartNavigation: React.FC<Props> = ({updateChart, categories}) => {
         }}>
         {state.availableMonths[state.currentMonth]?.name}
       </Text>
+      </Contingent>
+      <View style={isLandScape && styles.contingentButtonRight}>
       <CustomButton
         titleColor={
           state.currentMonth === state.availableMonths.length - 1 && state.lastHalf
@@ -109,6 +116,16 @@ export const ChartNavigation: React.FC<Props> = ({updateChart, categories}) => {
         fontSize={30}
         title={">"}
       />
+      </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  contingentButtonLeft: {
+    left: -200
+  },
+  contingentButtonRight: {
+    right: -200
+  }
+})

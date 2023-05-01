@@ -33,7 +33,7 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, ico
 
     Animated.timing(selectedCategoryAnimations[index], {
       toValue: newSelectedCategories.includes(category) ? 1 : 0,
-      duration: 200,
+      duration: 50,
       useNativeDriver: false,
     }).start();
   };
@@ -98,7 +98,7 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, ico
             {
               backgroundColor: selectedCategoryAnimations[index]?.interpolate({
                 inputRange: [0, 1],
-                outputRange: ["transparent", colors.test1],
+                outputRange: ["transparent", colors.categories.Arms],
               }),
             },
           ]}>
