@@ -44,7 +44,7 @@ export const ExerciseListBtm: React.FC<ExerciseListBtmProps> = ({
           onPress={handlePrevPage}
           title={"<"}
         />
-        <Text style={{fontFamily: "Roboto-Black"}}>Week {currentWeek}</Text>
+        <Text style={{fontFamily: "Roboto-Bold", color: colors.summerDarkest, fontSize: 16, paddingTop: 3}}>Week {currentWeek}</Text>
         <CustomButton
           titleColor={currentPage === maxPage ? colors.summerDark : colors.summerBlue}
           onPress={handleNextPage}
@@ -78,11 +78,12 @@ export const ExerciseListBtm: React.FC<ExerciseListBtmProps> = ({
 const styles = StyleSheet.create({
   pagination: {
     flexDirection: "row",
-    backgroundColor: colors.summerWhite,
     gap: 3,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: colors.summerWhite,
     width: "100%",
+    paddingTop: -3,
     paddingBottom: 5,
   },
 });

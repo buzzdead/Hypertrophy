@@ -2,6 +2,7 @@ import {DefaultTheme} from 'react-native-paper'
 import { Exercise, ExerciseWithDuplicates, IGroup } from '../../typings/types';
 import { CategorySchema, ExerciseSchema, MonthSchema } from '../config/realmConfig';
 
+
 const MyTheme = {
     ...DefaultTheme,
     colors: {
@@ -23,10 +24,18 @@ const MyTheme = {
       test6: '#000000',
       test7: '#FFBF9B',
       test8: '#B46060',
-      
-
+      categories: {
+        Shoulders: '#E9F5F8 ',
+        Legs: '#E2EFE5',
+        Arms: '#DAF4FC',
+        Abs: '#F2F8D8',
+        Back: '#EAE9D8',
+        Chest: '#FCFBE6',
+        Default: '#EFDBF1'
+      }
     }
   }
+export type CatColors = typeof MyTheme.colors.categories
 
 export const colors = MyTheme.colors;
 

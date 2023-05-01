@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {FlatList, SafeAreaView, StyleSheet, RefreshControl} from "react-native";
+import {FlatList, SafeAreaView, StyleSheet, RefreshControl, View} from "react-native";
 import {colors} from "../../utils/util";
 import {ExerciseWithDuplicates} from "../../../typings/types";
 import {StackScreenProps} from "@react-navigation/stack";
@@ -33,6 +33,8 @@ const WeeklyExercises: React.FC<WeeklyExercisesProps> = ({
     <SafeAreaView style={styles.container} >
       <FlatList
         data={currentExercises || []}
+        style={{gap: 10}}
+        ItemSeparatorComponent={() => <View style={{padding: 5}}></View>}
         renderItem={({item}) => <ExerciseItem item={item} navigation={navigation} />}
         keyExtractor={item => item.exercise.id.toString()}
         refreshControl={
@@ -55,6 +57,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: colors.summerWhite,
+    paddingTop: 5,
   },
   button: {
     fontSize: 20,

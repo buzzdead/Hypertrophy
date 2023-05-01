@@ -1,10 +1,8 @@
-import React, {useEffect, useState} from "react";
+import React, {useLayoutEffect, useState} from "react";
 import {Text, View} from "react-native";
 import { fetchExercises, fetchMonths } from "../../api/realmAPI";
 import CustomButton from "../../components/CustomButton";
-import LoadingIndicator from "../../components/LoadingIndicator";
 import {CategorySchema, ExerciseSchema, MonthSchema} from "../../config/realmConfig";
-import {useExercises} from "../../hooks/useExercises";
 import {colors, getAvailableMonths, Month} from "../../utils/util";
 import {ChartData} from "./ChartData";
 import {Chart} from "./ProgressTracking";
@@ -47,7 +45,7 @@ export const ChartNavigation: React.FC<Props> = ({updateChart, categories}) => {
     }
   }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     loadMonths()
   }, [])
 
@@ -64,7 +62,7 @@ export const ChartNavigation: React.FC<Props> = ({updateChart, categories}) => {
     }
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (state.availableMonths.length === 0) return;
     const {chartData, maxExercises, days} = ChartData({
       exercises: state.exercises,
@@ -75,7 +73,7 @@ export const ChartNavigation: React.FC<Props> = ({updateChart, categories}) => {
       mode: "Daily",
     });
     updateChart({chartData: chartData, maxExercises: maxExercises, days: days, mode: "Daily"});
-  }, [state.lastHalf, state.currentMonth, categories]);
+  }, [state.lastHalf, state.currentMonth, categories, state.availableMonths]);
 
   console.log("rendering navigation");
 

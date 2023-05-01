@@ -24,6 +24,14 @@ export async function addExercise(exercise: Exercise) {
 
   realm.write(() => {
     if(month !== undefined) month.exerciseCount += 1
+    else {
+      realm.create("Month", {
+        id: realm.objects("Month").length + 1,
+        year: eYear,
+        month: eMonth,
+        exerciseCount: 1,
+      })
+    }
     realm.create("Exercise", {
       id,
       type,
@@ -132,7 +140,7 @@ export async function fetchExercises(limitBy?: {by: 'Month', when: number}) {
   if (limitBy && limitBy.by === 'Month') {
     const month = limitBy.when;
     const year = new Date().getFullYear(); // or use a specific year if needed
-    const startDate = new Date(year, month, 2);
+    const startDate = new Date(Date.UTC(year, month, 1, 0, 0, 0, 0));
 
 const endDate = new Date(year, month + 1, 1); 
     exercises = exercises.filtered("date >= $0 AND date < $1", startDate, endDate);

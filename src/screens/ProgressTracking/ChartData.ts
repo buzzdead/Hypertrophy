@@ -19,12 +19,13 @@ export const ChartData = ({exercises, categories, month, year, lastHalf = false,
   const categorised = categories.length === 0 ? exercises : exercises.filter(e => categories.some(cat => cat.id === e.type.category.id))
 
   const odd = daysInMonth % 2 === 1 && lastHalf ? 2 : 1
+  console.log(halfMonth + odd)
   const tickValues: number[] = []
   let chartData = Array(halfMonth + odd).fill(0).map((_, index) => {
     let fixedIndex = lastHalf ? index + halfMonth : index
     const filteredExercises = categorised.filter(e => e.date.getDate() === fixedIndex);
     tickValues.push(fixedIndex)
-    return filteredExercises.length || 0;
+    return lastHalf && index === 0 ? 0 : filteredExercises.length || 0;
   });
   
 

@@ -12,8 +12,9 @@ class RealmService {
     const exerciseTypes = this.realm.objects<ExerciseTypeSchema>("ExerciseType");
     const exercises = this.realm.objects<ExerciseSchema>("Exercise");
     console.log(categories.length, exerciseTypes.length, exercises.length)
+ 
 
-    if(categories.length === 0 && exerciseTypes.length === 0 && exercises.length === 0){
+   /*  if(categories.length === 0 && exerciseTypes.length === 0 && exercises.length === 0){
     this.realm.write(() => {
       this.realm.delete(categories);
       this.realm.delete(exerciseTypes);
@@ -200,7 +201,9 @@ class RealmService {
       });
     }
   
-  })}}
+  })
+} */
+}
     
     
 

@@ -151,7 +151,6 @@ const styles = StyleSheet.create({
     top: 35,
     left: -SidebarVisibleWidth - 3,
     zIndex: 1000,
-    backgroundColor: colors.summerWhite,
     borderRadius: 4,
   },
   sidebarEdge: {

@@ -48,7 +48,7 @@ const Settings: React.FC<Props> = ({ navigation }) => {
       <ScrollView>
         <View style={{ paddingHorizontal: 20, paddingTop: 20 }}>
           <Text style={{ fontSize: 24, fontFamily: 'Roboto-Medium', color: colors.summerBlue, padding: 10, alignSelf: "center" }}>Edit</Text>
-          <View style={{ minWidth: 200, gap: 10, alignSelf: "center" }}>
+          <View style={{ minWidth: 200, gap: 10, alignSelf: "center", justifyContent: 'center' }}>
             <CustomButton
               backgroundColor={colors.summerDark}
               titleColor={colors.summerWhite}

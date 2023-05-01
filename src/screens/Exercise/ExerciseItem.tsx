@@ -26,15 +26,17 @@ const ExerciseItem: React.FC<ExerciseItemProps> = ({item, navigation}) => {
     );
   };
 
+  type abc = keyof typeof colors.categories
+
   return (
     <TouchableOpacity
-      style={styles.container}
+      style={{...styles.container, backgroundColor: colors.categories[item.exercise.type.category.name as abc || 'Default'] }}
       onPress={() => navigation.navigate("Details", {exerciseId: item.exercise.id, duplicates: item.duplicates})}>
       <View style={styles.subContainer}>
       <View style={{gap: 10}}>
         <View style={styles.topContainer}>
-          <Text style={{...styles.itemText, fontSize: 15, color: colors.test5}}>{item.exercise.type?.name}</Text>
-          <Text style={{fontStyle: "italic", color: colors.test6}}>{item.exercise.date.toLocaleDateString()}</Text>
+          <Text style={{...styles.itemText, fontSize: 15, color: colors.summerDarkest}}>{item.exercise.type?.name}</Text>
+          <Text style={{fontStyle: "italic", color: colors.summerDarkest}}>{item.exercise.date.toLocaleDateString()}</Text>
         </View>
         <Text style={[styles.itemText, {color: colors.summerDarkest, fontFamily: 'Roboto-Regular'}]}>
           <Text style={{...styles.itemText2, color: "green", fontSize: 15}}>{item.exercise.type?.category?.name}</Text>
@@ -64,13 +66,14 @@ const ExerciseItem: React.FC<ExerciseItemProps> = ({item, navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    alignSelf: 'center',
     alignItems: "center",
     paddingHorizontal: 12,
     paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.test6,
-    width: "100%",
+    borderWidth: 1,
+    borderColor: colors.test6,
+    borderRadius: 10,
+    width: "97.5%",
   },
   subContainer: {
     flexDirection: "column",

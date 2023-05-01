@@ -41,9 +41,8 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   };
 
   useEffect(() => {
-    if(exercisesLoading) return
-    console.log("groups")
     const groups = groupExercisesByWeek(exercises);
+    if(groupedExercises.length > groups.length) handlePrevPage()
     setGroupedExercises(groups)
   }, [exercises]);
 
@@ -93,7 +92,6 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
 
   useEffect(() => {
     if(groupedExercises.length === 0) return
-    console.log("updatefilterdexercises")
     loading && setLoading(false)
     setState({...state, filteredExercises: updateFilteredExercises(state.currentPage)})
   }, [groupedExercises])

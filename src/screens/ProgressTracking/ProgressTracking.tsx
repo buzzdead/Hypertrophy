@@ -57,9 +57,9 @@ const ProgressTracking = () => {
           tickFormat={id => (state?.days ? state.days[id] : id)}
           label={"Days in month"}
         />
-        <VictoryAxis dependentAxis label={"Exercises"} tickCount={Math.ceil(state?.maxExercises / 2) || 1} />
+        <VictoryAxis dependentAxis label={"Exercises"} tickCount={state?.maxExercises || 1} />
         <VictoryGroup offset={20}>
-          <VictoryBar
+          <VictoryBar 
             data={state?.chartData}
             barWidth={15}
             style={{
