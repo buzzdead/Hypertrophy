@@ -30,7 +30,7 @@ const ExerciseItem: React.FC<ExerciseItemProps> = ({item, navigation}) => {
 
   return (
     <TouchableOpacity
-      style={{...styles.container, backgroundColor: colors.categories[item.exercise.type.category.name as abc || 'Default'] }}
+      style={{...styles.container, backgroundColor: 'white' }}
       onPress={() => navigation.navigate("Details", {exerciseId: item.exercise.id, duplicates: item.duplicates})}>
       <View style={styles.subContainer}>
       <View style={{gap: 10}}>
