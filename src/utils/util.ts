@@ -16,6 +16,7 @@ const MyTheme = {
       summerWhite: '#EEEEEE',
       summerButton: '#007EDA',
       sidebarColor: '#F2F8D8',
+      graphColor: '#096625',
       test1: '#A9907E',
       test2: '#ABC4AA',
       test3: '#675D50',
@@ -25,14 +26,14 @@ const MyTheme = {
       test7: '#FFBF9B',
       test8: '#B46060',
       categories: {
-        Shoulders: '#491B39',
-        Shoulder: '#491B39',
-        Legs: '#5D491C',
-        Arms: '#4D7A0F',
-        Abs: '#54142C',
-        Back: '#226089',
-        Chest: '#096625',
-        Default: '#5C15EE'
+        Shoulders: '#067228',
+        Shoulder: '#067228',
+        Legs: '#2B7206',
+        Arms: '#066172',
+        Abs: '#4D0672',
+        Back: '#066F72',
+        Chest: '#721906',
+        Default: '#0A0672'
       }
     }
   }

@@ -89,7 +89,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
           <AddObject isCategory />
         </View>
       </View>
-      <View style={{flexDirection: "row", gap: 40}}>
+      <View style={{flexDirection: "row", gap: 40, paddingBottom: 55}}>
         <View style={{flex: 6}}>
           <PickerField
             name={"Exercise Type"}
@@ -151,6 +151,7 @@ const styles = StyleSheet.create({
     flex: 1,
     margin: 16,
     paddingTop: 20,
+    alignSelf: 'center'
   },
   inputContainer: {
     marginBottom: 16,

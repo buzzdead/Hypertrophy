@@ -37,6 +37,7 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   const _onRefresh = () => {
     categoriesRefresh();
     exercisesRefresh();
+    setState({...state, seleectedCategories: []})
   };
 
   useEffect(() => {

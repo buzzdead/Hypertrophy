@@ -14,13 +14,13 @@ const ExerciseItem: React.FC<ExerciseItemProps> = ({item, navigation}) => {
     return (
       <View style={{flexDirection: "row"}}>
         <View >
-          <Text style={{...styles.itemText2, color: colors.summerDarkest}}>{duplicate.sets + " x "}</Text>
+          <Text style={{...styles.itemText2, color: colors.summerDark}}>{duplicate.sets + " sets x "}</Text>
         </View>
-        <View style={{minWidth: 95}}>
-          <Text style={{...styles.itemText2, color: colors.summerDarkest}}>{duplicate.reps + " repetitions"}</Text>
+        <View style={{minWidth: 60}}>
+          <Text style={{...styles.itemText2, color: colors.summerDark}}>{duplicate.reps + " reps"}</Text>
         </View>
         <View>
-          <Text style={{...styles.itemText2, color: colors.summerDarkest, fontFamily: 'Roboto-MediumItalic'}}>{" (" + duplicate.weight} kg{")"}</Text>
+          <Text style={{...styles.itemText2, color: colors.summerDark}}>{" (" + duplicate.weight} kg{")"}</Text>
         </View>
       </View>
     );
@@ -35,21 +35,21 @@ const ExerciseItem: React.FC<ExerciseItemProps> = ({item, navigation}) => {
       <View style={styles.subContainer}>
       <View style={{gap: 10}}>
         <View style={styles.topContainer}>
-          <Text style={{...styles.itemText, fontSize: 15, color: colors.summerDarkest}}>{item.exercise.type?.name}</Text>
+          <Text style={{...styles.itemText, fontSize: 14, color: colors.summerDarkest}}>{item.exercise.type?.category.name}</Text>
           <Text style={{fontStyle: "italic", color: colors.summerDarkest}}>{item.exercise.date.toLocaleDateString()}</Text>
         </View>
-        <Text style={[styles.itemText, {color: colors.summerDarkest, fontFamily: 'Roboto-Regular'}]}>
-          <Text style={{...styles.itemText2, color: colors.categories[item.exercise.type.category.name as abc || 'Default'], fontSize: 15}}>{item.exercise.type?.category?.name}</Text>
-        </Text>
+          
+          <Text style={{...styles.itemText2, fontFamily: 'Roboto-Bold', color: colors.categories["Arms"] } }>{item.exercise.type?.name}</Text>
+        
         <View style={{flexDirection: "row"}}>
           <View >
-            <Text style={{...styles.itemText2, color: colors.summerDark}}>{item.exercise.sets + " x "}</Text>
+            <Text style={{...styles.itemText2, color: colors.summerDark}}>{item.exercise.sets + " sets x "}</Text>
           </View>
-          <View style={{minWidth: 95}}>
-            <Text style={{...styles.itemText2, color: colors.summerDark}}>{item.exercise.reps + " repetitions"}</Text>
+          <View style={{minWidth: 60}}>
+            <Text style={{...styles.itemText2, color: colors.summerDark}}>{item.exercise.reps + " reps"}</Text>
           </View>
           <View>
-          <Text style={{...styles.itemText2, color: colors.summerDark, fontFamily: 'Roboto-MediumItalic'}}>{" (" + item.exercise.weight} kg{")"}</Text>
+          <Text style={{...styles.itemText2, color: colors.summerDark}}>{" (" + item.exercise.weight} kg{")"}</Text>
         </View>
         </View>
         </View>
@@ -84,13 +84,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   itemText: {
-    fontSize: 15,
-    fontFamily: "Roboto-Medium",
+    fontSize: 14,
+    fontFamily: "Roboto-Black",
   },
   itemText2: {
     fontSize: 14,
     fontFamily: "Roboto-Medium",
-    color: colors.summerDarkest,
   },
 });
 
