@@ -1,121 +1,64 @@
-import React, {useLayoutEffect, useState} from "react";
+import React, {} from "react";
 import {StyleSheet, Text, View} from "react-native";
-import { fetchExercises, fetchMonths } from "../../api/realmAPI";
 import Contingent from "../../components/Contingent";
 import CustomButton from "../../components/CustomButton";
-import {CategorySchema, ExerciseSchema, MonthSchema} from "../../config/realmConfig";
-import {colors, getAvailableMonths, Month} from "../../utils/util";
-import {ChartData} from "./ChartData";
-import {Chart} from "./ProgressTracking";
+import { MonthSchema } from "../../config/realmConfig";
+import {colors, Month} from "../../utils/util";
 
 interface Props {
-  updateChart: (chart: Chart) => void;
-  categories: CategorySchema[];
   isLandScape: boolean
+  firstPage: boolean
+  lastPage: boolean
+  monthTitle: string
+  handleNext: () => void
+  handlePrev: () => void
 }
 
-interface State {
-  currentMonth: number;
-  lastHalf: boolean;
-  availableMonths: Month[];
-  exercises: ExerciseSchema[]
-  months: MonthSchema[]
-}
-
-export const ChartNavigation: React.FC<Props> = ({updateChart, categories, isLandScape}) => {
-  const [state, setState] = useState<State>({currentMonth: 0, lastHalf: false, availableMonths: [], exercises: [], months: []});
-
-
-  const handleNext = async () => {
-    if (!state.lastHalf) setState({...state, lastHalf: true});
-    else if (state.lastHalf && containsMonth(state.currentMonth + 1)) {
-      const newCurrentMonth = state.currentMonth + 1;
-      const newExercises = await fetchExercises({by: "Month", when: state.availableMonths[newCurrentMonth].numerical})
-      setState({...state, currentMonth: newCurrentMonth, lastHalf: false, exercises: newExercises});
-    }
-  };
-
-  const loadMonths = async () => {
-    const months2 = await fetchMonths()
-    try {
-      if(months2.length === 0) return
-      const availableMonths = getAvailableMonths(months2);
-      const newExercises = await fetchExercises({by: "Month", when: availableMonths[0]?.numerical})
-      setState({...state, months: months2, availableMonths: availableMonths, exercises: newExercises.length > 0 ? newExercises : []});
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  useLayoutEffect(() => {
-    loadMonths()
-  }, [])
-
-  const containsMonth = (month: number) => {
-    return state.months.find(e => e.month === state.availableMonths[month]?.numerical)
-  }
-
-  const handlePrev = async () => {
-    if (state.lastHalf) setState({...state, lastHalf: false});
-    else if (!state.lastHalf && containsMonth(state.currentMonth - 1)) {
-      const newCurrentMonth = state.currentMonth - 1;
-      const newExercises = await fetchExercises({by: "Month", when: state.availableMonths[newCurrentMonth].numerical})
-      setState({...state, currentMonth: newCurrentMonth, lastHalf: true, exercises: newExercises});
-    }
-  };
-
-  useLayoutEffect(() => {
-    if (state.availableMonths.length === 0) return;
-    const {chartData, maxExercises, days} = ChartData({
-      exercises: state.exercises,
-      categories: categories,
-      month: state.availableMonths[state.currentMonth]?.numerical,
-      year: "2023",
-      lastHalf: state.lastHalf,
-      mode: "Daily",
-    });
-    updateChart({chartData: chartData, maxExercises: maxExercises, days: days, mode: "Daily"});
-  }, [state.lastHalf, state.currentMonth, categories, state.availableMonths]);
+export const ChartNavigation: React.FC<Props> = ({isLandScape, firstPage, lastPage, monthTitle, handleNext, handlePrev}) => {
 
   console.log("rendering navigation");
 
   return (
-    <View style={{flexDirection: "row", justifyContent: "center", gap: 10, position: isLandScape ? 'absolute' : 'relative'}}>
+    <View
+      style={{
+        flexDirection: "row",
+        justifyContent: "center",
+        gap: 10,
+        position: isLandScape ? "absolute" : "relative",
+      }}>
       <View style={isLandScape && styles.contingentButtonLeft}>
-      <CustomButton
-        size="S"
-        titleColor={state.currentMonth === 0 && !state.lastHalf ? colors.summerDark : colors.summerBlue}
-        fontSize={30}
-        backgroundColor={colors.test6}
-        onPress={handlePrev}
-        title={"<"}
-      />
+        <CustomButton
+          size="S"
+          titleColor={firstPage ? colors.summerDark : colors.summerBlue}
+          fontSize={30}
+          backgroundColor={colors.test6}
+          onPress={handlePrev}
+          title={"<"}
+        />
       </View>
       <Contingent shouldRender={!isLandScape}>
-      <Text
-        style={{
-          textAlignVertical: "center",
-          minWidth: 100,
-          textAlign: "center",
-          fontFamily: "Roboto-Medium",
-          fontSize: 20,
-        }}>
-        {state.availableMonths[state.currentMonth]?.name}
-      </Text>
+        <Text
+          style={{
+            textAlignVertical: "center",
+            minWidth: 100,
+            textAlign: "center",
+            fontFamily: "Roboto-Medium",
+            fontSize: 20,
+          }}>
+          {monthTitle}
+        </Text>
       </Contingent>
       <View style={isLandScape && styles.contingentButtonRight}>
-      <CustomButton
-        titleColor={
-          state.currentMonth === state.availableMonths.length - 1 && state.lastHalf
-            ? colors.summerDark
-            : colors.summerBlue
-        }
-        onPress={handleNext}
-        backgroundColor={colors.test6}
-        size="S"
-        fontSize={30}
-        title={">"}
-      />
+        <CustomButton
+          titleColor={
+            lastPage ? colors.summerDark : colors.summerBlue
+          }
+          onPress={handleNext}
+          backgroundColor={colors.test6}
+          size="S"
+          fontSize={30}
+          title={">"}
+        />
       </View>
     </View>
   );
@@ -123,9 +66,9 @@ export const ChartNavigation: React.FC<Props> = ({updateChart, categories, isLan
 
 const styles = StyleSheet.create({
   contingentButtonLeft: {
-    left: -200
+    left: -200,
   },
   contingentButtonRight: {
-    right: -200
-  }
-})
+    right: -200,
+  },
+});

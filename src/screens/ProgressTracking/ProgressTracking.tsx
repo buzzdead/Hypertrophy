@@ -1,79 +1,119 @@
 // screens/ProgressTracking.tsx
-import React, {useState} from "react";
-import {SafeAreaView} from "react-native";
+import React, {useLayoutEffect, useState} from "react";
+import {SafeAreaView, View} from "react-native";
 import {useCategories} from "../../hooks/useCategories";
 import {SideBar} from "../../components/SideBar";
 import {CategorySchema} from "../../config/realmConfig";
 import {useScreenOrientation} from "../../hooks/useScreenOrientation";
-import {VictoryBar, VictoryChart, VictoryAxis, VictoryGroup} from "victory-native";
 import {ProgressTrackingBtm} from "./ProgressTrackingBtm";
-import {colors} from "../../utils/util";
 import {ChartNavigation} from "./ChartNavigation";
 import LoadingIndicator from "../../components/LoadingIndicator";
+import { Chart } from "./Chart";
+import { useMonths } from "../../hooks/useMonths";
+import { fetchExercises } from "../../api/realmAPI";
+import { ChartData } from "./ChartData";
 
 export interface Chart {
   chartData: number[];
   maxExercises: number;
   days: number[];
   mode: "Daily" | "Weekly";
+  currentMonth: number;
+  lastHalf: boolean;
+  filteredCategories: CategorySchema[]
 }
 
 const ProgressTracking = () => {
-  const {categories, loading: categoriesLoading} = useCategories();
+  const {categories, refresh, loading: categoriesLoading} = useCategories();
   const screenOrientation = useScreenOrientation();
   const [mode, setMode] = useState<"Weekly" | "Daily">("Daily");
-  const [filteredCategories, setFilteredCategories] = React.useState<CategorySchema[]>([]);
+  const {months, loading: monthsLoading, availableMonths} = useMonths();
 
   const [state, setState] = useState<Chart>({
     chartData: [],
     maxExercises: 0,
     days: [],
     mode: "Daily",
+    currentMonth: 0,
+    lastHalf: false,
+    filteredCategories: []
   });
 
-  
-
-  const updateChart = (chart: Chart) => {
-   setState({...chart})
+  const containsMonth = (month: number) => {
+    if (!availableMonths) return;
+    return months?.find(e => e.month === availableMonths[month]?.numerical);
   };
 
-  const handleFilterChange = (selectedCategories: CategorySchema[]) => {
-    if (selectedCategories.length === 0) {
-      setFilteredCategories(categories);
-    } else {
-      setFilteredCategories(categories.filter(category => selectedCategories.some(c => c.id === category.id)));
+  const handleNext = async () => {
+    if (!state.lastHalf) getChartData(true)
+    else if (state.lastHalf && containsMonth(state.currentMonth + 1)) {
+      const newCurrentMonth = state.currentMonth + 1;
+      getChartData(false, newCurrentMonth)
     }
   };
 
-  if (categoriesLoading) return <LoadingIndicator />;
+  const handlePrev = async () => {
+    if (state.lastHalf) getChartData(false)
+    else if (!state.lastHalf && containsMonth(state.currentMonth - 1)) {
+      const newCurrentMonth = state.currentMonth - 1;
+      getChartData(true, newCurrentMonth)
+    }
+  };
+
+  const getChartData = async (lh?: boolean, cm?: number) => {
+    const newLastHalf = lh !== undefined ? lh : state.lastHalf
+    const newCurrentMonth = cm !== undefined ? cm : state.currentMonth
+
+    const newExercises = await fetchExercises({by: "Month", when: availableMonths[newCurrentMonth]?.numerical});
+    const {chartData, maxExercises, days} = ChartData({
+      exercises: newExercises,
+      categories: state.filteredCategories,
+      month: availableMonths[newCurrentMonth]?.numerical,
+      year: "2023",
+      lastHalf: newLastHalf,
+      mode: "Daily",
+    });
+    setState({...state, chartData: chartData, maxExercises: maxExercises, days: days, mode: "Daily", currentMonth: newCurrentMonth, lastHalf: newLastHalf});
+  };
+
+  const getChartData2 = async (selectedCategories: CategorySchema[]) => {
+
+    const newCategories = selectedCategories.length === 0 ? categories : categories.filter(category => selectedCategories.some(c => c.id === category.id))
+
+    const newExercises = await fetchExercises({by: "Month", when: availableMonths[state.currentMonth]?.numerical});
+    const {chartData, maxExercises, days} = ChartData({
+      exercises: newExercises,
+      categories: newCategories,
+      month: availableMonths[state.currentMonth]?.numerical,
+      year: "2023",
+      lastHalf: state.lastHalf,
+      mode: "Daily",
+    });
+    setState({...state, chartData: chartData, maxExercises: maxExercises, days: days, mode: "Daily", filteredCategories: newCategories});
+  };
+
+  useLayoutEffect(() => {
+    if (availableMonths.length === 0) return;
+    getChartData();
+  }, [availableMonths]);
+
+  const handleFilterChange = (selectedCategories: CategorySchema[]) => {
+    getChartData2(selectedCategories)
+  };
+
+  if (categoriesLoading || monthsLoading) return <View style={{width: '100%', height: '100%'}}><LoadingIndicator /></View>;
   console.log("rendering progress")
 
   return (
     <SafeAreaView style={{width: "100%", height: "100%", justifyContent: "center", alignItems: "center", gap: 60}}>
-      <VictoryChart>
-        <VictoryAxis
-          style={{axisLabel: {padding: 30, fontSize: 16}}}
-          tickCount={state?.chartData.length || 1}
-          tickFormat={id => (state?.days ? state.days[id] : id)}
-          label={"Days in month"}
-        />
-        <VictoryAxis dependentAxis label={"Exercises"} tickCount={state?.maxExercises || 1} tickFormat={(i) => Math.round(i)}/>
-        <VictoryGroup offset={20}>
-          <VictoryBar 
-            data={state?.chartData}
-            barWidth={15}
-            style={{
-              data: {
-                fill: colors.primary,
-              },
-            }}
-          />
-        </VictoryGroup>
-      </VictoryChart>
+      <Chart maxExercises={state.maxExercises} chartData={state.chartData} days={state.days} />
       <ChartNavigation
-      updateChart={updateChart}
-      categories={filteredCategories.length > 0 ? filteredCategories : categories}
       isLandScape={screenOrientation.isLandscape}
+      handleNext={handleNext}
+      handlePrev={handlePrev}
+      monthTitle={availableMonths[state.currentMonth].name}
+      firstPage={!state.lastHalf && state.currentMonth === 0}
+      lastPage={state.lastHalf && state.currentMonth === availableMonths.length - 1}
       />
       <ProgressTrackingBtm mode={mode} landScapeOrientation={screenOrientation.isLandscape} changeMode={setMode} />
       <SideBar categories={categories} onFilterChange={handleFilterChange} icon={"chart-bar"} />
