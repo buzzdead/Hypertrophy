@@ -1,27 +1,32 @@
 import React from "react"
 import { VictoryChart, VictoryAxis, VictoryGroup, VictoryBar, VictoryTheme } from "victory-native"
+import { IGroup } from "../../../typings/types"
 import { colors } from "../../utils/util"
 
 interface Props {
-    chartData: number[]
+    chartData: number[] | IGroup[]
     days: number[]
     maxExercises: number
+    mode: 'Daily' | 'Weekly'
+    isLandScape: boolean
 }
 
-export const Chart: React.FC<Props> = ({chartData, days, maxExercises}) => {
+export const Chart: React.FC<Props> = ({chartData, days, maxExercises, mode, isLandScape}) => {
+  const data = mode === 'Daily' && typeof chartData[0] === 'number' ? chartData : chartData.map((e) => typeof e === 'number' ? e : e.exercises.length)
     return (
-        <VictoryChart theme={VictoryTheme.material}>
+        <VictoryChart height={isLandScape ? 300 : 375} width={isLandScape ? 500 : 400} theme={VictoryTheme.material}>
         <VictoryAxis
           style={{axisLabel: {padding: 30, fontSize: 16}}}
           tickCount={chartData.length || 1}
           tickFormat={id => (days ? days[id] : id)}
-          label={"Days in month"}
+          label={mode === 'Daily' ? "Days in month" : 'Weeks'}
         />
-        <VictoryAxis style={{axisLabel: {padding: 30, fontSize: 16}}} dependentAxis label={"Exercises"} tickCount={maxExercises || 1} tickFormat={(i) => Math.round(i)}/>
+        <VictoryAxis style={{axisLabel: {padding: 30, fontSize: 16}}} dependentAxis label={"Exercises"} tickCount={maxExercises > 14 ? Math.ceil(maxExercises / 2) : maxExercises || 1} tickFormat={(i) => Math.round(i + 5)}/>
         <VictoryGroup offset={20}>
           <VictoryBar 
-            data={chartData}
+            data={data}
             barWidth={10}
+            
             cornerRadius={5}
             style={{
               data: {

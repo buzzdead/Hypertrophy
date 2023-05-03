@@ -14,7 +14,7 @@ class RealmService {
     console.log(categories.length, exerciseTypes.length, exercises.length)
  
 
-   /*  if(categories.length === 0 && exerciseTypes.length === 0 && exercises.length === 0){
+    if(categories.length === 0 && exerciseTypes.length === 0 && exercises.length === 0){
     this.realm.write(() => {
       this.realm.delete(categories);
       this.realm.delete(exerciseTypes);
@@ -189,7 +189,7 @@ class RealmService {
       { type: createdExerciseTypes[16], sets: 2, reps: 12, weight: 130, date: new Date("2023-04-09") }
       
     ];
-    for (const exercise of exercisesData) {
+    /* for (const exercise of exercisesData) {
       const exerciseType = exercise.type;
       this.realm.create<ExerciseSchema>("Exercise", {
         id: this.realm.objects<ExerciseSchema>("Exercise").length + 1, // Add this line
@@ -199,10 +199,10 @@ class RealmService {
         weight: exercise.weight,
         date: exercise.date,
       });
-    }
+    } */
   
   })
-} */
+}
 }
     
     

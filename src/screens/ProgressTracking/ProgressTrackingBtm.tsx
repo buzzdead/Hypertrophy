@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
       flexDirection: "column",
     },
     buttonsNormal: {
-      bottom: 10,
+      bottom: 5,
       alignSelf: "center",
       flexDirection: "row",
     },

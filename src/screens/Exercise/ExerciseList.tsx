@@ -11,6 +11,7 @@ import {SideBar} from "../../components/SideBar";
 import {CategorySchema} from "../../config/realmConfig";
 import {usePanHandler} from "../../hooks/usePanHandler";
 import {ExerciseListBtm} from "./ExerciseListBtm";
+import { useScreenOrientation } from "../../hooks/useScreenOrientation";
 
 type ExeciseListProps = StackScreenProps<
   {
@@ -31,6 +32,7 @@ interface State {
 const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   const {categories, refresh: categoriesRefresh, loading: categoriesLoading} = useCategories();
   const {exercises, refresh: exercisesRefresh, loading: exercisesLoading} = useExercises();
+  const screenOrientation = useScreenOrientation()
   const [state, setState] = useState<State>({filteredExercises: [], currentPage: 0, seleectedCategories: [], groupedExercises: []})
   const currentPageRef = useRef(state.currentPage)
 
@@ -101,13 +103,13 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   }, [state.currentPage])
 
   // Figure out a way to fix rerendering cause of this
-  const panResponder = usePanHandler({handlePrevPage, handleNextPage, categories, groupedExercises: state.groupedExercises, currentPageRef});
+  const panResponder = usePanHandler({handlePrevPage, handleNextPage, categories: state.seleectedCategories, groupedExercises: state.groupedExercises, currentPageRef});
   if (categoriesLoading || exercisesLoading) return <LoadingIndicator />;
   console.log("rendering exerciselisasdft")
 
   return (
     <SafeAreaView style={styles.container} {...panResponder?.panHandlers}>
-      <SideBar categories={categories} onFilterChange={handleFilterChange} />
+      <SideBar isLandScape={screenOrientation.isLandscape} categories={categories} onFilterChange={handleFilterChange} />
       <WeeklyExercises
         navigation={navigation}
         onRefresh={_onRefresh}
@@ -117,7 +119,7 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
       <ExerciseListBtm
         currentWeek={state.groupedExercises[state.currentPage]?.weekNumber}
         currentPage={state.currentPage}
-        maxPage={state.groupedExercises.length - 1}
+        maxPage={state.groupedExercises.length - 1 > 0 ? state.groupedExercises.length - 1 : 0}
         handleNextPage={handleNextPage}
         handlePrevPage={handlePrevPage}
         handleGoToLastPage={handleGoToLastPage}

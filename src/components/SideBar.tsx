@@ -1,24 +1,25 @@
 // sidebar.tsx
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useLayoutEffect, useState} from "react";
 import {Animated, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import {CategorySchema} from "../config/realmConfig";
+import { useScreenOrientation } from "../hooks/useScreenOrientation";
 import {colors} from "../utils/util";
-
-const SidebarWidth = 150;
-const SidebarVisibleWidth = 30;
 
 interface SideBarProps {
   categories: CategorySchema[];
   onFilterChange: (selectedCategories: CategorySchema[]) => void;
   icon?: string;
+  isLandScape: boolean
 }
 
-export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, icon}) => {
+export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, icon, isLandScape}) => {
+  const [sideBarWidth, setSideBarWidth] = useState(isLandScape ? 300 : 150)
   const [selectedCategoryAnimations, setSelectedCategoryAnimations] = useState(
     categories.map(() => new Animated.Value(0)),
   );
 
+const SidebarVisibleWidth = 30;
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [translateX] = useState(new Animated.Value(0));
   const [selectedCategories, setSelectedCategories] = useState<CategorySchema[]>([]);
@@ -37,6 +38,7 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, ico
       useNativeDriver: false,
     }).start();
   };
+
   useEffect(() => {
     if(selectedCategories.length > 0) return
     setSelectedCategoryAnimations(categories.map(() => new Animated.Value(0)));
@@ -47,7 +49,7 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, ico
   }, [categories]);
   const handleCloseSidebar = () => {
     Animated.timing(translateX, {
-      toValue: -SidebarWidth,
+      toValue: -sideBarWidth,
       duration: 250,
       useNativeDriver: true,
     }).start(() => setSidebarVisible(false));
@@ -66,20 +68,23 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, ico
       style={[
         styles.sidebar,
         {
+          right: -sideBarWidth + SidebarVisibleWidth,
+          width: sideBarWidth - SidebarVisibleWidth,
+
           transform: [
             {
               translateX: translateX.interpolate({
-                inputRange: [-SidebarWidth, 0],
-                outputRange: [-SidebarWidth + SidebarVisibleWidth, 0],
+                inputRange: [-sideBarWidth, 0],
+                outputRange: [-sideBarWidth + SidebarVisibleWidth, 0],
                 extrapolate: "clamp",
               }),
             },
           ],
         },
       ]}>
-      <View style={styles.sidebarEdgeIndicator}>
+      <View style={{...styles.sidebarEdgeIndicator, left: -SidebarVisibleWidth - 3}}>
         <TouchableOpacity
-          style={{...styles.sidebarEdge, zIndex: sidebarVisible ? 1001 : -1}}
+          style={{...styles.sidebarEdge, zIndex: sidebarVisible ? 1001 : -1, width: SidebarVisibleWidth}}
           onPress={() => (sidebarVisible ? handleCloseSidebar() : handleOpenSidebar())}>
           <MaterialCommunityIcons
             adjustsFontSizeToFit
@@ -90,6 +95,7 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, ico
         </TouchableOpacity>
       </View>
       <Text style={styles.sidebarTitle}>Filter</Text>
+      <View style={isLandScape ? styles.sidebarItemsRow : styles.sidebarItemsColumn}>
       {categories.map((category, index) => (
         <Animated.View
           key={category?.name}
@@ -107,6 +113,7 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, ico
           </TouchableOpacity>
         </Animated.View>
       ))}
+      </View>
     </Animated.View>
   );
 };
@@ -115,10 +122,8 @@ const styles = StyleSheet.create({
   sidebar: {
     position: "absolute",
     top: 0,
-    right: -SidebarWidth + SidebarVisibleWidth,
     bottom: 0,
     zIndex: 1000,
-    width: SidebarWidth - SidebarVisibleWidth,
     elevation: 5, // Add box shadow on Android
     shadowColor: "#000", // Add box shadow on iOS
     shadowOffset: {width: 0, height: 2},
@@ -148,12 +153,10 @@ const styles = StyleSheet.create({
   sidebarEdgeIndicator: {
     position: "absolute",
     top: 35,
-    left: -SidebarVisibleWidth - 3,
     zIndex: 1000,
     borderRadius: 4,
   },
   sidebarEdge: {
-    width: SidebarVisibleWidth,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -162,5 +165,15 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
     width: "100%",
     opacity: 0.95,
+  },
+  sidebarItemsRow: {
+    flexDirection: 'column',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    maxHeight: 150,
+    overflow: 'hidden'
+  },
+  sidebarItemsColumn: {
+    flexDirection: 'column',
   },
 });

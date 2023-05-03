@@ -66,9 +66,9 @@ export const ChartNavigation: React.FC<Props> = ({isLandScape, firstPage, lastPa
 
 const styles = StyleSheet.create({
   contingentButtonLeft: {
-    left: -200,
+    left: -275,
   },
   contingentButtonRight: {
-    right: -200,
+    right: -250,
   },
 });

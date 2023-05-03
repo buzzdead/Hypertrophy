@@ -39,7 +39,7 @@ const ExerciseItem: React.FC<ExerciseItemProps> = ({item, navigation}) => {
           <Text style={{fontStyle: "italic", color: colors.summerDarkest}}>{item.exercise.date.toLocaleDateString()}</Text>
         </View>
           
-          <Text style={{...styles.itemText2, fontFamily: 'Roboto-Bold', color: colors.categories["Arms"] } }>{item.exercise.type?.name}</Text>
+          <Text style={{...styles.itemText2, fontFamily: 'Roboto-Bold', color: colors.categories[item.exercise.type.category.name as abc] || colors.categories.Default } }>{item.exercise.type?.name}</Text>
         
         <View style={{flexDirection: "row"}}>
           <View >

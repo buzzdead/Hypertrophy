@@ -1,6 +1,6 @@
 // screens/ProgressTracking.tsx
 import React, {useLayoutEffect, useState} from "react";
-import {SafeAreaView, View} from "react-native";
+import {SafeAreaView, Text, View} from "react-native";
 import {useCategories} from "../../hooks/useCategories";
 import {SideBar} from "../../components/SideBar";
 import {CategorySchema} from "../../config/realmConfig";
@@ -12,12 +12,12 @@ import { Chart } from "./Chart";
 import { useMonths } from "../../hooks/useMonths";
 import { fetchExercises } from "../../api/realmAPI";
 import { ChartData } from "./ChartData";
+import { IGroup } from "../../../typings/types";
 
 export interface Chart {
-  chartData: number[];
+  chartData: number[] | IGroup[];
   maxExercises: number;
   days: number[];
-  mode: "Daily" | "Weekly";
   currentMonth: number;
   lastHalf: boolean;
   filteredCategories: CategorySchema[]
@@ -33,7 +33,6 @@ const ProgressTracking = () => {
     chartData: [],
     maxExercises: 0,
     days: [],
-    mode: "Daily",
     currentMonth: 0,
     lastHalf: false,
     filteredCategories: []
@@ -64,49 +63,50 @@ const ProgressTracking = () => {
     const newLastHalf = lh !== undefined ? lh : state.lastHalf
     const newCurrentMonth = cm !== undefined ? cm : state.currentMonth
 
-    const newExercises = await fetchExercises({by: "Month", when: availableMonths[newCurrentMonth]?.numerical});
+    const newExercises = mode === 'Daily' ? await fetchExercises({by: "Month", when: availableMonths[newCurrentMonth]?.numerical}) : await fetchExercises()
     const {chartData, maxExercises, days} = ChartData({
       exercises: newExercises,
       categories: state.filteredCategories,
       month: availableMonths[newCurrentMonth]?.numerical,
       year: "2023",
       lastHalf: newLastHalf,
-      mode: "Daily",
+      mode: mode,
     });
-    setState({...state, chartData: chartData, maxExercises: maxExercises, days: days, mode: "Daily", currentMonth: newCurrentMonth, lastHalf: newLastHalf});
+    setState({...state, chartData: chartData, maxExercises: maxExercises, days: days, currentMonth: newCurrentMonth, lastHalf: newLastHalf});
   };
 
   const getChartData2 = async (selectedCategories: CategorySchema[]) => {
 
     const newCategories = selectedCategories.length === 0 ? categories : categories.filter(category => selectedCategories.some(c => c.id === category.id))
-
-    const newExercises = await fetchExercises({by: "Month", when: availableMonths[state.currentMonth]?.numerical});
+    const newExercises = mode === 'Daily' ? await fetchExercises({by: "Month", when: availableMonths[state.currentMonth]?.numerical}) : await fetchExercises()
     const {chartData, maxExercises, days} = ChartData({
       exercises: newExercises,
       categories: newCategories,
       month: availableMonths[state.currentMonth]?.numerical,
       year: "2023",
       lastHalf: state.lastHalf,
-      mode: "Daily",
+      mode: mode,
     });
-    setState({...state, chartData: chartData, maxExercises: maxExercises, days: days, mode: "Daily", filteredCategories: newCategories});
+    setState({...state, chartData: chartData, maxExercises: maxExercises, days: days, filteredCategories: newCategories});
   };
 
   useLayoutEffect(() => {
     if (availableMonths.length === 0) return;
     getChartData();
-  }, [availableMonths]);
+  }, [availableMonths, mode]);
 
   const handleFilterChange = (selectedCategories: CategorySchema[]) => {
     getChartData2(selectedCategories)
   };
-
+  
   if (categoriesLoading || monthsLoading) return <View style={{width: '100%', height: '100%'}}><LoadingIndicator /></View>;
   console.log("rendering progress")
 
+  if(state.chartData.length === 0 || availableMonths.length === 0) return <View style={{justifyContent: 'center', width: '100%', height: '100%', alignItems: 'center'}}><Text>No data found, add some exercises</Text></View>
+
   return (
-    <SafeAreaView style={{width: "100%", height: "100%", justifyContent: "center", alignItems: "center", gap: 60}}>
-      <Chart maxExercises={state.maxExercises} chartData={state.chartData} days={state.days} />
+    <SafeAreaView style={{width: "100%", height: "100%", justifyContent: "center", alignItems: "center", gap: 20}}>
+      <Chart isLandScape={screenOrientation.isLandscape} mode={mode} maxExercises={state.maxExercises} chartData={state.chartData} days={state.days} />
       <ChartNavigation
       isLandScape={screenOrientation.isLandscape}
       handleNext={handleNext}
@@ -116,7 +116,7 @@ const ProgressTracking = () => {
       lastPage={state.lastHalf && state.currentMonth === availableMonths.length - 1}
       />
       <ProgressTrackingBtm mode={mode} landScapeOrientation={screenOrientation.isLandscape} changeMode={setMode} />
-      <SideBar categories={categories} onFilterChange={handleFilterChange} icon={"chart-bar"} />
+      <SideBar isLandScape={screenOrientation.isLandscape} categories={categories} onFilterChange={handleFilterChange} icon={"chart-bar"} />
     </SafeAreaView>
   );
 };
