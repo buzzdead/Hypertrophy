@@ -35,6 +35,7 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   const screenOrientation = useScreenOrientation()
   const [state, setState] = useState<State>({filteredExercises: [], currentPage: 0, seleectedCategories: [], groupedExercises: []})
   const currentPageRef = useRef(state.currentPage)
+  const categoriesRef = useRef(state.seleectedCategories)
 
   const _onRefresh = () => {
     categoriesRefresh();
@@ -43,6 +44,8 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   };
 
   useEffect(() => {
+    if(categoriesLoading) return
+    console.log("iasdjfiasdjfiadsjf")
     const groups = groupExercisesByWeek(exercises);
     if(state.groupedExercises.length > groups.length) handlePrevPage()
     setState({...state, groupedExercises: groups, filteredExercises: updateFilteredExercises(state.currentPage, state.seleectedCategories, groups)})
@@ -52,34 +55,35 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
     _onRefresh()
   }, [])
 
-  const handleNextPage = (currentPage?: number) => {
+  const handleNextPage = (currentPage?: number, selectedCat?: CategorySchema[]) => {
     const newCurrent = typeof currentPage === 'number' ? currentPage : state.currentPage
     if (newCurrent < state.groupedExercises.length - 1) {
-      const filtered = updateFilteredExercises(newCurrent + 1)
+      const filtered = updateFilteredExercises(newCurrent + 1, selectedCat)
       setState({...state, filteredExercises: filtered, currentPage: newCurrent + 1})
     }
   };
 
-  const handlePrevPage = (currentPage?: number) => {
+  const handlePrevPage = (currentPage?: number, selectedCat?: CategorySchema[]) => {
     const newCurrent = typeof currentPage === 'number' ? currentPage : state.currentPage
     if (newCurrent > 0) {
-      const filtered = updateFilteredExercises(newCurrent - 1)
+      const filtered = updateFilteredExercises(newCurrent - 1, selectedCat)
       setState({...state, filteredExercises: filtered, currentPage: newCurrent - 1})
     }
   };
 
   const handleGoToLastPage = () => {
-    const filtered = updateFilteredExercises(state.groupedExercises.length - 1)
+    const filtered = updateFilteredExercises(state.groupedExercises.length - 1, categoriesRef.current)
     setState({...state, filteredExercises: filtered, currentPage: state.groupedExercises.length - 1})
   }
 
   const handleGoToFirstPage = () => {
-    const filtered = updateFilteredExercises(0)
+    const filtered = updateFilteredExercises(0, categoriesRef.current)
     setState({...state, filteredExercises: filtered, currentPage: 0})
   }
 
   const updateFilteredExercises = (cPage: number, currentSelectedCategories?: CategorySchema[], groups?: IGroup[]) => {
     const newCategories = currentSelectedCategories ? currentSelectedCategories : state.seleectedCategories
+    
     const newGroups = groups ? groups : state.groupedExercises
     const filtered =
     newCategories.length === 0
@@ -95,20 +99,22 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
 
   const handleFilterChange = (selected: CategorySchema[]) => {
     const filtered = updateFilteredExercises(state.currentPage, selected)
+    categoriesRef.current = selected
     setState({...state, seleectedCategories: selected, filteredExercises: filtered})
   }
 
   useEffect(() => {
+    if (categoriesLoading || exercisesLoading) return
     currentPageRef.current = state.currentPage
   }, [state.currentPage])
 
   // Figure out a way to fix rerendering cause of this
-  const panResponder = usePanHandler({handlePrevPage, handleNextPage, categories: state.seleectedCategories, groupedExercises: state.groupedExercises, currentPageRef});
+  const panResponder = usePanHandler({handlePrevPage, handleNextPage, groupedExercises: state.groupedExercises, currentPageRef, categoriesRef});
   if (categoriesLoading || exercisesLoading) return <LoadingIndicator />;
   console.log("rendering exerciselisasdft")
 
   return (
-    <SafeAreaView style={styles.container} {...panResponder?.panHandlers}>
+    <SafeAreaView style={styles.container} {...panResponder?.current?.panHandlers}>
       <SideBar isLandScape={screenOrientation.isLandscape} categories={categories} onFilterChange={handleFilterChange} />
       <WeeklyExercises
         navigation={navigation}

@@ -11,20 +11,24 @@ interface Props {
 
 export function useExerciseTypes({category, showAll}: Props) {
   const [exerciseTypes, setExerciseTypes] = useState<ExerciseTypeSchema[]>([]);
+  const [loading, setLoading] = useState(true)
 
   const loadCategories = async () => {
     if(showAll) {const types = await fetchExerciseTypes(); setExerciseTypes(types); return;}
     if (category === null) return;
     const exerciseTypes = await fetchExerciseTypesByCategory(category?.id);
     setExerciseTypes(exerciseTypes);
+    setLoading(false)
   };
 
   const refresh = async () => {
-    await loadCategories()
+    setLoading(true)
+    loadCategories()
   }
 
   useFocusEffect(
     useCallback(() => {
+      setLoading(true)
       loadCategories();
       return () => {};
     }, [category]),
@@ -33,5 +37,5 @@ export function useExerciseTypes({category, showAll}: Props) {
   // Memoize the result based on the category dependency
   const memoizedExerciseTypes = useMemo(() => exerciseTypes, [exerciseTypes]);
 
-  return {memoizedExerciseTypes, refresh};
+  return {memoizedExerciseTypes, loading, refresh};
 }

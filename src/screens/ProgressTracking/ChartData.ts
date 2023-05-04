@@ -44,8 +44,6 @@ export const ChartData = ({exercises, categories, month, year, lastHalf = false,
     tickValues = tickValues;
   } else {
     const modifiedData = chartData.map((e) => typeof e === 'number' ? e : e.weekNumber);
-    console.log(modifiedData)
-    console.log(modifiedData, "modified final")
     tickValues = modifiedData;
   }
   

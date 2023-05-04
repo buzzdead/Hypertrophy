@@ -1,9 +1,9 @@
-import React, {useEffect, useReducer} from "react";
+import React, {useEffect, useReducer, useRef, useState} from "react";
 import {SafeAreaView, ScrollView, StyleSheet, View} from "react-native";
 import PickerField from "./Picker/PickerField";
 import {extend} from "lodash";
 import {Exercise} from "../../../../typings/types";
-import {saveExercise, addExercise} from "../../../api/realmAPI";
+import {saveExercise, addExercise, fetchExerciseTypesByCategory} from "../../../api/realmAPI";
 import NumberInput from "../../../components/NumberInput";
 import {useCategories} from "../../../hooks/useCategories";
 import {useExerciseTypes} from "../../../hooks/useExerciseTypes";
@@ -13,6 +13,7 @@ import CustomButton from "../../../components/CustomButton";
 import AddObject from "./Modal/AddObject";
 import Weight from "./Weight";
 import LoadingIndicator from "../../../components/LoadingIndicator";
+import { ExerciseTypeSchema } from "../../../config/realmConfig";
 
 type Props = {
   navigation: any;
@@ -27,6 +28,7 @@ const initialState: ExerciseReducerType = {
   category: null,
   exerciseType: null,
   validWeight: true,
+  exerciseTypes: []
 };
 
 const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
@@ -39,15 +41,22 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
 
   const [state, dispatch] = useReducer(exerciseListReducer, newState);
   const {categories, loading: categoriesLoading} = useCategories();
-  const {memoizedExerciseTypes: exerciseTypesFromCategory} = useExerciseTypes({category: state.category});
+  const categoryRef = useRef(-1)
+
+  const fetchCategoryAndExerciseTypes = async (categoryId: number) => {
+    const exerciseTypes = await fetchExerciseTypesByCategory(categories[categoryId].id)
+    dispatch({type: "setItAll", payload: {exerciseType: exerciseTypes[0], exerciseTypes: exerciseTypes, category: categories[categoryId]}})
+    categoryRef.current = categoryId
+  }
 
   useEffect(() => {
-    if (!previousExercise) dispatch({type: "setCategory", payload: categories[0]});
-  }, [categories]);
-  useEffect(() => {
-    if (previousExercise && previousExercise.type?.category.id === state.category?.id) return;
-    dispatch({type: "setExerciseType", payload: exerciseTypesFromCategory[0]});
-  }, [exerciseTypesFromCategory]);
+    if(categoriesLoading) return
+    if(previousExercise) {
+      if(state.category && state.category.id !== previousExercise?.type?.category.id) fetchCategoryAndExerciseTypes(state.category ? state.category.id : 0)
+      return
+    }
+    if (categories.length > 0 && categoryRef.current !== state?.category?.id) fetchCategoryAndExerciseTypes(state.category ? state.category.id : 0)
+  }, [categories, state.category]);
 
   const handleAddExercise = async () => {
     const exercise: Exercise = {
@@ -95,7 +104,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
             name={"Exercise Type"}
             picker={220}
             item={state.exerciseType}
-            items={exerciseTypesFromCategory}
+            items={state.exerciseTypes}
             onChange={value => dispatch({type: "setExerciseType", payload: value})}
           />
         </View>

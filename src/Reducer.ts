@@ -5,6 +5,7 @@ export interface ExerciseReducerType extends Pick<Exercise, "date" | "sets" | "r
   category: Nullable<CategorySchema>,
   exerciseType: Nullable<ExerciseTypeSchema>
   validWeight: boolean
+  exerciseTypes: ExerciseTypeSchema[]
 }
 
 type Action =
@@ -14,6 +15,8 @@ type Action =
   | { type: "setWeight"; payload: {value: number | string, validWeight: boolean} }
   | { type: "setCategory"; payload: Nullable<CategorySchema> }
   | { type: "setExerciseType"; payload: Nullable<ExerciseTypeSchema> }
+  | { type: "setExerciseTypes"; payload: ExerciseTypeSchema[] }
+  | { type: "setItAll"; payload: {exerciseType: ExerciseTypeSchema, exerciseTypes: ExerciseTypeSchema[], category: CategorySchema}}
 
 export default function exerciseListReducer(state: ExerciseReducerType, action: Action): ExerciseReducerType {
   switch (action.type) {
@@ -27,6 +30,10 @@ export default function exerciseListReducer(state: ExerciseReducerType, action: 
       return { ...state, category: action.payload }
     case "setExerciseType": 
       return { ...state, exerciseType: action.payload }
+    case "setExerciseTypes": 
+      return { ...state, exerciseTypes: action.payload }
+    case "setItAll":
+      return { ...state, exerciseType: action.payload.exerciseType, exerciseTypes: action.payload.exerciseTypes, category: action.payload.category}
     default:
       throw new Error("Invalid action type");
   }

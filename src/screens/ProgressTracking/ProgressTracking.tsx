@@ -13,6 +13,7 @@ import { useMonths } from "../../hooks/useMonths";
 import { fetchExercises } from "../../api/realmAPI";
 import { ChartData } from "./ChartData";
 import { IGroup } from "../../../typings/types";
+import Contingent from "../../components/Contingent";
 
 export interface Chart {
   chartData: number[] | IGroup[];
@@ -91,6 +92,7 @@ const ProgressTracking = () => {
   };
 
   useLayoutEffect(() => {
+    if (categoriesLoading) return
     if (availableMonths.length === 0) return;
     getChartData();
   }, [availableMonths, mode]);
@@ -103,10 +105,11 @@ const ProgressTracking = () => {
   console.log("rendering progress")
 
   if(state.chartData.length === 0 || availableMonths.length === 0) return <View style={{justifyContent: 'center', width: '100%', height: '100%', alignItems: 'center'}}><Text>No data found, add some exercises</Text></View>
-
+  console.log("rendering real progress")
   return (
     <SafeAreaView style={{width: "100%", height: "100%", justifyContent: "center", alignItems: "center", gap: 20}}>
       <Chart isLandScape={screenOrientation.isLandscape} mode={mode} maxExercises={state.maxExercises} chartData={state.chartData} days={state.days} />
+      <Contingent shouldRender={mode === 'Daily'}>
       <ChartNavigation
       isLandScape={screenOrientation.isLandscape}
       handleNext={handleNext}
@@ -115,6 +118,7 @@ const ProgressTracking = () => {
       firstPage={!state.lastHalf && state.currentMonth === 0}
       lastPage={state.lastHalf && state.currentMonth === availableMonths.length - 1}
       />
+      </Contingent>
       <ProgressTrackingBtm mode={mode} landScapeOrientation={screenOrientation.isLandscape} changeMode={setMode} />
       <SideBar isLandScape={screenOrientation.isLandscape} categories={categories} onFilterChange={handleFilterChange} icon={"chart-bar"} />
     </SafeAreaView>

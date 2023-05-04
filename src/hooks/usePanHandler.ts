@@ -1,19 +1,19 @@
-import { MutableRefObject, useEffect, useState } from "react"
+import { MutableRefObject, useEffect, useRef, useState } from "react"
 import { PanResponder, PanResponderInstance } from "react-native"
 import { ExerciseWithDuplicates, IGroup } from "../../typings/types"
 import { CategorySchema } from "../config/realmConfig"
 
 interface Props {
-    handlePrevPage: (currentPage?: number) => void
-    handleNextPage: (currentPage?: number) => void
+    handlePrevPage: (currentPage?: number, selectedCat?: CategorySchema[]) => void
+    handleNextPage: (currentPage?: number, selectedCat?: CategorySchema[]) => void
     currentPageRef: MutableRefObject<number>
     groupedExercises: IGroup[]
-    categories: CategorySchema[]
+    categoriesRef: MutableRefObject<CategorySchema[]>
 
 }
 
-export const usePanHandler = ({handlePrevPage, handleNextPage, categories, groupedExercises, currentPageRef}: Props) => {
-    const [panResponder, setPanResponder] = useState<PanResponderInstance>()
+export const usePanHandler = ({handlePrevPage, handleNextPage, groupedExercises, currentPageRef, categoriesRef}: Props) => {
+    const panResponder = useRef<PanResponderInstance>()
 
     useEffect(() => {
         const responder = PanResponder.create({
@@ -23,14 +23,14 @@ export const usePanHandler = ({handlePrevPage, handleNextPage, categories, group
           },
           onPanResponderEnd: (event, gestureState) => {
             if (gestureState.dx > 50 && gestureState.vx > 0.5) {
-              handlePrevPage(currentPageRef.current);
+              handlePrevPage(currentPageRef.current, categoriesRef.current);
             } else if (gestureState.dx < -50 && gestureState.vx < -0.5) {
-              handleNextPage(currentPageRef.current);
+              handleNextPage(currentPageRef.current, categoriesRef.current);
             }
           },
         });
-        setPanResponder(responder);
-      }, [categories, groupedExercises]);
+          panResponder.current = responder
+      }, [groupedExercises]);
 
       return panResponder
 }
