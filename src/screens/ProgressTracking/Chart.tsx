@@ -5,7 +5,7 @@ import { colors } from "../../utils/util"
 
 interface Props {
     chartData: number[] | IGroup[]
-    days: number[]
+    days: number[] | string[]
     maxExercises: number
     mode: 'Daily' | 'Weekly' | 'Categories'
     isLandScape: boolean
@@ -19,7 +19,7 @@ export const Chart: React.FC<Props> = ({chartData, days, maxExercises, mode, isL
           style={{axisLabel: {padding: 30, fontSize: 16}}}
           tickCount={chartData.length || 1}
           tickFormat={id => (days ? days[id] : id)}
-          label={mode === 'Daily' ? "Days in month" : 'Weeks'}
+          label={mode === 'Daily' ? "Days in month" : mode === 'Weekly' ? 'Weeks' : 'Categories'}
         />
         <VictoryAxis style={{axisLabel: {padding: 30, fontSize: 16}}} dependentAxis label={"Exercises"} tickCount={maxExercises > 14 ? Math.ceil(maxExercises / 2) : maxExercises || 1} tickFormat={(i) => Math.round(i)}/>
         <VictoryGroup offset={20}>

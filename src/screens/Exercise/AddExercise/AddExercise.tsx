@@ -56,7 +56,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
       return
     }
     if (categories.length > 0 && categoryRef.current !== state?.category?.id) fetchCategoryAndExerciseTypes(state.category ? state.category.id : 0)
-  }, [categories, state.category]);
+  }, [categoriesLoading, state.category]);
 
   const handleAddExercise = async () => {
     const exercise: Exercise = {

@@ -5,11 +5,13 @@ import ProgressTracking from "./screens/ProgressTracking/ProgressTracking";
 import Settings from "./screens/Settings/Settings";
 import {colors} from "./utils/util";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { Home } from "./screens/Home";
 
 type BottomTabParamList = {
   List: undefined;
   Progress: undefined;
   Settings: undefined;
+  Home: undefined
 };
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
@@ -33,6 +35,18 @@ const Tabs: React.FC<Props> = () => {
         headerTintColor: colors.summerWhite,
         headerStyle: {backgroundColor: colors.summerDark},
       }}>
+      <Tab.Screen
+        name="Home"
+        component={Home}
+        initialParams={undefined}
+        options={{
+          title: "Home",
+          ...options,
+          tabBarIcon: ({size, focused}) => (
+            <MaterialCommunityIcons name="home" color={focused ? colors.accent : colors.summerWhite} size={size} />
+          ),
+        }}
+      />
       <Tab.Screen
         name="List"
         component={ExerciseList}

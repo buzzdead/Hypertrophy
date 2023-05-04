@@ -16,9 +16,14 @@ The app has three main screens:
 
    <img src="images/Progress.png" alt="Progress" width="250"/>
    <img src="images/ProgressFilter.png" alt="ProgressFilter" width="250"/>
+   <img src="images/ProgressWeekly.png" alt="ProgressWeekly" width="250"/>
 
 3. Settings - The Settings screen, here you can edit / delete your categories / exercise types
 
    <img src="images/Settings.png" alt="Settings" width="250"/>
    <img src="images/Categories.png" alt="Categories" width="250"/>
    <img src="images/ExerciseTypes.png" alt="Exercise Types" width="250"/>
+
+4. Home - The home screen where you keep track of your current week.
+
+   <img src="images/Home.png" alt="Home" width="250" />

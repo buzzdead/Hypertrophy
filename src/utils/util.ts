@@ -63,11 +63,12 @@ export const getExercisesByDate = (exercises: Exercise[], categories: CategorySc
   }, []);
 }
 
-export const groupExercisesByWeek = (sortedExercises: ExerciseSchema[]) => {
+export const groupExercisesByWeek = (sortedExercises: ExerciseSchema[], needValidation?: boolean) => {
   const groups: IGroup[] = [];
   const groupsByWeekKey: { [weekKey: string]: IGroup } = {};
+  const currentSortedExercises = needValidation ? sortedExercises.filter(e => e.isValid()) : sortedExercises
 
-  sortedExercises.forEach(exercise => {
+  currentSortedExercises.forEach(exercise => {
     const weekStart = exercise?.date ? new Date(exercise.date) : new Date();
     weekStart.setDate(weekStart.getDate() - ((weekStart.getDay() + 6) % 7));
     const weekNumber = getWeekNumber(weekStart);

@@ -20,7 +20,7 @@ class RealmService {
       this.realm.delete(exerciseTypes);
       this.realm.delete(exercises);
       // Create categories
-      const categoriesData = [    { name: "Chest"},    { name: "Back"},    { name: "Shoulders"},    { name: "Arms"},    { name: "Legs"},    { name: "Abs"},    { name: "Glutes"},    { name: "Calves"},  ];
+      const categoriesData = [    { name: "Chest"},    { name: "Back"},    { name: "Shoulders"},    { name: "Arms"},    { name: "Legs"},    { name: "Abs"}, ];
 
   const createdCategories: CategorySchema[] = []; // Use an array instead of a Map
   categoriesData.forEach((e) => {
@@ -84,17 +84,17 @@ class RealmService {
 { name: "Ab Wheel Rollout", category: createdCategories[5]},
 
 // Glutes
-{ name: "Hip Thrust", category: createdCategories[6]},
-{ name: "Glute Bridge", category: createdCategories[6]},
-{ name: "Lunges", category: createdCategories[6]},
-{ name: "Step-Up", category: createdCategories[6]},
-{ name: "Kickbacks", category: createdCategories[6]},
+{ name: "Hip Thrust", category: createdCategories[4]},
+{ name: "Glute Bridge", category: createdCategories[4]},
+{ name: "Lunges", category: createdCategories[4]},
+{ name: "Step-Up", category: createdCategories[4]},
+{ name: "Kickbacks", category: createdCategories[4]},
 
 // Calves
-{ name: "Standing Calf Raise", category: createdCategories[7]},
-{ name: "Seated Calf Raise", category: createdCategories[7]},
-{ name: "Donkey Calf Raise", category: createdCategories[7]},
-{ name: "Toe Press", category: createdCategories[7]},
+{ name: "Standing Calf Raise", category: createdCategories[4]},
+{ name: "Seated Calf Raise", category: createdCategories[4]},
+{ name: "Donkey Calf Raise", category: createdCategories[4]},
+{ name: "Toe Press", category: createdCategories[4]},
   ];
   const createdExerciseTypes: ExerciseTypeSchema[] = []; // Use an array instead of a Map
   exerciseTypesData.forEach((e) => {
