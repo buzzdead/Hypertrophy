@@ -2,6 +2,8 @@
 
 Welcome to the Hypertrophy Exercise App! This app is designed to help you keep track of your exercises and progress towards your fitness goals.
 
+[Link to app on google play store](https://play.google.com/store/apps/details?id=com.hypertrophy)
+
 ## Screens
 
 The app has three main screens:

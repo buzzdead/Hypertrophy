@@ -186,10 +186,23 @@ class RealmService {
       { type: createdExerciseTypes[13], sets: 3, reps: 12, weight: 10, date: new Date("2023-04-22") },
       { type: createdExerciseTypes[14], sets: 2, reps: 15, weight: 0, date: new Date("2023-04-23") },
       { type: createdExerciseTypes[15], sets: 3, reps: 10, weight: 35, date: new Date("2023-04-24") },
-      { type: createdExerciseTypes[16], sets: 2, reps: 12, weight: 130, date: new Date("2023-04-09") }
+      { type: createdExerciseTypes[16], sets: 2, reps: 12, weight: 130, date: new Date("2023-04-09") },
+
+      { type: createdExerciseTypes[16], sets: 2, reps: 12, weight: 130, date: new Date("2023-04-25") },
+      { type: createdExerciseTypes[6], sets: 2, reps: 15, weight: 0, date: new Date("2023-04-26") },
+      { type: createdExerciseTypes[7], sets: 3, reps: 10, weight: 40, date: new Date("2023-04-27") },
+      { type: createdExerciseTypes[8], sets: 3, reps: 12, weight: 25, date: new Date("2023-04-30") },
+      { type: createdExerciseTypes[9], sets: 4, reps: 8, weight: 60, date: new Date("2023-04-30") },
+      { type: createdExerciseTypes[10], sets: 3, reps: 12, weight: 30, date: new Date("2023-05-01") },
+      { type: createdExerciseTypes[11], sets: 5, reps: 5, weight: 80, date: new Date("2023-05-02") },
+      { type: createdExerciseTypes[12], sets: 4, reps: 6, weight: 70, date: new Date("2023-05-03") },
+      { type: createdExerciseTypes[13], sets: 3, reps: 12, weight: 10, date: new Date("2023-05-3") },
+      { type: createdExerciseTypes[14], sets: 2, reps: 15, weight: 0, date: new Date("2023-05-02") },
+      { type: createdExerciseTypes[15], sets: 3, reps: 10, weight: 35, date: new Date("2023-01-05") },
+      { type: createdExerciseTypes[16], sets: 2, reps: 12, weight: 130, date: new Date("2023-02-05") }
       
     ];
-    /* for (const exercise of exercisesData) {
+    for (const exercise of exercisesData) {
       const exerciseType = exercise.type;
       this.realm.create<ExerciseSchema>("Exercise", {
         id: this.realm.objects<ExerciseSchema>("Exercise").length + 1, // Add this line
@@ -199,7 +212,7 @@ class RealmService {
         weight: exercise.weight,
         date: exercise.date,
       });
-    } */
+    }
   
   })
 }
