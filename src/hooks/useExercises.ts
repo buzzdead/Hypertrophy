@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import {fetchExercises} from "../api/realmAPI";
-import { ExerciseSchema } from '../config/realmConfig';
+import {fetchExercises} from "../api/realm";
+import { ExerciseSchema } from '../config/realm';
 
 
 export function useExercises(limitBy?: {by: 'Month', when: number} ) {

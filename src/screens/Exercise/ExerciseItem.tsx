@@ -9,6 +9,8 @@ type ExerciseItemProps = {
   navigation: StackScreenProps<any, "List">["navigation"];
 };
 
+type CategoryColors = keyof typeof colors.categories
+
 const ExerciseItem: React.FC<ExerciseItemProps> = ({item, navigation}) => {
   const renderDuplicate = (duplicate: Duplicate) => {
     return (
@@ -26,8 +28,6 @@ const ExerciseItem: React.FC<ExerciseItemProps> = ({item, navigation}) => {
     );
   };
 
-  type abc = keyof typeof colors.categories
-
   return (
     <TouchableOpacity
       style={{...styles.container, backgroundColor: 'white' }}
@@ -38,9 +38,7 @@ const ExerciseItem: React.FC<ExerciseItemProps> = ({item, navigation}) => {
           <Text style={{...styles.itemText, fontSize: 14, color: colors.summerDarkest}}>{item.exercise.type?.category.name}</Text>
           <Text style={{fontStyle: "italic", color: colors.summerDarkest}}>{item.exercise.date.toLocaleDateString()}</Text>
         </View>
-          
-          <Text style={{...styles.itemText2, fontFamily: 'Roboto-Bold', color: colors.categories[item?.exercise?.type?.category?.name as abc] || colors.categories.Default } }>{item.exercise.type?.name}</Text>
-        
+          <Text style={{...styles.itemText2, fontFamily: 'Roboto-Bold', color: colors.categories[item?.exercise?.type?.category?.name as CategoryColors] || colors.categories.Default } }>{item.exercise.type?.name}</Text>
         <View style={{flexDirection: "row"}}>
           <View >
             <Text style={{...styles.itemText2, color: colors.summerDark}}>{item.exercise.sets + " sets x "}</Text>

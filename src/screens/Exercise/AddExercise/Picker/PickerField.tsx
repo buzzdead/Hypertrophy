@@ -3,7 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Picker from "./Picker";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons/faCaretDown";
-import { CategorySchema, ExerciseTypeSchema } from "../../../../config/realmConfig";
+import { CategorySchema, ExerciseTypeSchema } from "../../../../config/realm";
 import { colors } from "../../../../utils/util";
 
 type Props = {

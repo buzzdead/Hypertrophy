@@ -1,8 +1,8 @@
 // screens/Settings.tsx
 import React from "react";
 import { Alert, SafeAreaView, ScrollView, Text, View } from "react-native";
-import { deleteCategory, deleteExerciseType, editCategory, editExerciseType } from "../../api/realmAPI";
-import { CategorySchema, ExerciseTypeSchema } from "../../config/realmConfig";
+import { deleteCategory, deleteExerciseType, editCategory, editExerciseType } from "../../api/realm";
+import { CategorySchema, ExerciseTypeSchema } from "../../config/realm";
 import { colors } from "../../utils/util";
 import CustomButton from "../../components/CustomButton";
 

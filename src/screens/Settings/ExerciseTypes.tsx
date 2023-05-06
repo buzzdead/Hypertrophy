@@ -3,7 +3,7 @@ import {StyleSheet, Text, View} from "react-native";
 import {ScrollView} from "react-native-gesture-handler";
 import {SafeAreaView} from "react-native-safe-area-context";
 import CustomButton from "../../components/CustomButton";
-import {CategorySchema, ExerciseTypeSchema} from "../../config/realmConfig";
+import {CategorySchema, ExerciseTypeSchema} from "../../config/realm";
 import {useExerciseTypes} from "../../hooks/useExerciseTypes";
 import {colors} from "../../utils/util";
 import NewObjectModal from "../Exercise/AddExercise/Modal/NewObjectModal";

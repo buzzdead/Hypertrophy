@@ -1,4 +1,6 @@
-import { ExerciseSchema, ExerciseTypeSchema } from "../src/config/realmConfig";
+import { ExerciseSchema, ExerciseTypeSchema, MonthSchema, CategorySchema } from "../src/config/realm";
+
+export type Schema = ExerciseSchema | ExerciseTypeSchema | MonthSchema | CategorySchema;
 
 // types.ts
 export type Exercise = {

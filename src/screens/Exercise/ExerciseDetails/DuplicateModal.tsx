@@ -18,7 +18,9 @@ const DuplicateModal: React.FC<Props> = ({visible, onClose, onPress, duplicateEx
         <View style={styles.modalOverlay} />
       </TouchableWithoutFeedback>
       <View style={styles.modalContent}>
-        <Text style={{fontFamily: 'Roboto-Bold', color: colors.summerDark, fontSize: 16}}>Choose which exercise you want to edit</Text>
+        <Text style={{fontFamily: "Roboto-Bold", color: colors.summerDark, fontSize: 16}}>
+          Choose which exercise you want to edit
+        </Text>
         {duplicateExercises.map(e => {
           return (
             <View key={e.id} style={{gap: 5}}>
@@ -30,7 +32,9 @@ const DuplicateModal: React.FC<Props> = ({visible, onClose, onPress, duplicateEx
                 titleColor={colors.summerBlue}
                 onPress={() => onPress(e)}
               />
-              <Text style={{textAlign: "center", fontFamily: "Roboto-Black", color: colors.summerDark}}>Id: {e.id}</Text>
+              <Text style={{textAlign: "center", fontFamily: "Roboto-Black", color: colors.summerDark}}>
+                Id: {e.id}
+              </Text>
               <Text style={{textAlign: "center", fontFamily: "Roboto-Black", color: colors.summerDark}}>
                 Sets: {e.sets} Reps: {e.reps} Weight: {e.weight}
               </Text>
@@ -41,8 +45,6 @@ const DuplicateModal: React.FC<Props> = ({visible, onClose, onPress, duplicateEx
     </Modal>
   );
 };
-
-export default DuplicateModal;
 
 const styles = StyleSheet.create({
   modalOverlay: {
@@ -67,3 +69,5 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto-Bold",
   },
 });
+
+export default DuplicateModal;

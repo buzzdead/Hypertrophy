@@ -1,7 +1,7 @@
 import { MutableRefObject, useEffect, useRef, useState } from "react"
 import { PanResponder, PanResponderInstance } from "react-native"
 import { ExerciseWithDuplicates, IGroup } from "../../typings/types"
-import { CategorySchema } from "../config/realmConfig"
+import { CategorySchema } from "../config/realm"
 
 interface Props {
     handlePrevPage: (currentPage?: number, selectedCat?: CategorySchema[]) => void

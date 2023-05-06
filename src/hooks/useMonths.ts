@@ -1,7 +1,7 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useRef, useState } from "react";
-import { fetchMonths } from "../api/realmAPI";
-import { MonthSchema } from "../config/realmConfig";
+import { fetchMonths } from "../api/realm";
+import { MonthSchema } from "../config/realm";
 import { getAvailableMonths, Month } from "../utils/util";
 
 export function useMonths() {

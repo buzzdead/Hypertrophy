@@ -3,7 +3,7 @@ import {StyleSheet, Text, View} from "react-native";
 import {ScrollView} from "react-native-gesture-handler";
 import {SafeAreaView} from "react-native-safe-area-context";
 import CustomButton from "../../components/CustomButton";
-import {CategorySchema} from "../../config/realmConfig";
+import {CategorySchema} from "../../config/realm";
 import {useCategories} from "../../hooks/useCategories";
 import {colors} from "../../utils/util";
 import NewObjectModal from "../Exercise/AddExercise/Modal/NewObjectModal";
@@ -19,7 +19,6 @@ export function Categories() {
     onClose(id);
   };
   const onOpen = (id: number) => {
-    console.log(id);
     setModalVisible(
       modalVisible.map(m => {
         if (m.id === id) {

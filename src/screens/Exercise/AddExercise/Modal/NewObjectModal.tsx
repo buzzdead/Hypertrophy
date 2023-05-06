@@ -9,7 +9,7 @@ import {
   TouchableWithoutFeedback,
   Text,
 } from "react-native";
-import {CategorySchema, ExerciseTypeSchema} from "../../../../config/realmConfig";
+import {CategorySchema, ExerciseTypeSchema} from "../../../../config/realm";
 import {useCategories} from "../../../../hooks/useCategories";
 import PickerField from "../Picker/PickerField";
 
@@ -21,9 +21,9 @@ type NewObjectModalProps = {
   id?: number;
   currentValue?: string;
   currentCategory?: CategorySchema;
-  title?: string
+  title?: string;
   objectType: "Category" | "Exercise Type";
-  name: "Exercise Type" | "Category"
+  name: "Exercise Type" | "Category";
 };
 
 const NewObjectModal = ({
@@ -36,10 +36,10 @@ const NewObjectModal = ({
   currentValue,
   currentCategory,
   title,
-  name
+  name,
 }: NewObjectModalProps) => {
   const [objectName, setObjectName] = useState(currentValue || "");
-  const {categories} = useCategories()
+  const {categories} = useCategories();
   const [category, setCategory] = useState<Optional<CategorySchema>>(currentCategory);
 
   const handleAdd = () => {
@@ -66,7 +66,7 @@ const NewObjectModal = ({
         />
         {objectType === "Exercise Type" && (
           <PickerField
-          name={name}
+            name={name}
             item={category!}
             items={categories}
             onChange={value => handleOnChange(value)}

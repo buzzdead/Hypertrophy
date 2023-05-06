@@ -4,7 +4,7 @@ import {Duplicate, Exercise} from "../../../../typings/types";
 import CustomButton from "../../../components/CustomButton";
 import {colors} from "../../../utils/util";
 import Contingent from "../../../components/Contingent";
-import {deleteExercise, findAllDuplicateExercises} from "../../../api/realmAPI";
+import {deleteExercise, findAllDuplicateExercises} from "../../../api/realm";
 import DuplicateModal from "./DuplicateModal";
 
 interface ExerciseDetailsContentProps {

@@ -18,8 +18,9 @@ const WeeklyExercises: React.FC<WeeklyExercisesProps> = ({
   refreshing = false,
   groupedExercises
 }) => {
-
+  
   const [currentExercises, setCurrentExercises] = useState<ExerciseWithDuplicates[]>([])
+
   useEffect(() => {
     if(!groupedExercises || groupedExercises === undefined) {
       const newExercises = currentExercises.filter(e => e.exercise.isValid())

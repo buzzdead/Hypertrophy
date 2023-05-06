@@ -1,16 +1,17 @@
 import React, {useState} from "react";
 import {View, StyleSheet} from "react-native";
-import { addCategory, addExerciseType } from "../../../../api/realmAPI";
+import { addCategory, addExerciseType } from "../../../../api/realm";
 import CustomButton from "../../../../components/CustomButton";
-import { CategorySchema, ExerciseTypeSchema } from "../../../../config/realmConfig";
+import { CategorySchema } from "../../../../config/realm";
 import { colors } from "../../../../utils/util";
 import NewObjectModal from "./NewObjectModal";
 
 type Props = {
   isCategory: boolean;
+  s: () => void
 };
 
-const AddObject = ({isCategory}: Props) => {
+const AddObject = ({isCategory, s}: Props) => {
   const [modalVisible, setModalVisible] = useState(false);
   const name = isCategory ? "Exercise Type" : "Category"
 
@@ -22,9 +23,10 @@ const AddObject = ({isCategory}: Props) => {
     setModalVisible(false);
   };
 
-  const handleAdd = (name: string, isCategory: boolean, category?: Nullable<CategorySchema>) => {
-    isCategory ? addCategory(name) : addExerciseType(name, category!);
+  const handleAdd = async (name: string, isCategory: boolean, category?: Nullable<CategorySchema>) => {
+    isCategory ? await addCategory(name) : await addExerciseType(name, category!);
     closeModal();
+    s()
   };
 
   return (

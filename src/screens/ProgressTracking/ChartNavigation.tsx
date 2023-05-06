@@ -2,8 +2,7 @@ import React, {} from "react";
 import {StyleSheet, Text, View} from "react-native";
 import Contingent from "../../components/Contingent";
 import CustomButton from "../../components/CustomButton";
-import { MonthSchema } from "../../config/realmConfig";
-import {colors, Month} from "../../utils/util";
+import {colors} from "../../utils/util";
 
 interface Props {
   isLandScape: boolean

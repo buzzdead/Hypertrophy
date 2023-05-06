@@ -1,7 +1,7 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { fetchExerciseTypes, fetchExerciseTypesByCategory } from "../api/realmAPI";
-import { CategorySchema, ExerciseTypeSchema } from "../config/realmConfig";
+import { fetchExerciseTypes, fetchExerciseTypesByCategory } from "../api/realm";
+import { CategorySchema, ExerciseTypeSchema } from "../config/realm";
 
 interface Props {
   category: Nullable<CategorySchema>

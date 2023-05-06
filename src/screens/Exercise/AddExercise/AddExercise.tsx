@@ -1,19 +1,17 @@
-import React, {useEffect, useReducer, useRef, useState} from "react";
+import React, {useEffect, useReducer, useRef} from "react";
 import {SafeAreaView, ScrollView, StyleSheet, View} from "react-native";
 import PickerField from "./Picker/PickerField";
 import {extend} from "lodash";
 import {Exercise} from "../../../../typings/types";
-import {saveExercise, addExercise, fetchExerciseTypesByCategory} from "../../../api/realmAPI";
+import {saveExercise, addExercise, fetchExerciseTypesByCategory} from "../../../api/realm";
 import NumberInput from "../../../components/NumberInput";
 import {useCategories} from "../../../hooks/useCategories";
-import {useExerciseTypes} from "../../../hooks/useExerciseTypes";
 import exerciseListReducer, {ExerciseReducerType} from "../../../Reducer";
 import {colors} from "../../../utils/util";
 import CustomButton from "../../../components/CustomButton";
 import AddObject from "./Modal/AddObject";
 import Weight from "./Weight";
 import LoadingIndicator from "../../../components/LoadingIndicator";
-import { ExerciseTypeSchema } from "../../../config/realmConfig";
 
 type Props = {
   navigation: any;
@@ -40,23 +38,13 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
     : initialState;
 
   const [state, dispatch] = useReducer(exerciseListReducer, newState);
-  const {categories, loading: categoriesLoading} = useCategories();
+  const {categories, refresh, loading: categoriesLoading} = useCategories();
   const categoryRef = useRef(-1)
 
-  const fetchCategoryAndExerciseTypes = async (categoryId: number) => {
-    const exerciseTypes = await fetchExerciseTypesByCategory(categories[categoryId].id)
-    dispatch({type: "setItAll", payload: {exerciseType: exerciseTypes[0], exerciseTypes: exerciseTypes, category: categories[categoryId]}})
-    categoryRef.current = categoryId
+  const _refresh = async () => {
+    await refresh()
+    onCategoryChange(state.category?.id || 0)
   }
-
-  useEffect(() => {
-    if(categoriesLoading) return
-    if(previousExercise) {
-      if(state.category && state.category.id !== previousExercise?.type?.category.id) fetchCategoryAndExerciseTypes(state.category ? state.category.id : 0)
-      return
-    }
-    if (categories.length > 0 && categoryRef.current !== state?.category?.id) fetchCategoryAndExerciseTypes(state.category ? state.category.id : 0)
-  }, [categoriesLoading, state.category]);
 
   const handleAddExercise = async () => {
     const exercise: Exercise = {
@@ -75,11 +63,28 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
     navigation.goBack();
   };
 
+  const onCategoryChange = async (categoryId: number) => {
+    if(categories[categoryId] === undefined) {console.log(categories); return}
+    const exerciseTypes = await fetchExerciseTypesByCategory(categories[categoryId].id)
+    dispatch({type: "setItAll", payload: {exerciseType: exerciseTypes[0], exerciseTypes: exerciseTypes, category: categories[categoryId]}})
+    categoryRef.current = categoryId
+  }
+
   const onWeightChange = (value: number | string, validWeight: boolean) => {
     dispatch({type: "setWeight", payload: {value, validWeight}});
   };
 
+  useEffect(() => {
+    if(categoriesLoading) return
+    if(previousExercise) {
+      if(state.category && state.category.id !== previousExercise?.type?.category.id) onCategoryChange(state.category ? state.category.id : 0)
+      return
+    }
+    if (categories.length > 0 && categoryRef.current !== state?.category?.id) onCategoryChange(state.category?.id || 0)
+  }, [categoriesLoading, state.category]);
+
   if(categoriesLoading) return <LoadingIndicator />
+  
   console.log("rendering add exercise")
 
   return (
@@ -95,7 +100,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
           />
         </View>
         <View style={{flex: 1, justifyContent: "flex-end", paddingBottom: 11}}>
-          <AddObject isCategory />
+          <AddObject isCategory s={refresh} />
         </View>
       </View>
       <View style={{flexDirection: "row", gap: 40, paddingBottom: 55}}>
@@ -109,7 +114,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
           />
         </View>
         <View style={{flex: 1, justifyContent: "flex-end", paddingBottom: 11}}>
-          <AddObject isCategory={false} />
+          <AddObject isCategory={false} s={_refresh}/>
         </View>
       </View>
       <Weight

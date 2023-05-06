@@ -2,7 +2,7 @@
 import React, {useEffect, useLayoutEffect, useState} from "react";
 import {Animated, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import {CategorySchema} from "../config/realmConfig";
+import {CategorySchema} from "../config/realm";
 import { useScreenOrientation } from "../hooks/useScreenOrientation";
 import {colors} from "../utils/util";
 
