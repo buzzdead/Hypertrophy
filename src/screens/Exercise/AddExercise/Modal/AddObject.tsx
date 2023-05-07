@@ -34,7 +34,7 @@ const AddObject = ({isCategory, s}: Props) => {
       <View style={styles.addButton}>
        <CustomButton
           title="+"
-          fontSize={24}
+          fontSize={32}
           titleColor={colors.accent}
           backgroundColor={colors.summerDark}
           onPress={openModal}

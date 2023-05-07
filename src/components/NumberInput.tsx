@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 32,
     fontFamily: "Roboto-Black",
-    color: colors.summerBlue,
+    color: 'black'
   },
   borderedFlatList: {
     borderWidth: 2,

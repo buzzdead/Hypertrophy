@@ -17,23 +17,24 @@ type PickerProps = {
 const Picker: React.FC<PickerProps> = ({ visible, items, onSelect, onClose, picker, maxWidth }) => {
   return (
     <Modal visible={visible} transparent={true} animationType="fade" onRequestClose={onClose}>
-      <TouchableWithoutFeedback onPress={onClose}>
+      <TouchableWithoutFeedback onPress={onClose} accessibilityLabel='close'>
         <View style={styles.modalOverlay} />
       </TouchableWithoutFeedback>
       <View style={{...styles.pickerContainer, top: picker ? picker : 140, maxWidth: maxWidth, left: maxWidth ? 55 : 16}}>
         <FlatList
+        accessibilityLabel="menu"
           data={items.filter(item => item.name !== "default")}
           renderItem={({ item }) => (
             <TouchableHighlight
             underlayColor={colors.summerBlue}
-              style={{ padding: 8 }}
+              style={{ paddingVertical: 16, paddingLeft: 8 }}
               onPress={() => {
                 onSelect(item);
                 onClose();
               }}
              
             >
-              <Text>{item.name}</Text>
+              <Text style={{fontFamily: 'Roboto-Medium', fontSize: 16}}>{item.name}</Text>
             </TouchableHighlight>
           )}
           keyExtractor={item => item.name}

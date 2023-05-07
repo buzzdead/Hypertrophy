@@ -95,11 +95,12 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
           <PickerField
             item={state.category}
             name={"Category"}
+            maxWidth={275}
             items={categories}
             onChange={value => dispatch({type: "setCategory", payload: value})}
           />
         </View>
-        <View style={{flex: 1, justifyContent: "flex-end", paddingBottom: 11}}>
+        <View style={{flex: 1, justifyContent: "flex-end", paddingBottom: 12, paddingRight: 12}}>
           <AddObject isCategory s={refresh} />
         </View>
       </View>
@@ -107,13 +108,14 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
         <View style={{flex: 6}}>
           <PickerField
             name={"Exercise Type"}
+            maxWidth={275}
             picker={220}
             item={state.exerciseType}
             items={state.exerciseTypes}
             onChange={value => dispatch({type: "setExerciseType", payload: value})}
           />
         </View>
-        <View style={{flex: 1, justifyContent: "flex-end", paddingBottom: 11}}>
+        <View style={{flex: 1, justifyContent: "flex-end", paddingBottom: 12, paddingRight: 12}}>
           <AddObject isCategory={false} s={_refresh}/>
         </View>
       </View>

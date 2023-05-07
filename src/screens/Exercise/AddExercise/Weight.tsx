@@ -26,13 +26,14 @@ const Weight: React.FC<Props> = ({title, value, onChange}) => {
           value={String(value)}
           onChangeText={handleWeightChange}
         />
-        <Text style={{textAlign: "center", alignSelf: "center", fontSize: 24}}>Kg</Text>
+        <Text style={{textAlign: "center", alignSelf: "center", fontSize: 24, fontFamily: 'Roboto-Bold', color: colors.summerDark, marginLeft: 5}}>Kg</Text>
       </View>
+      {!isWeightValid && <Text style={styles.errorText}>Weight must be a number</Text>}
       <Image
         source={require("../../../../assets/images/weights.png")}
         style={{width: "20%", height: "100%", position: "absolute", top: -60}}
       />
-      {!isWeightValid && <Text style={styles.errorText}>Weight must be a number</Text>}
+      
     </View>
   );
 };
@@ -40,8 +41,8 @@ const Weight: React.FC<Props> = ({title, value, onChange}) => {
 const styles = StyleSheet.create({
   inputContainer: {
     marginBottom: 16,
-    marginTop: 60,
-    flexDirection: "row",
+    marginTop: 6,
+    flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 10,
@@ -57,7 +58,7 @@ const styles = StyleSheet.create({
     borderColor: "#BDBDBD",
     borderWidth: 1,
     borderRadius: 4,
-    color: colors.summerBlue,
+    color: 'black',
     minWidth: 75,
     marginLeft: 27.5,
     textAlign: "center",
@@ -77,7 +78,10 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: "red",
-    fontSize: 12,
+    position: 'absolute',
+    top: 60,
+    fontSize: 14,
+    fontFamily: "Roboto-Normal",
     marginTop: 4,
   },
 });

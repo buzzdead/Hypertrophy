@@ -19,7 +19,7 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, ico
     categories.map(() => new Animated.Value(0)),
   );
 
-const SidebarVisibleWidth = 30;
+const SidebarVisibleWidth = 48;
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [translateX] = useState(new Animated.Value(0));
   const [selectedCategories, setSelectedCategories] = useState<CategorySchema[]>([]);
@@ -39,14 +39,7 @@ const SidebarVisibleWidth = 30;
     }).start();
   };
 
-  useEffect(() => {
-    if(selectedCategories.length > 0) return
-    setSelectedCategoryAnimations(categories.map(() => new Animated.Value(0)));
-    selectedCategories.length > 0 && setSelectedCategories(selectedCategories => {
-      const newSelectedCategories = selectedCategories.filter(cat => categories.includes(cat));
-      return newSelectedCategories;
-    });
-  }, [categories]);
+ 
   const handleCloseSidebar = () => {
     Animated.timing(translateX, {
       toValue: -sideBarWidth,
@@ -62,6 +55,8 @@ const SidebarVisibleWidth = 30;
       useNativeDriver: true,
     }).start(() => setSidebarVisible(true));
   };
+
+
 
   return (
     <Animated.View
@@ -89,7 +84,7 @@ const SidebarVisibleWidth = 30;
           <MaterialCommunityIcons
             adjustsFontSizeToFit
             name={icon || "tune-vertical"}
-            size={28}
+            size={48}
             color={sidebarVisible ? "green" : "red"}
           />
         </TouchableOpacity>
@@ -141,11 +136,12 @@ const styles = StyleSheet.create({
   sidebarItem: {
     borderBottomWidth: 0.25,
     borderBottomColor: colors.summerWhite,
+    paddingVertical: 5,
   },
   sidebarItemText: {
     fontSize: 14,
     fontWeight: "bold",
-    padding: 11.4,
+    padding: 14,
     fontFamily: "Roboto-Bold",
     color: colors.summerDarkest,
     textAlign: "center",

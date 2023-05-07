@@ -36,10 +36,10 @@ const PickerField = ({ item, items, onChange, setLoading, picker, maxWidth, name
         </View>
         <View style={pickerStyles.pickerInputContainer}>
           <TouchableOpacity style={pickerStyles.pickerInput} onPress={togglePicker}>
-            <Text style={pickerStyles.pickerInputText}>{item?.name || ""}</Text>
+            <Text style={pickerStyles.pickerInputText}>{item?.name || name}</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={togglePicker} style={pickerStyles.pickerDisplay}>
-            <FontAwesomeIcon icon={faCaretDown} size={20} color={colors.test5} />
+          <TouchableOpacity accessibilityLabel={`close ${name}`} onPress={togglePicker} style={pickerStyles.pickerDisplay}>
+            <FontAwesomeIcon icon={faCaretDown} size={30} color={colors.test5} />
           </TouchableOpacity>
         </View>
       </View>
@@ -70,7 +70,7 @@ export const pickerStyles = StyleSheet.create({
   },
   pickerInput: {
     flex: 1,
-    padding: 8
+    padding: 16
   },
   pickerInputText: {
     color: colors.summerDarkest,

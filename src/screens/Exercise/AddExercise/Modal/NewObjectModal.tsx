@@ -9,8 +9,10 @@ import {
   TouchableWithoutFeedback,
   Text,
 } from "react-native";
+import CustomButton from "../../../../components/CustomButton";
 import {CategorySchema, ExerciseTypeSchema} from "../../../../config/realm";
 import {useCategories} from "../../../../hooks/useCategories";
+import { colors } from "../../../../utils/util";
 import PickerField from "../Picker/PickerField";
 
 type NewObjectModalProps = {
@@ -74,12 +76,10 @@ const NewObjectModal = ({
             maxWidth={300}
           />
         )}
-        <View style={{flexDirection: "row"}}>
-          <TouchableOpacity style={{flex: 1}} onPress={onClose}>
-            <Text style={styles.closeText}>Close</Text>
-          </TouchableOpacity>
+        <View style={{flexDirection: "row", gap: 25}}>
+        <CustomButton size='SM' backgroundColor={colors.summerDark} titleColor={colors.summerWhite} title={"Cancel"} onPress={onClose} />
           <View style={{flex: 1}}>
-            <Button title={title || "Add"} onPress={handleAdd} />
+            <CustomButton size='SM' backgroundColor={colors.summerDark} titleColor={colors.accent} title={title || "Add"} onPress={handleAdd} />
           </View>
         </View>
       </View>
@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     borderColor: "#BDBDBD",
     borderWidth: 1,
     borderRadius: 4,
-    padding: 8,
+    padding: 12,
     marginBottom: 8,
   },
   closeText: {

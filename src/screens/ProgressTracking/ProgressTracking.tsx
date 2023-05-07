@@ -1,5 +1,5 @@
 // screens/ProgressTracking.tsx
-import React, {useLayoutEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {SafeAreaView, Text, View} from "react-native";
 import {useCategories} from "../../hooks/useCategories";
 import {SideBar} from "../../components/SideBar";
@@ -91,21 +91,21 @@ const ProgressTracking = () => {
     setState({...state, chartData: chartData, maxExercises: maxExercises, days: days, filteredCategories: newCategories});
   };
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (categoriesLoading) return
     if (availableMonths.length === 0) return;
-    getChartData();
+    getChartData()
   }, [availableMonths, mode]);
 
   const handleFilterChange = (selectedCategories: CategorySchema[]) => {
     getChartData2(selectedCategories)
   };
   
-  if (categoriesLoading || monthsLoading) return <View style={{width: '100%', height: '100%'}}><LoadingIndicator /></View>;
-  console.log("rendering progress")
+  if (categoriesLoading || monthsLoading) return <View style={{height: '100%', width: '100%'}}><LoadingIndicator /></View>
+  
 
   if(state.chartData.length === 0 || availableMonths.length === 0) return <View style={{justifyContent: 'center', width: '100%', height: '100%', alignItems: 'center'}}><Text>No data found, add some exercises</Text></View>
-  console.log("rendering real progress")
+  
   return (
     <SafeAreaView style={{width: "100%", height: "100%", justifyContent: "center", alignItems: "center", gap: 20}}>
       <Chart isLandScape={screenOrientation.isLandscape} mode={mode} maxExercises={state.maxExercises} chartData={state.chartData} days={state.days} />

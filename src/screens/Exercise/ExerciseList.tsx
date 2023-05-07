@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {SafeAreaView, StyleSheet} from "react-native";
+import {SafeAreaView, StyleSheet, View} from "react-native";
 import {StackScreenProps} from "@react-navigation/stack";
 import {Exercise, ExerciseWithDuplicates, IGroup} from "../../../typings/types";
 import {groupExercisesByWeek} from "../../utils/util";
@@ -110,10 +110,6 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
     });
   }, [exercises]);
 
-  useEffect(() => {
-    _onRefresh();
-  }, []);
-
   // Figure out a way to fix rerendering cause of this
   const panResponder = usePanHandler({
     handlePrevPage,
@@ -122,7 +118,7 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
     currentPageRef,
     categoriesRef,
   });
-  if (categoriesLoading || exercisesLoading) return <LoadingIndicator />;
+  if (categoriesLoading || exercisesLoading) return <View style={{width: '100%', height: '100%'}}><LoadingIndicator /></View>;
   console.log("rendering exerciselist");
 
   return (
@@ -130,6 +126,7 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
       <SideBar
         isLandScape={screenOrientation.isLandscape}
         categories={categories}
+        icon='filter-variant'
         onFilterChange={handleFilterChange}
       />
       <WeeklyExercises

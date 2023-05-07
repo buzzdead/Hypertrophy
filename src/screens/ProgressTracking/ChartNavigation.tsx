@@ -15,7 +15,7 @@ interface Props {
 
 export const ChartNavigation: React.FC<Props> = ({isLandScape, firstPage, lastPage, monthTitle, handleNext, handlePrev}) => {
 
-  console.log("rendering navigation");
+  
 
   return (
     <View
