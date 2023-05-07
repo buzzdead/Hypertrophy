@@ -30,7 +30,7 @@ const AddObject = ({isCategory, s}: Props) => {
   };
 
   return (
-    <View>
+    <View accessibilityLabel={`modal-${name}`}>
       <View style={styles.addButton}>
        <CustomButton
           title="+"

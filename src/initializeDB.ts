@@ -24,7 +24,7 @@ export const initializeDB = (realm: Realm) => {
       const createdCategories: CategorySchema[] = []; // Use an array instead of a Map
       categoriesData.forEach(e => {
         const createdCategory = realm.create<CategorySchema>("Category", {
-          id: realm.objects<CategorySchema>("Category").length,
+          id: realm.objects<CategorySchema>("Category").length + 1,
           name: e.name,
         });
         createdCategories.push(createdCategory); // Add the created object to the array
@@ -99,7 +99,7 @@ export const initializeDB = (realm: Realm) => {
       const createdExerciseTypes: ExerciseTypeSchema[] = []; // Use an array instead of a Map
       exerciseTypesData.forEach(e => {
         const createdExerciseType = realm.create<ExerciseTypeSchema>("ExerciseType", {
-          id: realm.objects<ExerciseTypeSchema>("ExerciseType").length,
+          id: realm.objects<ExerciseTypeSchema>("ExerciseType").length + 1,
           name: e.name,
           category: e.category,
         });
@@ -201,7 +201,7 @@ export const initializeDB = (realm: Realm) => {
         {type: createdExerciseTypes[15], sets: 3, reps: 10, weight: 35, date: new Date("2023-01-05")},
         {type: createdExerciseTypes[16], sets: 2, reps: 12, weight: 130, date: new Date("2023-02-05")},
       ];
-      for (const exercise of exercisesData) {
+      /* for (const exercise of exercisesData) {
         const exerciseType = exercise.type;
         realm.create<ExerciseSchema>("Exercise", {
           id: realm.objects<ExerciseSchema>("Exercise").length + 1, // Add this line
@@ -211,7 +211,7 @@ export const initializeDB = (realm: Realm) => {
           weight: exercise.weight,
           date: exercise.date,
         });
-      }
+      } */
     });
   }
 };

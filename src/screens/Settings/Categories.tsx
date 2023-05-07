@@ -57,13 +57,14 @@ export function Categories() {
     <SafeAreaView>
       <ScrollView keyboardShouldPersistTaps="handled">
         <View style={styles.container}>
+          <Text style={{textAlign: "center", fontFamily: 'Roboto-Bold', fontSize: 28, color: 'black'}}>Active categories</Text>
           {validCategories.map(c => {
             const visible = modalVisible.find(m => m.id === c.id)?.visible || false;
             const onCloseCurrent = () => onClose(c.id);
             return (
               <View key={c.name} style={styles.subContainer}>
                 <Text style={styles.title}>{c.name}</Text>
-                <View style={styles.buttonContainer}>
+                <View accessibilityLabel={`change ${c.name}`} style={styles.buttonContainer}>
                   <CustomButton
                     size="L"
                     titleColor={colors.summerWhite}
@@ -77,7 +78,7 @@ export function Categories() {
                     titleColor={colors.error}
                     fontSize={20}
                     backgroundColor={colors.summerDark}
-                    title={"Delete category"}
+                    title={"Delete " + c.name}
                     onPress={() => onDelete(c)}
                   />
                 </View>

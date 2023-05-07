@@ -56,11 +56,12 @@ export function ExerciseTypes() {
     <SafeAreaView>
       <ScrollView keyboardShouldPersistTaps="handled">
         <View style={styles.container}>
+        <Text style={{textAlign: "center", fontFamily: 'Roboto-Bold', fontSize: 28, color: 'black'}}>Active exercise types</Text>
           {validExerciseTypes.map(c => {
             const visible = modalVisible.find(m => m.id === c.id)?.visible || false;
             const onCloseCurrent = () => onClose(c.id);
             return (
-              <View key={c.name} style={styles.subContainer}>
+              <View key={c.name + '-' + c.id.toString()} style={styles.subContainer}>
                 <Text style={styles.title}>{c.name}</Text>
                 <View style={styles.buttonContainer}>
                   <CustomButton
@@ -76,7 +77,7 @@ export function ExerciseTypes() {
                     fontSize={20}
                     titleColor={colors.error}
                     backgroundColor={colors.summerDark}
-                    title={"Delete exercise type"}
+                    title={"Delete " + c.name}
                     onPress={() => onDelete(c)}
                   />
                 </View>

@@ -19,7 +19,7 @@ type Props = {
 };
 
 const initialState: ExerciseReducerType = {
-  weight: 0,
+  weight: 5,
   sets: 1,
   reps: 10,
   date: new Date(),
@@ -67,7 +67,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
     if(categories[categoryId] === undefined) {console.log(categories); return}
     const exerciseTypes = await fetchExerciseTypesByCategory(categories[categoryId].id)
     dispatch({type: "setItAll", payload: {exerciseType: exerciseTypes[0], exerciseTypes: exerciseTypes, category: categories[categoryId]}})
-    categoryRef.current = categoryId
+    categoryRef.current = categoryId + 1
   }
 
   const onWeightChange = (value: number | string, validWeight: boolean) => {
@@ -80,7 +80,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
       if(state.category && state.category.id !== previousExercise?.type?.category.id) onCategoryChange(state.category ? state.category.id : 0)
       return
     }
-    if (categories.length > 0 && categoryRef.current !== state?.category?.id) onCategoryChange(state.category?.id || 0)
+    if (categories.length > 0 && categoryRef.current !== state?.category?.id) onCategoryChange(state.category?.id || 1)
   }, [categoriesLoading, state.category]);
 
   if(categoriesLoading) return <LoadingIndicator />
@@ -100,7 +100,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
             onChange={value => dispatch({type: "setCategory", payload: value})}
           />
         </View>
-        <View style={{flex: 1, justifyContent: "flex-end", paddingBottom: 12, paddingRight: 12}}>
+        <View style={{justifyContent: "flex-end", paddingBottom: 12, paddingRight: 12}}>
           <AddObject isCategory s={refresh} />
         </View>
       </View>
@@ -115,7 +115,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
             onChange={value => dispatch({type: "setExerciseType", payload: value})}
           />
         </View>
-        <View style={{flex: 1, justifyContent: "flex-end", paddingBottom: 12, paddingRight: 12}}>
+        <View style={{justifyContent: "flex-end", paddingBottom: 12, paddingRight: 12}}>
           <AddObject isCategory={false} s={_refresh}/>
         </View>
       </View>

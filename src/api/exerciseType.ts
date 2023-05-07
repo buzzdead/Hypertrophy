@@ -1,9 +1,10 @@
-import {ExerciseTypeSchema, CategorySchema} from "../config/realm";
+import {ExerciseTypeSchema, CategorySchema, ExerciseSchema} from "../config/realm";
 import {RealmWrapper} from "./RealmWrapper";
 
 const rw = new RealmWrapper();
 const realm = rw.getRealm();
 const realmObject = realm.objects<ExerciseTypeSchema>("ExerciseType")
+const exercises = realm.objects<ExerciseSchema>("Exercise")
 
 const getMaxId = () => {
     return rw.getMaxId<ExerciseTypeSchema>("ExerciseType");
@@ -14,9 +15,9 @@ const getRealmObjectFromPrimaryKey = (id: number) => {
 }
 
 export async function deleteExerciseType(exerciseType: ExerciseTypeSchema) {
-  const exercises = realmObject.filtered("type.id = $0", exerciseType.id);
+  const filteredExercises = Array.from(exercises.filtered("type.id = $0", exerciseType.id));
   await rw.performWriteTransaction(() => {
-    realm.delete(exercises);
+    realm.delete(filteredExercises);
     realm.delete(exerciseType);
   });
 }

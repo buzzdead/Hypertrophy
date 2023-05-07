@@ -66,7 +66,7 @@ const Settings: React.FC<Props> = ({ navigation }) => {
           </View>
           <View style={{alignSelf: 'center'}}>
           <Text style={{ fontSize: 24, padding: 10, fontFamily: 'Roboto-Bold', color: colors.test6, paddingTop: 20, alignSelf: "center"}}>
-            Adjust Dates
+            Dates
           </Text>
           <CustomButton
           size="L"

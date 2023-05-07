@@ -136,12 +136,13 @@ const styles = StyleSheet.create({
   sidebarItem: {
     borderBottomWidth: 0.25,
     borderBottomColor: colors.summerWhite,
-    paddingVertical: 5,
+    paddingVertical: 7,
   },
   sidebarItemText: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "bold",
-    padding: 14,
+    height: 55,
+    textAlignVertical: "center",
     fontFamily: "Roboto-Bold",
     color: colors.summerDarkest,
     textAlign: "center",

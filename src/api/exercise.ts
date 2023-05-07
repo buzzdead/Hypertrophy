@@ -34,6 +34,7 @@ export async function addExercise(exercise: Exercise) {
   const eMonth = exercise.date.getMonth();
   const eYear = exercise.date.getFullYear().toString();
   const month = months.find(m => m.year === eYear && m.month === eMonth);
+  const exerciseToAdd: ExerciseSchema = exercise as ExerciseSchema
 
   await rw.performWriteTransaction(() => {
     if (month !== undefined) month.exerciseCount += 1;
@@ -45,7 +46,7 @@ export async function addExercise(exercise: Exercise) {
         exerciseCount: 1,
       });
     }
-    realm.create("Exercise", exercise);
+    realm.create("Exercise", exerciseToAdd);
   });
 }
 

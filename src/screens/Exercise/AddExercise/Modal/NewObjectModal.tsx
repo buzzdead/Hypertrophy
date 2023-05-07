@@ -56,10 +56,12 @@ const NewObjectModal = ({
 
   return (
     <Modal visible={visible} transparent onRequestClose={onClose}>
-      <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.modalOverlay} />
+      
+      <TouchableWithoutFeedback onPress={onClose} accessibilityLabel={"modal for" + name}> 
+        <View style={styles.modalOverlay}/>
       </TouchableWithoutFeedback>
       <View style={styles.modalContent}>
+      <Text style={{textAlign: "center", fontFamily: 'Roboto-Bold', fontSize: 28, color: 'black'}}>{name} Modal</Text>
         <TextInput
           value={objectName}
           onChangeText={setObjectName}

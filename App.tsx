@@ -24,26 +24,7 @@ type StackParamList = {
 const Stack = createStackNavigator<StackParamList>();
 
 const App = () => {
-
-  const LoadingScreen = () => {
-    return (
-      <View style={styles.loadingContainer}>
-        <Image source={require('./assets/images/Hypertrophy.png')} style={{width: '25%', height: '10%'}} />
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  };
-
-  const [loading, setLoading] = useState(true)
-
-
-  useEffect(() => {
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000); // set loading time here in milliseconds
-  }, []);
-  if(loading) return <LoadingScreen />  
+ 
   return (
     <NavigationContainer>
       <Stack.Navigator>
