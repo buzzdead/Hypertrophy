@@ -1,4 +1,6 @@
 import React from "react";
+import { View } from "react-native";
+import { Text } from "react-native-paper";
 import {VictoryChart, VictoryAxis, VictoryGroup, VictoryBar, VictoryTheme} from "victory-native";
 import {IGroup} from "../../../typings/types";
 import {colors} from "../../utils/util";
@@ -40,6 +42,7 @@ export const Chart: React.FC<Props> = ({chartData, days, maxExercises, mode, isL
           style={{
             data: {
               fill: colors.graphColor,
+              fillOpacity: 0.85,
             },
           }}
         />

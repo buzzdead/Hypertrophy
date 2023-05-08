@@ -4,7 +4,7 @@ import {SafeAreaView, View, Text} from "react-native";
 import LoadingIndicator from "../components/LoadingIndicator";
 import {useCategories} from "../hooks/useCategories";
 import {useExercises} from "../hooks/useExercises";
-import {colors, getWeekNumber} from "../utils/util";
+import {colors, getWeekNumber, months} from "../utils/util";
 import {HomeChartData} from "./HomeChartData";
 import {Chart} from "./ProgressTracking/Chart";
 
@@ -23,6 +23,7 @@ export const Home = () => {
   const {exercises, loading: exercisesLoading} = useExercises();
   const {categories, loading: categoriesLoading} = useCategories();
   const currentExercises = exercises.filter(e => e.isValid());
+  const currentMonth = months.find(m => m.numerical === currentDate.getMonth())
 
   useFocusEffect(
     useCallback(() => {
@@ -33,18 +34,39 @@ export const Home = () => {
   );
   if (exercisesLoading || categoriesLoading) return <LoadingIndicator />;
   return (
-    <SafeAreaView>
-      <View style={{height: "100%", justifyContent: "center", gap: 50}}>
-        <Text
+    <SafeAreaView style={{height: '100%'}}>
+      <Text
           style={{
-            paddingTop: 50,
+            paddingTop: 25,
+            textAlign: "center",
+            fontFamily: "Roboto-Medium",
+            fontSize: 36,
+            color: 'black',
+            fontWeight: "800"
+          }}>
+          {currentMonth?.name}, 2023
+        </Text>
+      <Text
+          style={{
+            paddingTop: 25,
             textAlign: "center",
             fontFamily: "Roboto-Medium",
             fontSize: 30,
-            color: colors.categories.Back,
+            color: colors.summerDark,
           }}>
-          Progress for week: {weekNumber}
+          Week {weekNumber}
         </Text>
+        <Text
+          style={{
+            paddingTop: 25,
+            textAlign: "center",
+            fontFamily: "Roboto-Medium",
+            fontSize: 18,
+            color: colors.summerDarkest,
+          }}>
+          Day {currentDate.getDay()} of 7
+        </Text>
+      <View style={{position: 'absolute', bottom: 50}}>
         <Chart
           maxExercises={state.maxExercises}
           chartData={state.chartData}

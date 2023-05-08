@@ -101,8 +101,8 @@ android {
         applicationId "com.hypertrophy"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 16
-        versionName "8.0.8"
+        versionCode 19
+        versionName "8.1.1"
     }
 
     splits {

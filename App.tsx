@@ -12,6 +12,7 @@ import { Duplicate } from "./typings/types";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 import { ActivityIndicator, Image, StyleSheet, View } from "react-native";
+import SplashScreen from 'react-native-splash-screen';
 
 type StackParamList = {
   Exercises: undefined;
@@ -25,6 +26,10 @@ const Stack = createStackNavigator<StackParamList>();
 
 const App = () => {
  
+  useEffect(() => {
+    SplashScreen.hide()
+  }, []);
+
   return (
     <NavigationContainer>
       <Stack.Navigator>

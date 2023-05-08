@@ -3,6 +3,7 @@ import {Text, TouchableOpacity, View, FlatList, StyleSheet} from "react-native";
 import {Duplicate, ExerciseWithDuplicates} from "../../../typings/types";
 import {colors} from "../../utils/util";
 import {StackScreenProps} from "@react-navigation/stack";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 type ExerciseItemProps = {
   item: ExerciseWithDuplicates;
@@ -16,14 +17,20 @@ const ExerciseItem: React.FC<ExerciseItemProps> = ({item, navigation}) => {
     return (
       <View style={{flexDirection: "row"}}>
         <View >
-          <Text style={{...styles.itemText2, color: colors.summerDark}}>{duplicate.sets + " sets x "}</Text>
+          <Text style={{...styles.itemText2}}>{duplicate.sets + " sets x "}</Text>
         </View>
         <View style={{minWidth: 60}}>
-          <Text style={{...styles.itemText2, color: colors.summerDark}}>{duplicate.reps + " reps"}</Text>
+          <Text style={{...styles.itemText2}}>{duplicate.reps + " reps"}</Text>
         </View>
-        <View>
-          <Text style={{...styles.itemText2, color: colors.summerDark}}>{" (" + duplicate.weight} kg{")"}</Text>
+        <View style={{minWidth: '65%'}}>
+          <Text style={{...styles.itemText2}}>{" (" + duplicate.weight} kg{")"}</Text>
         </View>
+        <MaterialCommunityIcons
+            adjustsFontSizeToFit
+            name={"check"}
+            size={16}
+            color={'green'}
+          />
       </View>
     );
   };
@@ -33,22 +40,30 @@ const ExerciseItem: React.FC<ExerciseItemProps> = ({item, navigation}) => {
       style={{...styles.container, backgroundColor: 'white' }}
       onPress={() => navigation.navigate("Details", {exerciseId: item.exercise.id, duplicates: item.duplicates})}>
       <View style={styles.subContainer}>
-      <View style={{gap: 10}}>
+      <View style={{gap: 15, width: '100%'}}>
         <View style={styles.topContainer}>
-          <Text style={{...styles.itemText, fontSize: 14, color: colors.summerDarkest}}>{item.exercise.type?.category.name}</Text>
+        <Text style={{...styles.itemText2, fontFamily: 'Roboto-Medium', fontWeight: '900', fontSize: 16, color: colors.categories[item?.exercise?.type?.category?.name as CategoryColors] || colors.categories.Default } }>{item.exercise.type?.name}</Text>
+      
           <Text style={{fontStyle: "italic", color: colors.summerDarkest}}>{item.exercise.date.toLocaleDateString()}</Text>
         </View>
-          <Text style={{...styles.itemText2, fontFamily: 'Roboto-Bold', color: colors.categories[item?.exercise?.type?.category?.name as CategoryColors] || colors.categories.Default } }>{item.exercise.type?.name}</Text>
-        <View style={{flexDirection: "row"}}>
+        <View style={{ width: '100%'}}>
+        <View style={{flexDirection: "row", width: '100%'}}>
           <View >
-            <Text style={{...styles.itemText2, color: colors.summerDark}}>{item.exercise.sets + " sets x "}</Text>
+            <Text style={{...styles.itemText2}}>{item.exercise.sets + " sets x "}</Text>
           </View>
           <View style={{minWidth: 60}}>
-            <Text style={{...styles.itemText2, color: colors.summerDark}}>{item.exercise.reps + " reps"}</Text>
+            <Text style={{...styles.itemText2}}>{item.exercise.reps + " reps"}</Text>
           </View>
-          <View>
-          <Text style={{...styles.itemText2, color: colors.summerDark}}>{" (" + item.exercise.weight} kg{")"}</Text>
+          <View style={{minWidth: '65%'}}>
+          <Text style={{...styles.itemText2}}>{" (" + item.exercise.weight} kg{")"}</Text>
         </View>
+        <MaterialCommunityIcons
+            adjustsFontSizeToFit
+            name={"check"}
+            size={16}
+            color={'green'}
+          />
+        </View> 
         </View>
         </View>
         <FlatList
@@ -67,7 +82,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     alignItems: "center",
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingVertical: 15,
     borderWidth: 1,
     borderColor: colors.test6,
     borderRadius: 10,
@@ -82,12 +97,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   itemText: {
-    fontSize: 14,
+    fontSize: 16,
     fontFamily: "Roboto-Black",
+    
   },
   itemText2: {
     fontSize: 14,
-    fontFamily: "Roboto-Medium",
+    fontFamily: "Roboto-MediumItalic",
+    color: colors.summerDarkest
   },
 });
 

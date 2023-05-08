@@ -38,11 +38,11 @@ export const ChartNavigation: React.FC<Props> = ({isLandScape, firstPage, lastPa
       <Contingent shouldRender={!isLandScape}>
         <Text
           style={{
-            textAlignVertical: "center",
             minWidth: 100,
             textAlign: "center",
             fontFamily: "Roboto-Medium",
-            fontSize: 20,
+            fontSize: 32,
+            color: colors.summerDarkest
           }}>
           {monthTitle}
         </Text>

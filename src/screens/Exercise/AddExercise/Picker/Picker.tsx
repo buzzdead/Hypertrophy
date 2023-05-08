@@ -27,14 +27,14 @@ const Picker: React.FC<PickerProps> = ({ visible, items, onSelect, onClose, pick
           renderItem={({ item }) => (
             <TouchableHighlight
             underlayColor={colors.summerBlue}
-              style={{ paddingVertical: 16, paddingLeft: 8 }}
+              style={{ height: 56, paddingLeft: 4, justifyContent: 'center' }}
               onPress={() => {
                 onSelect(item);
                 onClose();
               }}
              
             >
-              <Text style={{fontFamily: 'Roboto-Medium', fontSize: 16}}>{item.name}</Text>
+              <Text style={{fontFamily: 'Roboto-Medium', fontSize: 16, textAlignVertical: 'center'}}>{item.name}</Text>
             </TouchableHighlight>
           )}
           keyExtractor={item => item.name}

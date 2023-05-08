@@ -57,7 +57,7 @@ export const groupExercisesByWeek = (exercises: ExerciseSchema[], needValidation
 
 export type Month = {numerical: number; name: string};
 
-const months: Month[] = [
+export const months: Month[] = [
   {numerical: 0, name: "January"},
   {numerical: 1, name: "February"},
   {numerical: 2, name: "March"},

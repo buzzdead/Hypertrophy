@@ -65,7 +65,7 @@ export const ExerciseListBtm: React.FC<ExerciseListBtmProps> = ({
       <View style={{bottom: 2, right: 2, position: "absolute"}}>
         <CustomButton
           title="+"
-          fontSize={24}
+          fontSize={32}
           titleColor={colors.accent}
           backgroundColor={colors.summerDark}
           onPress={() => navigation.navigate("AddExercise", {previousExercise: null})}
