@@ -73,32 +73,23 @@ export class MonthSchema extends Realm.Object {
 
 const realmConfig: Realm.Configuration = {
   schema: [ExerciseSchema, ExerciseTypeSchema, CategorySchema, MonthSchema],
-  schemaVersion: 10,
+  schemaVersion: 11,
   onMigration: migration,
 };
 
 function migration(oldRealm: Realm, newRealm: Realm) {
-  const exercises = oldRealm.objects("Exercise");
-  if(oldRealm.schemaVersion < 10){
-  for (let i = 0; i < exercises.length; i++) {
-    const exercise = exercises[i] as ExerciseSchema; // cast to ExerciseSchema type
-    const date = exercise.date; // should not produce an error now
-    const month = date.getMonth();
-    const year = date.getFullYear().toString();
+  if(oldRealm.schemaVersion < 11){
+  const oldCategories = oldRealm.objects<CategorySchema>("Category");
+  const hasCategoryWithId0 = oldCategories.findIndex(c => c.id === 0) !== -1;
 
-    // Find or create the corresponding MonthSchema object
-    
-    let monthObj = newRealm.objects("Month").filtered("year == $0 AND month == $1", year, month)[0] as MonthSchema;
+  if (hasCategoryWithId0) {
+    const oldCategoryObjects = newRealm.objects<CategorySchema>("Category");
+    oldCategoryObjects.forEach(category => category.id += 1)
+      
+    };
+   
+}}
 
-    if (!monthObj) {
-      const id = newRealm.objects("Month").length + 1
-      const newMonth = {id: id, year: year, month: month, exerciseCount: 1};
-      newRealm.create("Month", newMonth);
-    } else {
-      monthObj.exerciseCount++;
-    }
-  }}
-}
 
 
 

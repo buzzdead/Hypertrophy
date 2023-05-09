@@ -22,30 +22,25 @@ const ExerciseItem: React.FC<ExerciseItemProps> = ({item, navigation}) => {
         <View style={{minWidth: 60}}>
           <Text style={{...styles.itemText2}}>{duplicate.reps + " reps"}</Text>
         </View>
-        <View style={{minWidth: '65%'}}>
-          <Text style={{...styles.itemText2}}>{" (" + duplicate.weight} kg{")"}</Text>
+        <View style={{minWidth: '10%'}}>
+          <Text style={{...styles.itemText2}}>{" ( " + duplicate.weight} {")"}</Text>
         </View>
-        <MaterialCommunityIcons
-            adjustsFontSizeToFit
-            name={"check"}
-            size={16}
-            color={'green'}
-          />
       </View>
     );
   };
 
   return (
     <TouchableOpacity
-      style={{...styles.container, backgroundColor: 'white' }}
+      style={{...styles.container, backgroundColor: `${colors.categories[item?.exercise?.type?.category?.name as CategoryColors] + "50"}` || colors.categories.Default
+    }}
       onPress={() => navigation.navigate("Details", {exerciseId: item.exercise.id, duplicates: item.duplicates})}>
       <View style={styles.subContainer}>
-      <View style={{gap: 15, width: '100%'}}>
+      <View style={{gap: 10, width: '100%'}}>
         <View style={styles.topContainer}>
-        <Text style={{...styles.itemText2, fontFamily: 'Roboto-Medium', fontWeight: '900', fontSize: 16, color: colors.categories[item?.exercise?.type?.category?.name as CategoryColors] || colors.categories.Default } }>{item.exercise.type?.name}</Text>
-      
+        <Text style={{...styles.itemText2, fontFamily: 'Roboto-Medium', fontWeight: '900', fontSize: 18, color: 'black' } }>{item.exercise.type?.name}</Text>
           <Text style={{fontStyle: "italic", color: colors.summerDarkest}}>{item.exercise.date.toLocaleDateString()}</Text>
         </View>
+        <Text style={{...styles.itemText2, fontFamily: 'Roboto-Black', color: colors.categories[item?.exercise?.type?.category?.name as CategoryColors] || colors.categories.Default}}>{item.exercise.type?.category.name}</Text>
         <View style={{ width: '100%'}}>
         <View style={{flexDirection: "row", width: '100%'}}>
           <View >
@@ -54,15 +49,9 @@ const ExerciseItem: React.FC<ExerciseItemProps> = ({item, navigation}) => {
           <View style={{minWidth: 60}}>
             <Text style={{...styles.itemText2}}>{item.exercise.reps + " reps"}</Text>
           </View>
-          <View style={{minWidth: '65%'}}>
-          <Text style={{...styles.itemText2}}>{" (" + item.exercise.weight} kg{")"}</Text>
+          <View style={{minWidth: '10%'}}>
+          <Text style={{...styles.itemText2}}>{" ( " + item.exercise.weight} {")"}</Text>
         </View>
-        <MaterialCommunityIcons
-            adjustsFontSizeToFit
-            name={"check"}
-            size={16}
-            color={'green'}
-          />
         </View> 
         </View>
         </View>
@@ -71,6 +60,13 @@ const ExerciseItem: React.FC<ExerciseItemProps> = ({item, navigation}) => {
           renderItem={({item}) => renderDuplicate(item)}
           keyExtractor={(item, id) => id.toString()}
         />
+        <MaterialCommunityIcons
+            name={"weight-kilogram"}
+            size={20}
+            style={{position: 'absolute', bottom: 0, right: 0}}
+            color={colors.summerDarkest}
+          />
+           
       </View>
     </TouchableOpacity>
   );
@@ -102,8 +98,8 @@ const styles = StyleSheet.create({
     
   },
   itemText2: {
-    fontSize: 14,
-    fontFamily: "Roboto-MediumItalic",
+    fontSize: 16,
+    fontFamily: "Roboto-Medium",
     color: colors.summerDarkest
   },
 });

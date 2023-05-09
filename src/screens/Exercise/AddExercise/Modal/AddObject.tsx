@@ -41,7 +41,7 @@ const AddObject = ({isCategory, s}: Props) => {
         />
         </View>
       <NewObjectModal
-      name={name}
+      name={name === 'Category' ? 'Exercise Type' : 'Category'}
         visible={modalVisible}
         onClose={closeModal}
         onAdd={handleAdd}

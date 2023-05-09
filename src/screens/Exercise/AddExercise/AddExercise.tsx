@@ -43,7 +43,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
 
   const _refresh = async () => {
     await refresh()
-    onCategoryChange(state.category?.id || 0)
+    onCategoryChange(state.category?.id || 1)
   }
 
   const handleAddExercise = async () => {
@@ -64,10 +64,10 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
   };
 
   const onCategoryChange = async (categoryId: number) => {
-    if(categories[categoryId] === undefined) {console.log(categories); return}
-    const exerciseTypes = await fetchExerciseTypesByCategory(categories[categoryId].id)
-    dispatch({type: "setItAll", payload: {exerciseType: exerciseTypes[0], exerciseTypes: exerciseTypes, category: categories[categoryId]}})
-    categoryRef.current = categoryId + 1
+    if(categories[categoryId - 1] === undefined) {console.log(categories); return}
+    const exerciseTypes = await fetchExerciseTypesByCategory(categories[categoryId - 1].id)
+    dispatch({type: "setItAll", payload: {exerciseType: exerciseTypes[0], exerciseTypes: exerciseTypes, category: categories[categoryId - 1]}})
+    categoryRef.current = categoryId
   }
 
   const onWeightChange = (value: number | string, validWeight: boolean) => {
@@ -77,7 +77,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
   useEffect(() => {
     if(categoriesLoading) return
     if(previousExercise) {
-      if(state.category && state.category.id !== previousExercise?.type?.category.id) onCategoryChange(state.category ? state.category.id : 0)
+      if(state.category && state.category.id !== previousExercise?.type?.category.id) onCategoryChange(state.category ? state.category.id : 1)
       return
     }
     if (categories.length > 0 && categoryRef.current !== state?.category?.id) onCategoryChange(state.category?.id || 1)
@@ -85,7 +85,8 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
 
   if(categoriesLoading) return <LoadingIndicator />
   
-  console.log("rendering add exercise")
+
+  console.log("renderinga dd exercise")
 
   return (
     <SafeAreaView style={styles.container}>

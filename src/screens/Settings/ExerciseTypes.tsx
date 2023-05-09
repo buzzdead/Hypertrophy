@@ -83,7 +83,7 @@ export function ExerciseTypes() {
                 </View>
                 {visible && (
                   <NewObjectModal
-                    name="Category"
+                    name="Exercise Type"
                     visible={visible}
                     modalFunction={onEdit}
                     id={c.id}

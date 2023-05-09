@@ -104,7 +104,7 @@ const ProgressTracking = () => {
   if (categoriesLoading || monthsLoading) return <View style={{height: '100%', width: '100%'}}><LoadingIndicator /></View>
   
 
-  if(state.chartData.length === 0 || availableMonths.length === 0) return <View style={{justifyContent: 'center', width: '100%', height: '100%', alignItems: 'center'}}><Text>No data found, add some exercises</Text></View>
+  if(state.chartData.length === 0 || availableMonths.length === 0) return <View style={{justifyContent: 'center', width: '100%', height: '100%', alignItems: 'center'}}><Text style={{fontFamily: 'Roboto-Bold'}}>No data found, add some exercises</Text></View>
   
   return (
     <SafeAreaView style={{width: "100%", height: "100%", justifyContent: "center", alignItems: "center", gap: 20}}>

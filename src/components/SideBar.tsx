@@ -19,7 +19,7 @@ export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, ico
     categories.map(() => new Animated.Value(0)),
   );
 
-const SidebarVisibleWidth = 48;
+const SidebarVisibleWidth = 50;
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [translateX] = useState(new Animated.Value(0));
   const [selectedCategories, setSelectedCategories] = useState<CategorySchema[]>([]);
@@ -117,12 +117,11 @@ const styles = StyleSheet.create({
   sidebar: {
     position: "absolute",
     top: 0,
-    bottom: 0,
     zIndex: 1000,
-    elevation: 5, // Add box shadow on Android
-    shadowColor: "#000", // Add box shadow on iOS
+    elevation: 55, // Add box shadow on Android
+    shadowColor: colors.summerDarkest, // Add box shadow on iOS
     shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.5,
     shadowRadius: 3.84,
     backgroundColor: colors.summerWhite,
   },

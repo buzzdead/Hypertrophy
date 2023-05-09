@@ -31,7 +31,7 @@ export const ExerciseListBtm: React.FC<ExerciseListBtmProps> = ({
       <CustomButton
           titleColor={currentPage === 0 ? colors.summerDark : colors.summerBlue}
           onPress={handleGoToFirstPage}
-          backgroundColor={'white'}
+          backgroundColor={colors.summerWhite}
           size="S"
           fontSize={26}
           title={"<<"}
@@ -40,7 +40,7 @@ export const ExerciseListBtm: React.FC<ExerciseListBtmProps> = ({
           size="S"
           titleColor={currentPage === 0 ? colors.summerDark : colors.summerBlue}
           fontSize={26}
-          backgroundColor={'white'}
+          backgroundColor={colors.summerWhite}
           onPress={handlePrevPage}
           title={"<"}
         />
@@ -48,7 +48,7 @@ export const ExerciseListBtm: React.FC<ExerciseListBtmProps> = ({
         <CustomButton
           titleColor={currentPage === maxPage ? colors.summerDark : colors.summerBlue}
           onPress={handleNextPage}
-          backgroundColor={'white'}
+          backgroundColor={colors.summerWhite}
           size="S"
           fontSize={26}
           title={">"}
@@ -56,7 +56,7 @@ export const ExerciseListBtm: React.FC<ExerciseListBtmProps> = ({
          <CustomButton
           titleColor={currentPage === maxPage ? colors.summerDark : colors.summerBlue}
           onPress={handleGoToLastPage}
-          backgroundColor={'white'}
+          backgroundColor={colors.summerWhite}
           size="S"
           fontSize={26}
           title={">>"}
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     gap: 3,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: 'white',
+    backgroundColor: colors.summerWhite,
     width: "100%",
     paddingTop: -3,
     paddingBottom: 5,
