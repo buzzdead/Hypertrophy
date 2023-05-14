@@ -3,15 +3,13 @@ import {
   Modal,
   View,
   TextInput,
-  Button,
   StyleSheet,
-  TouchableOpacity,
   TouchableWithoutFeedback,
   Text,
 } from "react-native";
 import CustomButton from "../../../../components/CustomButton";
-import {CategorySchema, ExerciseTypeSchema} from "../../../../config/realm";
-import {useCategories} from "../../../../hooks/useCategories";
+import {CategorySchema} from "../../../../config/realm";
+import { useRealm } from "../../../../hooks/hooks";
 import { colors } from "../../../../utils/util";
 import PickerField from "../Picker/PickerField";
 
@@ -41,7 +39,7 @@ const NewObjectModal = ({
   name,
 }: NewObjectModalProps) => {
   const [objectName, setObjectName] = useState(currentValue || "");
-  const {categories} = useCategories();
+  const {data: categories} = useRealm<CategorySchema>("Category");
   const [category, setCategory] = useState<Optional<CategorySchema>>(currentCategory);
 
   const handleAdd = () => {

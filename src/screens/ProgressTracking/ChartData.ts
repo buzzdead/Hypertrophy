@@ -50,7 +50,7 @@ export const ChartData = ({exercises, categories, month, year, lastHalf = false,
   }
 
   return {
-    chartData,
+    chartData: mode === 'Daily' ? chartData as number[] : chartData.map(e => (typeof e === "number" ? e : e.exercises.length)),
     maxExercises:
       mode === "Daily"
         ? Math.max(...(chartData as number[]))

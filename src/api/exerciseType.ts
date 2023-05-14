@@ -45,12 +45,6 @@ export async function addExerciseType(exerciseType: string, category: CategorySc
   });
 }
 
-export async function fetchExerciseTypes() {
-  const exerciseTypes = realmObject
-  const exerciseTypesArray = Array.from(exerciseTypes);
-  return exerciseTypesArray;
-}
-
 export async function fetchExerciseTypesByCategory(categoryId: number) {
   const exerciseTypes = realmObject.filtered("category.id = $0", categoryId);
   const exerciseTypesArray = Array.from(exerciseTypes);

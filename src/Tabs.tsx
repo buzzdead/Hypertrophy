@@ -5,7 +5,7 @@ import ProgressTracking from "./screens/ProgressTracking/ProgressTracking";
 import Settings from "./screens/Settings/Settings";
 import {colors} from "./utils/util";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { Home } from "./screens/Home";
+import { Home } from "./screens/Home/Home";
 
 type BottomTabParamList = {
   List: undefined;

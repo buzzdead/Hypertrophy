@@ -4,15 +4,15 @@ import {ScrollView} from "react-native-gesture-handler";
 import {SafeAreaView} from "react-native-safe-area-context";
 import CustomButton from "../../components/CustomButton";
 import {CategorySchema, ExerciseTypeSchema} from "../../config/realm";
-import {useExerciseTypes} from "../../hooks/useExerciseTypes";
-import {colors} from "../../utils/util";
+import {useRealm} from "../../hooks/hooks";
+import {colors, validateSchema} from "../../utils/util";
 import NewObjectModal from "../Exercise/AddExercise/Modal/NewObjectModal";
 import {handleDelete, handleEdit} from "./Settings";
 
 // Add pagination
 export function ExerciseTypes() {
-  const {memoizedExerciseTypes, refresh} = useExerciseTypes({category: null, showAll: true});
-  const validExerciseTypes = memoizedExerciseTypes.filter(e => e.isValid());
+  const {data: exerciseTypes, refresh} = useRealm<ExerciseTypeSchema>("ExerciseType");
+  const validExerciseTypes = validateSchema(exerciseTypes)
   const [modalVisible, setModalVisible] = useState<{visible: boolean; id: number}[]>([]);
 
   const onEdit = (name: string, id: number, category?: CategorySchema) => {
@@ -51,7 +51,7 @@ export function ExerciseTypes() {
       return {visible: false, id: c.id};
     });
     setModalVisible(mVisibles);
-  }, [memoizedExerciseTypes]);
+  }, [exerciseTypes]);
   return (
     <SafeAreaView>
       <ScrollView keyboardShouldPersistTaps="handled">

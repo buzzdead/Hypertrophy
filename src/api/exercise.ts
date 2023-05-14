@@ -1,12 +1,12 @@
-import {Exercise} from "../../typings/types";
-import {ExerciseSchema, MonthSchema} from "../config/realm";
+import {Exercise, Plan} from "../../typings/types";
+import {ExerciseSchema, MonthSchema, PlanSchema} from "../config/realm";
 import {RealmWrapper} from "./RealmWrapper";
 
 const rw = new RealmWrapper();
 const realm = rw.getRealm();
 
 const getMaxId = () => {
-  return rw.getMaxId<Exercise>("Exercise");
+  return rw.getMaxId<ExerciseSchema>("Exercise");
 };
 
 const getRealmObjectFromPrimaryKey = (id: number) => {
@@ -15,6 +15,7 @@ const getRealmObjectFromPrimaryKey = (id: number) => {
 
 const months = realm.objects<MonthSchema>("Month");
 const exercises = realm.objects<ExerciseSchema>("Exercise");
+const plans = realm.objects<PlanSchema>("Plan")
 
 export async function findAllDuplicateExercises(exercise: Exercise) {
   const exercises = realm.objects<ExerciseSchema>("Exercise");
@@ -94,6 +95,39 @@ export async function deleteExercise(exercise: Exercise) {
   });
 }
 
+// Plans
+
+export async function addPlan(plan: Plan) {
+  await rw.performWriteTransaction(() => {
+    realm.create("Plan", {
+      ...plan,
+      id: rw.getMaxId<PlanSchema>("Plan")
+    });
+  });
+}
+
+export async function editPlan(newPlan: Plan) {
+  if(!newPlan?.id || !newPlan?.type) throw new Error
+  const currentPlan = realm.objectForPrimaryKey<PlanSchema>("Plan", newPlan?.id)
+  if(!currentPlan) throw new Error
+  const {weight, type, sets, reps, week} = newPlan
+  await rw.performWriteTransaction(() => {
+    currentPlan.weight = weight
+    currentPlan.reps = reps
+    currentPlan.week = week
+    currentPlan.sets = sets
+    currentPlan.type = type
+  })
+}
+
+export async function deletePlan(planId: number) {
+  const plan = realm.objectForPrimaryKey<PlanSchema>("Plan", planId);
+  await rw.performWriteTransaction(() => {
+    realm.delete(plan)
+  })
+}
+
+// Months
 export async function fetchMonths() {
   return months;
 }

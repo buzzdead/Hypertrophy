@@ -1,12 +1,9 @@
 import React from "react";
-import { View } from "react-native";
-import { Text } from "react-native-paper";
 import {VictoryChart, VictoryAxis, VictoryGroup, VictoryBar, VictoryTheme} from "victory-native";
-import {IGroup} from "../../../typings/types";
 import {colors} from "../../utils/util";
 
 interface Props {
-  chartData: number[] | IGroup[];
+  chartData: number[]
   days: number[] | string[];
   maxExercises: number;
   mode: "Daily" | "Weekly" | "Categories";
@@ -14,11 +11,6 @@ interface Props {
 }
 
 export const Chart: React.FC<Props> = ({chartData, days, maxExercises, mode, isLandScape}) => {
-  const data =
-    mode === "Daily" && typeof chartData[0] === "number"
-      ? chartData
-      : chartData.map(e => (typeof e === "number" ? e : e.exercises.length));
-  console.log("chart");
   return (
     <VictoryChart height={isLandScape ? 300 : 375} width={isLandScape ? 500 : 400} theme={VictoryTheme.material}>
       <VictoryAxis
@@ -36,7 +28,7 @@ export const Chart: React.FC<Props> = ({chartData, days, maxExercises, mode, isL
       />
       <VictoryGroup offset={20}>
         <VictoryBar
-          data={data}
+          data={chartData}
           barWidth={10}
           cornerRadius={5}
           style={{

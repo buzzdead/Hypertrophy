@@ -1,22 +1,19 @@
 // screens/ProgressTracking.tsx
 import React, {useEffect, useState} from "react";
 import {SafeAreaView, Text, View} from "react-native";
-import {useCategories} from "../../hooks/useCategories";
 import {SideBar} from "../../components/SideBar";
 import {CategorySchema} from "../../config/realm";
-import {useScreenOrientation} from "../../hooks/useScreenOrientation";
 import {ProgressTrackingBtm} from "./ProgressTrackingBtm";
 import {ChartNavigation} from "./ChartNavigation";
 import LoadingIndicator from "../../components/LoadingIndicator";
 import { Chart } from "./Chart";
-import { useMonths } from "../../hooks/useMonths";
+import { useMonths, useRealm, useScreenOrientation } from "../../hooks/hooks";
 import { fetchExercises } from "../../api/realm";
 import { ChartData } from "./ChartData";
-import { IGroup } from "../../../typings/types";
 import Contingent from "../../components/Contingent";
 
 export interface Chart {
-  chartData: number[] | IGroup[];
+  chartData: number[];
   maxExercises: number;
   days: number[];
   currentMonth: number;
@@ -25,7 +22,7 @@ export interface Chart {
 }
 
 const ProgressTracking = () => {
-  const {categories, refresh, loading: categoriesLoading} = useCategories();
+  const {data: categories, refresh, loading: categoriesLoading} = useRealm<CategorySchema>("Category");
   const screenOrientation = useScreenOrientation();
   const [mode, setMode] = useState<"Weekly" | "Daily">("Daily");
   const {months, loading: monthsLoading, availableMonths} = useMonths();

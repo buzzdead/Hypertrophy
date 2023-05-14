@@ -71,8 +71,31 @@ export class MonthSchema extends Realm.Object {
   exerciseCount!: number;
 }
 
+export class PlanSchema extends Realm.Object {
+  static schema = {
+    name: "Plan",
+    primaryKey: "id",
+    properties: {
+      id: { type: "int?", indexed: true, optional: true},
+      week: "int",
+      type: "ExerciseType",
+      sets: "int",
+      reps: "int",
+      weight: "float",
+      completed: "bool"
+    }
+  };
+  id!: number;
+  week!: number;
+  type!: ExerciseTypeSchema;
+  sets!: number;
+  reps!: number;
+  weight!: number;
+  completed!: boolean
+}
+
 const realmConfig: Realm.Configuration = {
-  schema: [ExerciseSchema, ExerciseTypeSchema, CategorySchema, MonthSchema],
+  schema: [ExerciseSchema, ExerciseTypeSchema, CategorySchema, MonthSchema, PlanSchema],
   schemaVersion: 11,
   onMigration: migration,
 };

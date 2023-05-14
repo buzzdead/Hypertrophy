@@ -3,13 +3,11 @@ import {SafeAreaView, StyleSheet, View} from "react-native";
 import {StackScreenProps} from "@react-navigation/stack";
 import {Exercise, ExerciseWithDuplicates, IGroup} from "../../../typings/types";
 import {groupExercisesByWeek} from "../../utils/util";
-import {useExercises} from "../../hooks/useExercises";
 import WeeklyExercises from "./WeeklyExercises";
 import LoadingIndicator from "../../components/LoadingIndicator";
-import {useCategories} from "../../hooks/useCategories";
+import {usePanHandler, useRealm} from "../../hooks/hooks";
 import {SideBar} from "../../components/SideBar";
-import {CategorySchema} from "../../config/realm";
-import {usePanHandler} from "../../hooks/usePanHandler";
+import {CategorySchema, ExerciseSchema} from "../../config/realm";
 import {ExerciseListBtm} from "./ExerciseListBtm";
 import {useScreenOrientation} from "../../hooks/useScreenOrientation";
 
@@ -30,8 +28,8 @@ interface State {
 }
 
 const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
-  const {categories, refresh: categoriesRefresh, loading: categoriesLoading} = useCategories();
-  const {exercises, refresh: exercisesRefresh, loading: exercisesLoading} = useExercises();
+  const {data: categories, refresh: categoriesRefresh, loading: categoriesLoading} = useRealm<CategorySchema>("Category");
+  const {data: exercises, refresh: exercisesRefresh, loading: exercisesLoading} = useRealm<ExerciseSchema>("Exercise");
   const screenOrientation = useScreenOrientation();
   const [state, setState] = useState<State>({
     filteredExercises: [],

@@ -2,13 +2,14 @@ import {useFocusEffect} from "@react-navigation/native";
 import React, {useCallback, useState} from "react";
 import {SafeAreaView, View, Text} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import Contingent from "../components/Contingent";
-import LoadingIndicator from "../components/LoadingIndicator";
-import {useCategories} from "../hooks/useCategories";
-import {useExercises} from "../hooks/useExercises";
-import {colors, getWeekNumber, months} from "../utils/util";
+import Contingent from "../../components/Contingent";
+import LoadingIndicator from "../../components/LoadingIndicator";
+import {colors, getWeekNumber, months} from "../../utils/util";
 import {HomeChartData} from "./HomeChartData";
-import {Chart} from "./ProgressTracking/Chart";
+import {Chart} from "../ProgressTracking/Chart";
+import { WeekPlan } from "./WeekPlan";
+import { useRealm } from "../../hooks/hooks";
+import { CategorySchema, ExerciseSchema } from "../../config/realm";
 
 interface State {
   maxExercises: number;
@@ -23,8 +24,8 @@ export const Home = () => {
   const currentUTCDate = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), currentDate.getUTCDate(), currentDate.getUTCHours(), currentDate.getUTCMinutes(), currentDate.getUTCSeconds()));
   const weekNumber = getWeekNumber(currentUTCDate);
 
-  const {exercises, loading: exercisesLoading} = useExercises();
-  const {categories, loading: categoriesLoading} = useCategories();
+  const {data: exercises, loading: exercisesLoading} = useRealm<ExerciseSchema>("Exercise");
+  const {data: categories, loading: categoriesLoading} = useRealm<CategorySchema>("Category");
   const currentExercises = exercises.filter(e => e.isValid());
   const currentMonth = months.find(m => m.numerical === currentUTCDate.getMonth())
 
@@ -38,12 +39,10 @@ export const Home = () => {
   if (exercisesLoading || categoriesLoading) return <LoadingIndicator />;
   
   return (
-    <SafeAreaView style={{height: '100%'}}>
-   
-        
+    <SafeAreaView style={{height: '100%', width: '100%'}}>
       <Text
           style={{
-            paddingTop: 25,
+            paddingTop: 5,
             textAlign: "center",
             fontFamily: "Roboto-Medium",
             fontSize: 30,
@@ -54,22 +53,23 @@ export const Home = () => {
         <MaterialCommunityIcons
             name={"weight-lifter"}
             size={100}
-            style={{textAlign: 'center', paddingTop: 15}}
+            style={{textAlign: 'center', paddingTop: 5}}
             
           />
         <Text
           style={{
-            paddingTop: 25,
+            paddingTop: 5,
             textAlign: "center",
             fontFamily: "Roboto-Medium",
             fontSize: 18,
             color: colors.summerDarkest,
           }}>
-          Day {currentDate.getUTCDay()} of 7
+          Day {currentUTCDate.getUTCDay()} of 7
         </Text>
+        <WeekPlan week={weekNumber}/>
       <View style={{width: '100%', height: '100%'}}>
         <Contingent style={{width: '100%', height: '100%'}} shouldRender={state.maxExercises !== 0}>
-          <View style={{flexDirection: 'column', alignSelf: 'flex-end', paddingTop: 100}}>
+          <View style={{flexDirection: 'column', alignSelf: 'flex-end'}}>
         <Chart
           maxExercises={state.maxExercises}
           chartData={state.chartData}

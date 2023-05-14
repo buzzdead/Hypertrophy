@@ -5,13 +5,14 @@ import {extend} from "lodash";
 import {Exercise} from "../../../../typings/types";
 import {saveExercise, addExercise, fetchExerciseTypesByCategory} from "../../../api/realm";
 import NumberInput from "../../../components/NumberInput";
-import {useCategories} from "../../../hooks/useCategories";
 import exerciseListReducer, {ExerciseReducerType} from "../../../Reducer";
 import {colors} from "../../../utils/util";
 import CustomButton from "../../../components/CustomButton";
 import AddObject from "./Modal/AddObject";
 import Weight from "./Weight";
 import LoadingIndicator from "../../../components/LoadingIndicator";
+import { useRealm } from "../../../hooks/useRealm";
+import { CategorySchema } from "../../../config/realm";
 
 type Props = {
   navigation: any;
@@ -38,7 +39,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
     : initialState;
 
   const [state, dispatch] = useReducer(exerciseListReducer, newState);
-  const {categories, refresh, loading: categoriesLoading} = useCategories();
+  const {data: categories, refresh, loading: categoriesLoading} = useRealm<CategorySchema>("Category");
   const categoryRef = useRef(-1)
 
   const _refresh = async () => {

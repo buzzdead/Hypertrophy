@@ -1,5 +1,5 @@
-import {CategorySchema, ExerciseSchema} from "../config/realm";
-import {getWeekNumber, groupExercisesByWeek, validateSchema} from "../utils/util";
+import {CategorySchema, ExerciseSchema} from "../../config/realm";
+import {getWeekNumber, groupExercisesByWeek, validateSchema} from "../../utils/util";
 
 interface Props {
   exercises: ExerciseSchema[];

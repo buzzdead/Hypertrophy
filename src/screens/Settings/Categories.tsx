@@ -4,13 +4,13 @@ import {ScrollView} from "react-native-gesture-handler";
 import {SafeAreaView} from "react-native-safe-area-context";
 import CustomButton from "../../components/CustomButton";
 import {CategorySchema} from "../../config/realm";
-import {useCategories} from "../../hooks/useCategories";
+import {useRealm} from "../../hooks/hooks";
 import {colors} from "../../utils/util";
 import NewObjectModal from "../Exercise/AddExercise/Modal/NewObjectModal";
 import {handleDelete, handleEdit} from "./Settings";
 
 export function Categories() {
-  const {categories, refresh} = useCategories();
+  const {data: categories, refresh} = useRealm<CategorySchema>("Category");
   const [modalVisible, setModalVisible] = useState<{visible: boolean; id: number}[]>([]);
   const validCategories = categories.filter(c => c.isValid());
 
