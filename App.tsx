@@ -13,6 +13,8 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { useNavigation } from "@react-navigation/native";
 import { ActivityIndicator, Image, StyleSheet, View } from "react-native";
 import SplashScreen from 'react-native-splash-screen';
+import {Provider} from 'react-redux'
+import { store } from "./src/store/store";
 
 type StackParamList = {
   Exercises: undefined;
@@ -31,6 +33,7 @@ const App = () => {
   }, []);
 
   return (
+    <Provider store={store}>
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="Exercises" component={Tabs} options={{headerShown: false}} />
@@ -134,6 +137,7 @@ const App = () => {
         />
       </Stack.Navigator>
     </NavigationContainer>
+    </Provider>
   );
 };
 

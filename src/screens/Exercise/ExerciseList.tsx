@@ -10,6 +10,7 @@ import {SideBar} from "../../components/SideBar";
 import {CategorySchema, ExerciseSchema} from "../../config/realm";
 import {ExerciseListBtm} from "./ExerciseListBtm";
 import {useScreenOrientation} from "../../hooks/useScreenOrientation";
+import useExercises from "../../hooks/useExercises";
 
 type ExeciseListProps = StackScreenProps<
   {
@@ -29,7 +30,7 @@ interface State {
 
 const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   const {data: categories, refresh: categoriesRefresh, loading: categoriesLoading} = useRealm<CategorySchema>("Category");
-  const {data: exercises, refresh: exercisesRefresh, loading: exercisesLoading} = useRealm<ExerciseSchema>("Exercise");
+  const {exercises} = useExercises()
   const screenOrientation = useScreenOrientation();
   const [state, setState] = useState<State>({
     filteredExercises: [],
@@ -42,7 +43,6 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
 
   const _onRefresh = () => {
     categoriesRefresh();
-    exercisesRefresh();
     setState({...state, seleectedCategories: []});
   };
 
@@ -93,7 +93,7 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   };
 
   useEffect(() => {
-    if (categoriesLoading || exercisesLoading) return;
+    if (categoriesLoading) return;
     currentPageRef.current = state.currentPage;
   }, [state.currentPage]);
 
@@ -116,7 +116,7 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
     currentPageRef,
     categoriesRef,
   });
-  if (categoriesLoading || exercisesLoading) return <View style={{width: '100%', height: '100%'}}><LoadingIndicator /></View>;
+  if (categoriesLoading) return <View style={{width: '100%', height: '100%'}}><LoadingIndicator /></View>;
   console.log("rendering exerciselist");
 
   return (
@@ -130,7 +130,7 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
       <WeeklyExercises
         navigation={navigation}
         onRefresh={_onRefresh}
-        refreshing={exercisesLoading || categoriesLoading}
+        refreshing={ categoriesLoading}
         groupedExercises={state.filteredExercises}
       />
       <ExerciseListBtm

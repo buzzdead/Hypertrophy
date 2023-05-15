@@ -1,6 +1,6 @@
 // RealmService.ts
 import Realm from "realm";
-import realmConfig from "../config/realm";
+import realmConfig, { ExerciseSchema } from "../config/realm";
 import {initializeDB} from "../initializeDB";
 
 class RealmService {
@@ -10,6 +10,7 @@ class RealmService {
   private constructor() {
     this.realm = new Realm(realmConfig);
     initializeDB(this.realm);
+   
   }
 
   public static getInstance(): RealmService {

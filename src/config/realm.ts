@@ -40,7 +40,7 @@ export class ExerciseSchema extends Realm.Object {
       type: "ExerciseType",
       sets: "int",
       reps: "int",
-      date: "date",
+      date: "string",
       weight: "float",
     },
   };
@@ -49,7 +49,7 @@ export class ExerciseSchema extends Realm.Object {
   type!: ExerciseTypeSchema;
   sets!: number;
   reps!: number;
-  date!: Date;
+  date!: string;
   weight!: number;
 }
 
@@ -94,6 +94,29 @@ export class PlanSchema extends Realm.Object {
   completed!: boolean
 }
 
+export class OldExerciseSchema extends Realm.Object {
+  static schema = {
+    name: "Exercise",
+    primaryKey: "id",
+    properties: {
+      id: { type: "int?", indexed: true, optional: true },
+      type: "ExerciseType",
+      sets: "int",
+      reps: "int",
+      date: "date", // this is still a Date
+      weight: "float",
+    },
+  };
+
+  id!: number;
+  type!: ExerciseTypeSchema;
+  sets!: number;
+  reps!: number;
+  date!: Date; // this is still a Date
+  weight!: number;
+}
+
+
 const realmConfig: Realm.Configuration = {
   schema: [ExerciseSchema, ExerciseTypeSchema, CategorySchema, MonthSchema, PlanSchema],
   schemaVersion: 11,
@@ -110,7 +133,14 @@ function migration(oldRealm: Realm, newRealm: Realm) {
     oldCategoryObjects.forEach(category => category.id += 1)
       
     };
-   
+    if (oldRealm.schemaVersion < 12) {
+      const oldObjects = oldRealm.objects<OldExerciseSchema>('Exercise');
+      const newObjects = newRealm.objects<ExerciseSchema>('Exercise');
+      
+      for (let i = 0; i < oldObjects.length; i++) {
+        newObjects[i].date = oldObjects[i].date.toISOString();
+      }
+    }
 }}
 
 
