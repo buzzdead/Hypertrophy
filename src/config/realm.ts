@@ -1,5 +1,6 @@
 // realmConfig.ts
 import Realm from "realm";
+import { getWeekNumber } from "../utils/util";
 
 export class CategorySchema extends Realm.Object {
   static schema = {
@@ -22,13 +23,13 @@ export class ExerciseTypeSchema extends Realm.Object {
     properties: {
       id: { type: "int?", indexed: true, optional: true },
       name: "string",
-      category: "Category",
+      categoryId: "int",
     },
   };
 
   id!: number;
   name!: string;
-  category!: CategorySchema;
+  categoryId!: number;
 }
 
 export class ExerciseSchema extends Realm.Object {
@@ -37,19 +38,25 @@ export class ExerciseSchema extends Realm.Object {
     primaryKey: "id",
     properties: {
       id: { type: "int?", indexed: true, optional: true },
-      type: "ExerciseType",
+      type: "int",
       sets: "int",
       reps: "int",
       date: "string",
+      week: "int",
+      month: "int",
+      year: "int",
       weight: "float",
     },
   };
 
   id!: number;
-  type!: ExerciseTypeSchema;
+  typeId!: number;
   sets!: number;
   reps!: number;
   date!: string;
+  week!: number;
+  year!: number;
+  month!: number;
   weight!: number;
 }
 
@@ -116,10 +123,26 @@ export class OldExerciseSchema extends Realm.Object {
   weight!: number;
 }
 
+export class OldExerciseTypeSchema extends Realm.Object {
+  static schema = {
+    name: "ExerciseType",
+    primaryKey: "id",
+    properties: {
+      id: { type: "int?", indexed: true, optional: true },
+      name: "string",
+      category: "Category",
+    },
+  };
+
+  id!: number;
+  name!: string;
+  category!: CategorySchema;
+}
+
 
 const realmConfig: Realm.Configuration = {
   schema: [ExerciseSchema, ExerciseTypeSchema, CategorySchema, MonthSchema, PlanSchema],
-  schemaVersion: 11,
+  schemaVersion: 12,
   onMigration: migration,
 };
 
@@ -134,11 +157,24 @@ function migration(oldRealm: Realm, newRealm: Realm) {
       
     };
     if (oldRealm.schemaVersion < 12) {
-      const oldObjects = oldRealm.objects<OldExerciseSchema>('Exercise');
-      const newObjects = newRealm.objects<ExerciseSchema>('Exercise');
       
-      for (let i = 0; i < oldObjects.length; i++) {
-        newObjects[i].date = oldObjects[i].date.toISOString();
+      const oldExercises = oldRealm.objects<OldExerciseSchema>('Exercise');
+      const newExercises = newRealm.objects<ExerciseSchema>('Exercise');
+      const oldExerciseTypes = oldRealm.objects<OldExerciseTypeSchema>('ExerciseType');
+      const newExerciseTypes = newRealm.objects<ExerciseTypeSchema>('ExerciseType');
+      
+      for (let i = 0; i < oldExercises.length; i++) {
+        const currentDate = oldExercises[i].date
+        const currentUTCDate = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), currentDate.getUTCDate(), currentDate.getUTCHours(), currentDate.getUTCMinutes(), currentDate.getUTCSeconds()));
+        const weekNumber = getWeekNumber(currentUTCDate);
+        newExercises[i].date = oldExercises[i].date.toISOString();
+        newExercises[i].typeId = oldExercises[i].type.id
+        newExercises[i].week = weekNumber
+        newExercises[i].year = currentUTCDate.getFullYear()
+        newExercises[i].month = currentUTCDate.getMonth()
+      }
+      for(let i=0; i < oldExerciseTypes.length; i++) {
+        newExerciseTypes[i].categoryId = oldExerciseTypes[i].category.id
       }
     }
 }}

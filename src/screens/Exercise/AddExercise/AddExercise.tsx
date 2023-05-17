@@ -23,7 +23,7 @@ const initialState: ExerciseReducerType = {
   weight: 5,
   sets: 1,
   reps: 10,
-  date: new Date(),
+  date: (new Date()).toISOString(),
   category: null,
   exerciseType: null,
   validWeight: true,

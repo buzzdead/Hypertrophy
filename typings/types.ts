@@ -16,7 +16,7 @@ export type Exercise = {
   sets: number;
   reps: number;
   weight: number | string
-  date: Date;
+  date: string;
 };
 
 export type Plan = {
