@@ -1,4 +1,4 @@
-import React, {useEffect, useReducer, useRef} from "react";
+import React, {useEffect, useReducer, useRef, useState} from "react";
 import {SafeAreaView, ScrollView, StyleSheet, View} from "react-native";
 import PickerField from "./Picker/PickerField";
 import {extend} from "lodash";
@@ -12,7 +12,7 @@ import AddObject from "./Modal/AddObject";
 import Weight from "./Weight";
 import LoadingIndicator from "../../../components/LoadingIndicator";
 import {useRealm} from "../../../hooks/useRealm";
-import {CategorySchema, ExerciseSchema} from "../../../config/realm";
+import {CategorySchema} from "../../../config/realm";
 import {useMutation, useQueryClient} from "react-query";
 
 type Props = {
@@ -42,6 +42,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
   const [state, dispatch] = useReducer(exerciseListReducer, newState);
   const {data: categories, refresh, loading: categoriesLoading} = useRealm<CategorySchema>("Category");
   const queryClient = useQueryClient();
+  const [loading, setLoading] = useState(false)
   const categoryRef = useRef(-1);
 
   const _refresh = async () => {
@@ -66,6 +67,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
       },
       onSettled: async () => {
         await queryClient.invalidateQueries("Exercise");
+        navigation.goBack()
       },
     },
   );
@@ -94,8 +96,8 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
       month: previousExercise?.month || month,
       date: previousExercise?.date || new Date(),
     };
-    mutateExercise.mutate({exercise});
-    navigation.goBack();
+    setLoading(true)
+    setTimeout(async () => await mutateExercise.mutateAsync({exercise}).then(() => setLoading(false)), 250)
   };
 
   const onCategoryChange = async (categoryId: number) => {
@@ -195,6 +197,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
               backgroundColor={colors.summerDark}
               disabled={!state.validWeight}
               title="Save"
+              loading={loading}
               onPress={handleAddExercise}
             />
           </View>

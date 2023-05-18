@@ -6,6 +6,7 @@ import {colors} from "../../../utils/util";
 import Contingent from "../../../components/Contingent";
 import {deleteExercise, findAllDuplicateExercises} from "../../../api/realm";
 import DuplicateModal from "./DuplicateModal";
+import { useMutation, useQueryClient } from "react-query";
 
 interface ExerciseDetailsContentProps {
   exercise: Exercise;
@@ -25,6 +26,29 @@ const ExerciseDetailsContent = ({
   const [duplicateExercises, setDuplicateExercises] = useState<Exercise[]>([]);
   // Check if the exercise was created less than a day ago
   const lessThanADayAgo = Date.now() - new Date(exercise.date).getTime() < 764 * 60 * 60 * 1000;
+  const queryClient = useQueryClient();
+
+  const mutateExercise = useMutation(
+    ({exercise}: {exercise: Exercise}) => (deleteExercise(exercise)),
+    {
+      onMutate: async ({exercise: newExercise}) => {
+        await queryClient.cancelQueries("Exercise");
+        const previousExercises = queryClient.getQueryData<Exercise[]>("Exercise");
+        if (previousExercises) {
+          queryClient.setQueryData<Exercise[]>("Exercise", {...previousExercises.filter(e => e.id !== newExercise.id)});
+        }
+        return () => (previousExercises ? queryClient.setQueryData("Exercise", previousExercises) : null);
+      },
+      onError: (error, newExercise, rollback) => {
+        console.error(error);
+        if (rollback) rollback();
+      },
+      onSettled: async () => {
+        await queryClient.invalidateQueries("Exercise");
+        onClose();
+      },
+    },
+  );
 
   const renderDuplicate = (duplicate: Duplicate) => {
     return (
@@ -36,7 +60,7 @@ const ExerciseDetailsContent = ({
 
   const handleDelete = async (duplicateExercise?: Exercise) => {
     setLoading(true);
-    setTimeout(async () => await deleteExercise(duplicateExercise || exercise).then(() => onClose()), 1000);
+    setTimeout(async () => await mutateExercise.mutateAsync({exercise: duplicateExercise || exercise}).then(() => setLoading(false)), 250)
   };
 
   const handleDelete2 = async () => {
@@ -79,6 +103,7 @@ const ExerciseDetailsContent = ({
             size={"M"}
             onPress={onEditPress}
             title={"Edit"}
+            disabled={loading}
             backgroundColor={colors.summerDark}
             titleColor={colors.accent}
           />

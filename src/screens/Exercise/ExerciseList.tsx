@@ -10,6 +10,7 @@ import {SideBar} from "../../components/SideBar";
 import {CategorySchema, ExerciseSchema} from "../../config/realm";
 import {ExerciseListBtm} from "./ExerciseListBtm";
 import {useScreenOrientation} from "../../hooks/useScreenOrientation";
+import { useIsFocused } from "@react-navigation/native";
 
 type ExeciseListProps = StackScreenProps<
   {
@@ -31,6 +32,7 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   const {data: categories, refresh: categoriesRefresh, loading: categoriesLoading} = useRealm<CategorySchema>("Category");
   const {data: exercises, refresh: exercisesRefresh, loading: exercisesLoading} = useRealm<ExerciseSchema>("Exercise");
   const screenOrientation = useScreenOrientation();
+  const focused = useIsFocused()
   const [state, setState] = useState<State>({
     filteredExercises: [],
     currentPage: 0,
@@ -116,8 +118,8 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
     currentPageRef,
     categoriesRef,
   });
-  console.log("rendering exerciselist PRE")
-  if (categoriesLoading || exercisesLoading) return <View style={{width: '100%', height: '100%'}}><LoadingIndicator /></View>;
+  console.log("rendering exerciselist PRE " + focused)
+  if (categoriesLoading || exercisesLoading || !focused) return <View style={{width: '100%', height: '100%'}}><LoadingIndicator /></View>;
   console.log("rendering exerciselist");
 
   return (

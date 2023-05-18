@@ -19,7 +19,7 @@ const WeeklyExercises: React.FC<WeeklyExercisesProps> = ({
   groupedExercises
 }) => {
   
-  const eb = groupedExercises.filter(e => e.exercise.isValid())
+  const eb = groupedExercises?.filter(e => e.exercise.isValid())
 
   console.log("rendering weekly")
 

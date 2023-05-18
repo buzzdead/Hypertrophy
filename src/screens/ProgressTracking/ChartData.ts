@@ -27,7 +27,6 @@ export const ChartData = ({exercises, categories, month, year, lastHalf = false,
     const modifiedData = groupExercisesByWeek(categorised);
     modifiedData.unshift({
       exercises: [],
-      weekKey: "",
       weekNumber: 0,
     });
     chartData = modifiedData;

@@ -12,7 +12,7 @@ import { fetchExercises } from "../../api/realm";
 import { ChartData } from "./ChartData";
 import Contingent from "../../components/Contingent";
 import { getAvailableMonths, Month } from "../../utils/util";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 
 interface Chart {
   chartData: number[];
@@ -25,10 +25,12 @@ interface Chart {
   mode: 'Weekly' | 'Daily'
 }
 
-const ProgressTracking = () => {
+export const ProgressTracking = () => {
   const {data: categories, loading: categoriesLoading} = useRealm<CategorySchema>("Category");
   const {data: months, loading: monthsLoading} = useRealm<MonthSchema>("Month");
+  const [loading, setLoading] = useState(false)
   const screenOrientation = useScreenOrientation();
+  const focused = useIsFocused()
 
   const [state, setState] = useState<Chart>({
     chartData: [],
@@ -63,6 +65,7 @@ const ProgressTracking = () => {
   };
 
   const getChartData = async (lh?: boolean, cm?: number) => {
+    setLoading(true)
     const newLastHalf = lh !== undefined ? lh : state.lastHalf
     const newCurrentMonth = cm !== undefined ? cm : state.currentMonth
 
@@ -79,6 +82,7 @@ const ProgressTracking = () => {
       mode: state.mode,
     });
     setState({...state, chartData: chartData, maxExercises: maxExercises, days: days, currentMonth: newCurrentMonth, lastHalf: newLastHalf, availableMonths: availableMonths});
+    setLoading(false)
   };
 
   const getChartData2 = async (selectedCategories: CategorySchema[]) => {
@@ -101,16 +105,14 @@ const ProgressTracking = () => {
     if (categoriesLoading) return
     if (monthsLoading) return;
     getChartData()
-  }, [months, state.mode]));
+  }, [monthsLoading, state.mode]));
 
   const handleFilterChange = (selectedCategories: CategorySchema[]) => {
     getChartData2(selectedCategories)
   };
-
+  
+  if (categoriesLoading || monthsLoading || !focused || loading) return <View style={{height: '100%', width: '100%'}}><LoadingIndicator /></View>
   console.log("rendering progress")
-  
-  if (categoriesLoading || monthsLoading) return <View style={{height: '100%', width: '100%'}}><LoadingIndicator /></View>
-  
 
   if(state.chartData.length === 0 || state.availableMonths.length === 0) return <View style={{justifyContent: 'center', width: '100%', height: '100%', alignItems: 'center'}}><Text style={{fontFamily: 'Roboto-Bold'}}>No data found, add some exercises</Text></View>
 
@@ -132,5 +134,3 @@ const ProgressTracking = () => {
     </SafeAreaView>
   );
 };
-
-export default ProgressTracking;

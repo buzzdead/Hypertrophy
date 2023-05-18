@@ -1,4 +1,4 @@
-import {useFocusEffect} from "@react-navigation/native";
+import {useFocusEffect, useIsFocused} from "@react-navigation/native";
 import React, {useCallback, useState} from "react";
 import {SafeAreaView, View, Text} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -23,6 +23,7 @@ export const Home = () => {
   const currentDate = new Date();
   const currentUTCDate = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), currentDate.getUTCDate(), currentDate.getUTCHours(), currentDate.getUTCMinutes(), currentDate.getUTCSeconds()));
   const weekNumber = getWeekNumber(currentUTCDate);
+  const focused = useIsFocused()
 
   const {data: exercises, loading: exercisesLoading} = useRealm<ExerciseSchema>("Exercise");
   const {data: categories, loading: categoriesLoading} = useRealm<CategorySchema>("Category");
@@ -34,9 +35,10 @@ export const Home = () => {
       if (categoriesLoading || exercisesLoading) return;
       const {maxExercises, chartData, days} = HomeChartData({exercises: currentExercises, categories});
       setState({maxExercises, chartData, days});
-    }, [exercisesLoading || categoriesLoading]),
+    }, [exercisesLoading || categoriesLoading || exercises]),
   );
-  if (exercisesLoading || categoriesLoading) return <LoadingIndicator />;
+
+  if (exercisesLoading || categoriesLoading || !focused) return <LoadingIndicator />;
   
   return (
     <SafeAreaView style={{height: '100%', width: '100%'}}>

@@ -58,8 +58,8 @@ const ExerciseDetails: React.FC<Props> = ({navigation, route}) => {
 
   if (deleted)
     return (
-      <View style={{justifyContent: "center", alignContent: "center"}}>
-        <Text style={{textAlign: "center"}}>Exercise Deleted</Text>
+      <View style={{justifyContent: "center", alignContent: "center", width: '100%', height: '100%'}}>
+        <Text style={{textAlign: "center", textAlignVertical: 'center', fontSize: 34}}>Exercise Deleted</Text>
       </View>
     );
 
