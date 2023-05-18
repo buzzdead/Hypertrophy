@@ -99,7 +99,7 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
 
   useEffect(() => {
     if (categoriesLoading) return;
-    const groups = groupExercisesByWeek(exercises);
+    const groups = groupExercisesByWeek(exercises, true);
     if (state.groupedExercises.length > groups.length) handlePrevPage();
     setState({
       ...state,
@@ -116,6 +116,7 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
     currentPageRef,
     categoriesRef,
   });
+  console.log("rendering exerciselist PRE")
   if (categoriesLoading || exercisesLoading) return <View style={{width: '100%', height: '100%'}}><LoadingIndicator /></View>;
   console.log("rendering exerciselist");
 

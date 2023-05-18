@@ -11,6 +11,7 @@ interface Props {
 }
 
 export const Chart: React.FC<Props> = ({chartData, days, maxExercises, mode, isLandScape}) => {
+  console.log('rendering chart')
   return (
     <VictoryChart height={isLandScape ? 300 : 375} width={isLandScape ? 500 : 400} theme={VictoryTheme.material}>
       <VictoryAxis

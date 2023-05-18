@@ -13,7 +13,7 @@ interface SideBarProps {
   isLandScape: boolean
 }
 
-export const SideBar: React.FC<SideBarProps> = ({categories, onFilterChange, icon, isLandScape}) => {
+export const SideBar: React.FC<SideBarProps> = React.memo(({categories, onFilterChange, icon, isLandScape}) => {
   const [sideBarWidth, setSideBarWidth] = useState(isLandScape ? 300 : 150)
   const [selectedCategoryAnimations, setSelectedCategoryAnimations] = useState(
     categories.map(() => new Animated.Value(0)),
@@ -111,7 +111,7 @@ const SidebarVisibleWidth = 50;
       </View>
     </Animated.View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   sidebar: {

@@ -1,5 +1,4 @@
-import { useState, useCallback } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
+import { useQuery } from 'react-query';
 import { Schema } from '../../typings/types';
 import { RealmWrapper } from '../api/RealmWrapper';
 import { validateSchema } from '../utils/util';
@@ -7,34 +6,19 @@ import { validateSchema } from '../utils/util';
 interface UseRealmConfig<T> {
     schemaName: keyof Schema;
     limitBy?: { by: 'Month', when: number };
-  }
+}
 
 export function useRealm<T extends Schema[keyof Schema]>(schemaName: keyof Schema, limitBy?: { by: 'Month', when: number }) {
-  const [data, setData] = useState<T[]>([]);
-  const [loading, setLoading] = useState(true);
   const rw = new RealmWrapper();
 
-  const loadData = async () => {
+  const fetchData = async () => {
     console.log("loading data" + schemaName)
     const dataArray = limitBy ? await rw.getRealmObject<T>(schemaName, limitBy) : await rw.getRealmObject<T>(schemaName);
     const validData = validateSchema(dataArray);
-    setData(validData);
-    setLoading(false);
+    return validData;
   };
 
-  const refresh = async () => {
-    setLoading(true);
-    await loadData();
-    setLoading(false);
-  };
+  const { data, isLoading: loading, refetch: refresh } = useQuery([schemaName, limitBy], fetchData, {cacheTime: 1000 * 60 * 60, staleTime: 1000 * 60 * 60 , refetchOnWindowFocus: false});
 
-  useFocusEffect(
-    useCallback(() => {
-      setLoading(true);
-      loadData();
-      return () => {};
-    }, []),
-  );
-
-  return { data, loading, refresh };
+  return { data: data === undefined ? [] : data, loading, refresh };
 }

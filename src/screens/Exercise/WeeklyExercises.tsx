@@ -19,21 +19,14 @@ const WeeklyExercises: React.FC<WeeklyExercisesProps> = ({
   groupedExercises
 }) => {
   
-  const [currentExercises, setCurrentExercises] = useState<ExerciseWithDuplicates[]>([])
+  const eb = groupedExercises.filter(e => e.exercise.isValid())
 
-  useEffect(() => {
-    if(!groupedExercises || groupedExercises === undefined) {
-      const newExercises = currentExercises.filter(e => e.exercise.isValid())
-      setCurrentExercises(newExercises)
-    }
-    setCurrentExercises(groupedExercises?.filter(e => e.exercise.isValid()))
-  }, [groupedExercises])
-
+  console.log("rendering weekly")
 
   return (
     <SafeAreaView style={styles.container} >
       <FlatList
-        data={currentExercises || []}
+        data={eb || []}
         style={{gap: 10}}
         ItemSeparatorComponent={() => <View style={{padding: 5}}></View>}
         renderItem={({item}) => <ExerciseItem item={item} navigation={navigation} />}

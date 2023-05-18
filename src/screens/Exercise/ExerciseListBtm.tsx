@@ -25,6 +25,7 @@ export const ExerciseListBtm: React.FC<ExerciseListBtmProps> = ({
   maxPage,
   navigation,
 }) => {
+  console.log("rendering btm")
   return (
     <SafeAreaView>
       <View style={styles.pagination}>

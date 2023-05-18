@@ -31,14 +31,11 @@ export const groupExercisesByWeek = (exercises: ExerciseSchema[], needValidation
   const validExercises = needValidation ? validateSchema(exercises) : exercises;
 
   validExercises.forEach(exercise => {
-    const weekStart = exercise?.date ? new Date(exercise.date) : new Date();
-    const weekNumber = getWeekNumber(weekStart);
-    const weekKey = `${weekStart.getFullYear()}-W${weekNumber}`;
 
-    let group = groupsByWeekKey[weekKey];
+    let group = groupsByWeekKey[exercise.week];
     if (!group) {
-      group = {weekKey, weekNumber, exercises: []};
-      groupsByWeekKey[weekKey] = group;
+      group = {weekNumber: exercise.week, exercises: []};
+      groupsByWeekKey[exercise.week] = group;
       groups.push(group);
     }
 
