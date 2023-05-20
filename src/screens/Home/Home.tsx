@@ -1,5 +1,5 @@
 import {useFocusEffect, useIsFocused} from "@react-navigation/native";
-import React, {useCallback, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {SafeAreaView, View, Text} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Contingent from "../../components/Contingent";
@@ -10,6 +10,7 @@ import {Chart} from "../ProgressTracking/Chart";
 import { WeekPlan } from "./WeekPlan";
 import { useRealm } from "../../hooks/hooks";
 import { CategorySchema, ExerciseSchema } from "../../config/realm";
+import { useFocus } from "../../hooks/useFocus";
 
 interface State {
   maxExercises: number;
@@ -23,12 +24,12 @@ export const Home = () => {
   const currentDate = new Date();
   const currentUTCDate = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), currentDate.getUTCDate(), currentDate.getUTCHours(), currentDate.getUTCMinutes(), currentDate.getUTCSeconds()));
   const weekNumber = getWeekNumber(currentUTCDate);
-  const focused = useIsFocused()
+  const isFocused = useFocus()
 
   const {data: exercises, loading: exercisesLoading} = useRealm<ExerciseSchema>("Exercise");
   const {data: categories, loading: categoriesLoading} = useRealm<CategorySchema>("Category");
   const currentExercises = exercises.filter(e => e.isValid());
-  const currentMonth = months.find(m => m.numerical === currentUTCDate.getMonth())
+  
 
   useFocusEffect(
     useCallback(() => {
@@ -38,7 +39,7 @@ export const Home = () => {
     }, [exercisesLoading || categoriesLoading || exercises]),
   );
 
-  if (exercisesLoading || categoriesLoading || !focused) return <LoadingIndicator />;
+  if (exercisesLoading || categoriesLoading || !isFocused.current) return <LoadingIndicator />;
   
   return (
     <SafeAreaView style={{height: '100%', width: '100%'}}>
@@ -66,7 +67,7 @@ export const Home = () => {
             fontSize: 18,
             color: colors.summerDarkest,
           }}>
-          Day {currentUTCDate.getUTCDay()} of 7
+          Day {currentDate.getUTCDay()} of 7
         </Text>
         <WeekPlan week={weekNumber}/>
       <View style={{width: '100%', height: '100%'}}>

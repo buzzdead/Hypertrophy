@@ -7,6 +7,7 @@ import Contingent from "../../../components/Contingent";
 import {deleteExercise, findAllDuplicateExercises} from "../../../api/realm";
 import DuplicateModal from "./DuplicateModal";
 import { useMutation, useQueryClient } from "react-query";
+import LoadingIndicator from "../../../components/LoadingIndicator";
 
 interface ExerciseDetailsContentProps {
   exercise: Exercise;
@@ -76,6 +77,8 @@ const ExerciseDetailsContent = ({
     setDuplicateExercises([]);
     handleDelete(exercise);
   };
+
+  if (loading) return <LoadingIndicator />;
 
   return (
     <SafeAreaView style={styles.container}>

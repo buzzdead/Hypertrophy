@@ -14,6 +14,7 @@ import LoadingIndicator from "../../../components/LoadingIndicator";
 import {useRealm} from "../../../hooks/useRealm";
 import {CategorySchema} from "../../../config/realm";
 import {useMutation, useQueryClient} from "react-query";
+import { useFocus } from "../../../hooks/useFocus";
 
 type Props = {
   navigation: any;
@@ -44,6 +45,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false)
   const categoryRef = useRef(-1);
+  const isFocused = useFocus()
 
   const _refresh = async () => {
     await refresh();
@@ -97,7 +99,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
       date: previousExercise?.date || new Date(),
     };
     setLoading(true)
-    setTimeout(async () => await mutateExercise.mutateAsync({exercise}).then(() => setLoading(false)), 250)
+    setTimeout(async () => await mutateExercise.mutateAsync({exercise}), 250)
   };
 
   const onCategoryChange = async (categoryId: number) => {
@@ -127,7 +129,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
     if (categories.length > 0 && categoryRef.current !== state?.category?.id) onCategoryChange(state.category?.id || 1);
   }, [categoriesLoading, state.category]);
 
-  if (categoriesLoading) return <LoadingIndicator />;
+  if (categoriesLoading || !isFocused.current || loading) return <LoadingIndicator />;
 
   console.log("renderinga dd exercise");
 

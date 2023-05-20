@@ -1,5 +1,5 @@
 // screens/ProgressTracking.tsx
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {SafeAreaView, Text, View} from "react-native";
 import {SideBar} from "../../components/SideBar";
 import {CategorySchema, MonthSchema} from "../../config/realm";
@@ -13,6 +13,7 @@ import { ChartData } from "./ChartData";
 import Contingent from "../../components/Contingent";
 import { getAvailableMonths, Month } from "../../utils/util";
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
+import { useFocus } from "../../hooks/useFocus";
 
 interface Chart {
   chartData: number[];
@@ -28,9 +29,8 @@ interface Chart {
 export const ProgressTracking = () => {
   const {data: categories, loading: categoriesLoading} = useRealm<CategorySchema>("Category");
   const {data: months, loading: monthsLoading} = useRealm<MonthSchema>("Month");
-  const [loading, setLoading] = useState(false)
   const screenOrientation = useScreenOrientation();
-  const focused = useIsFocused()
+  const isFocused = useFocus()
 
   const [state, setState] = useState<Chart>({
     chartData: [],
@@ -65,7 +65,6 @@ export const ProgressTracking = () => {
   };
 
   const getChartData = async (lh?: boolean, cm?: number) => {
-    setLoading(true)
     const newLastHalf = lh !== undefined ? lh : state.lastHalf
     const newCurrentMonth = cm !== undefined ? cm : state.currentMonth
 
@@ -82,7 +81,7 @@ export const ProgressTracking = () => {
       mode: state.mode,
     });
     setState({...state, chartData: chartData, maxExercises: maxExercises, days: days, currentMonth: newCurrentMonth, lastHalf: newLastHalf, availableMonths: availableMonths});
-    setLoading(false)
+    
   };
 
   const getChartData2 = async (selectedCategories: CategorySchema[]) => {
@@ -104,6 +103,7 @@ export const ProgressTracking = () => {
     React.useCallback(() => {
     if (categoriesLoading) return
     if (monthsLoading) return;
+    if (state.chartData.length > 0) return
     getChartData()
   }, [monthsLoading, state.mode]));
 
@@ -111,7 +111,7 @@ export const ProgressTracking = () => {
     getChartData2(selectedCategories)
   };
   
-  if (categoriesLoading || monthsLoading || !focused || loading) return <View style={{height: '100%', width: '100%'}}><LoadingIndicator /></View>
+  if (categoriesLoading || monthsLoading || !isFocused.current ) return <View style={{height: '100%', width: '100%'}}><LoadingIndicator /></View>
   console.log("rendering progress")
 
   if(state.chartData.length === 0 || state.availableMonths.length === 0) return <View style={{justifyContent: 'center', width: '100%', height: '100%', alignItems: 'center'}}><Text style={{fontFamily: 'Roboto-Bold'}}>No data found, add some exercises</Text></View>

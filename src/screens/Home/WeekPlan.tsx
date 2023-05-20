@@ -2,30 +2,62 @@ import React from "react";
 import {SafeAreaView, View} from "react-native";
 import {FlatList} from "react-native-gesture-handler";
 import LoadingIndicator from "../../components/LoadingIndicator";
-import { CategorySchema, ExerciseTypeSchema, PlanSchema } from "../../config/realm";
-import { useRealm } from "../../hooks/hooks";
+import {CategorySchema, ExerciseTypeSchema, PlanSchema} from "../../config/realm";
+import {useRealm} from "../../hooks/hooks";
+import { useFocus } from "../../hooks/useFocus";
 import {PlanItem} from "./PlanItem";
 
 interface Props {
-  week: number
+  week: number;
 }
 
 export const WeekPlan: React.FC<Props> = ({week}) => {
-  const {data: plans, refresh: planRefresh, loading: plansLoading} = useRealm<PlanSchema>("Plan")
-  const {data: exerciseTypes, loading: exerciseTypesLoading} = useRealm<ExerciseTypeSchema>("ExerciseType")
-  const {data: categories, loading: categoriesLoading} = useRealm<CategorySchema>("Category")
+  const {data: plans, refresh: planRefresh, loading: plansLoading} = useRealm<PlanSchema>("Plan");
+  const {data: exerciseTypes, loading: exerciseTypesLoading} = useRealm<ExerciseTypeSchema>("ExerciseType");
+  const {data: categories, loading: categoriesLoading} = useRealm<CategorySchema>("Category");
+  const focused = useFocus()
 
-  if(plansLoading || exerciseTypesLoading) return <View style={{width: '100%', height: '100%'}}><LoadingIndicator /></View>
+  const currentPlans = plans.filter(p => p.isValid())
+
+  if (plansLoading || exerciseTypesLoading || !focused.current)
+    return (
+      <View style={{width: "100%", height: "100%"}}>
+        <LoadingIndicator />
+      </View>
+    );
 
   return (
-    <SafeAreaView style={{width: "100%", paddingTop: 20, paddingHorizontal: 40, justifyContent: "center", alignItems: 'center'}}>
+    <SafeAreaView
+      style={{width: "100%", paddingTop: 20, paddingHorizontal: 40, justifyContent: "center", alignItems: "center"}}>
       <FlatList
         ItemSeparatorComponent={() => <View style={{padding: 5}}></View>}
         showsHorizontalScrollIndicator={false}
         horizontal
-        data={plans}
-        renderItem={({item}) => <PlanItem refresh={planRefresh} categories={categories} exerciseTypes={exerciseTypes} reps={item.reps} sets={item.sets} weight={item.weight} type={item.type} week={week} completed={item.completed} id={item.id}/>}
-        ListFooterComponent={<PlanItem refresh={planRefresh} categories={categories} exerciseTypes={exerciseTypes} newPlan week={week} completed={false} />}
+        data={currentPlans}
+        renderItem={({item}) => (
+          <PlanItem
+            categories={categories}
+            exerciseTypes={exerciseTypes}
+            reps={item.reps}
+            sets={item.sets}
+            weight={item.weight}
+            type={item.type}
+            week={week}
+            completed={item.completed}
+            id={item.id}
+          />
+        )}
+        ListFooterComponent={
+          <View style={{paddingLeft: 10}}>
+            <PlanItem
+              categories={categories}
+              exerciseTypes={exerciseTypes}
+              newPlan
+              week={week}
+              completed={false}
+            />
+          </View>
+        }
       />
     </SafeAreaView>
   );

@@ -1,4 +1,3 @@
-import { Results } from "realm";
 import {Exercise, Plan} from "../../typings/types";
 import {ExerciseSchema, MonthSchema, PlanSchema} from "../config/realm";
 import {RealmWrapper} from "./RealmWrapper";

@@ -34,10 +34,3 @@ export async function editCategory(categoryId: number, categoryName: string) {
     categoryToEdit.name = categoryName;
   });
 }
-
-export async function fetchCategories() {
-  console.log("fetching categories")
-  const categories = realm.objects<CategorySchema>("Category");
-  const categoriesArray = Array.from(categories);
-  return categoriesArray;
-}
