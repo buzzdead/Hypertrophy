@@ -33,7 +33,7 @@ export const Home = () => {
 
   useFocusEffect(
     useCallback(() => {
-      if (categoriesLoading || exercisesLoading) return;
+      if (categoriesLoading || exercisesLoading || !isFocused.current) return;
       const {maxExercises, chartData, days} = HomeChartData({exercises: currentExercises, categories});
       setState({maxExercises, chartData, days});
     }, [exercisesLoading || categoriesLoading || exercises]),

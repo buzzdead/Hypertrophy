@@ -52,8 +52,7 @@ export function useRealm<T extends Schema[keyof Schema]>({schemaName, limitBy, m
     const dataArray = limitBy
       ? await rw.getRealmObject<T>(schemaName, limitBy)
       : await rw.getRealmObject<T>(schemaName);
-    const validData = validateSchema(dataArray);
-    return validData;
+    return dataArray;
   };
 
   const {
