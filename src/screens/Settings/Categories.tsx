@@ -10,7 +10,7 @@ import NewObjectModal from "../Exercise/AddExercise/Modal/NewObjectModal";
 import {handleDelete, handleEdit} from "./Settings";
 
 export function Categories() {
-  const {data: categories, refresh} = useRealm<CategorySchema>("Category");
+  const {data: categories, refresh} = useRealm<CategorySchema>({schemaName: "Category"});
   const [modalVisible, setModalVisible] = useState<{visible: boolean; id: number}[]>([]);
   const validCategories = categories.filter(c => c.isValid());
 

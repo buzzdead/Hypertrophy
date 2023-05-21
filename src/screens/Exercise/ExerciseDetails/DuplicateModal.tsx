@@ -2,13 +2,14 @@ import React from "react";
 import {Modal, SafeAreaView, StyleSheet, Text, TouchableWithoutFeedback, View} from "react-native";
 import {Exercise} from "../../../../typings/types";
 import CustomButton from "../../../components/CustomButton";
+import { ExerciseSchema } from "../../../config/realm";
 import {colors} from "../../../utils/util";
 
 interface Props {
   visible: boolean;
   onClose: () => void;
-  onPress: (exercise: Exercise) => void;
-  duplicateExercises: Exercise[];
+  onPress: (exercise: ExerciseSchema) => void;
+  duplicateExercises: ExerciseSchema[];
 }
 
 const DuplicateModal: React.FC<Props> = ({visible, onClose, onPress, duplicateExercises}) => {

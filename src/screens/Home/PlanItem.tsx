@@ -1,13 +1,13 @@
 import React, {useState} from "react";
 import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import { useMutation, useQueryClient } from "react-query";
+import {UseMutationResult} from "react-query";
 import {Plan} from "../../../typings/types";
-import {addPlan, deletePlan, editPlan} from "../../api/exercise";
 import Contingent from "../../components/Contingent";
 import CustomButton from "../../components/CustomButton";
 import LoadingIndicator from "../../components/LoadingIndicator";
 import {CategorySchema, ExerciseTypeSchema, PlanSchema} from "../../config/realm";
-import { useFocus } from "../../hooks/useFocus";
+import {useFocus} from "../../hooks/useFocus";
+import {Mutations} from "../../hooks/useRealm";
 import {colors} from "../../utils/color";
 import PlanModal from "./PlanModal";
 
@@ -17,6 +17,15 @@ interface Props extends Partial<Plan> {
   week: number;
   exerciseTypes: ExerciseTypeSchema[];
   categories: CategorySchema[];
+  mutatePlan: UseMutationResult<
+    void,
+    unknown,
+    {
+      item: PlanSchema;
+      action: Mutations;
+    },
+    () => PlanSchema[] | null
+  >;
 }
 
 export const PlanItem: React.FC<Props> = ({
@@ -28,65 +37,23 @@ export const PlanItem: React.FC<Props> = ({
   week,
   categories,
   exerciseTypes,
+  mutatePlan,
   id,
 }) => {
   const [showModal, setShowModal] = useState(false);
-  const queryClient = useQueryClient();
-  const isFocused = useFocus()
+  const isFocused = useFocus();
 
   const handleSave = (data: Omit<Plan, "week" | "completed">) => {
-    const plan = {...data, week: week, completed: false} as PlanSchema
-    useAddSave.mutateAsync({p: plan})
+    const plan = {...data, week: week, completed: false} as PlanSchema;
+    mutatePlan.mutateAsync({item: plan, action: newPlan ? "ADD" : "SAVE"});
   };
-
-  const useDelete = useMutation(
-    ({planId}: {planId: number}) => (deletePlan(planId)),
-    {
-      onMutate: async ({planId}) => {
-        await queryClient.cancelQueries("Plan");
-        const previousPlans = queryClient.getQueryData<PlanSchema[]>("Plan");
-        if (previousPlans) {
-          queryClient.setQueryData<PlanSchema[]>("Plan", {...previousPlans.filter(p => p.id !== planId)});
-        }
-        return () => (previousPlans ? queryClient.setQueryData("Plan", previousPlans) : null);
-      },
-      onError: (error, newExercise, rollback) => {
-        console.error(error);
-        if (rollback) rollback();
-      },
-      onSettled: async () => {
-        await queryClient.invalidateQueries("Plan")
-      },
-    },
-  );
-
-  const useAddSave = useMutation(
-    ({p}: {p: PlanSchema}) => (newPlan ? addPlan({...p}) : editPlan({...p})),
-    {
-      onMutate: async ({p}) => {
-        await queryClient.cancelQueries("Plan");
-        const previousPlans = queryClient.getQueryData<PlanSchema[]>("Plan");
-        if (previousPlans) {
-          queryClient.setQueryData<PlanSchema[]>("Plan", [...previousPlans, p]);
-        }
-        return () => (previousPlans ? queryClient.setQueryData("Plan", previousPlans) : null);
-      },
-      onError: (error, newExercise, rollback) => {
-        console.error(error);
-        if (rollback) rollback();
-      },
-      onSettled: async () => {
-        await queryClient.invalidateQueries("Plan")
-      },
-    },
-  );
-  
 
   const handleDelete = () => {
-    if (id !== undefined) useDelete.mutateAsync({planId: id});
+    const data = {id: id, week: week, type: type, sets: sets, reps: reps, weight: weight};
+    if (id !== undefined) mutatePlan.mutateAsync({item: {...data} as PlanSchema, action: "DEL"});
   };
 
-  if(!isFocused.current) return <LoadingIndicator />
+  if (!isFocused.current) return <LoadingIndicator />;
 
   return (
     <Contingent style={{width: showModal ? 300 : 150, height: showModal ? 200 : 100}} shouldRender={showModal}>

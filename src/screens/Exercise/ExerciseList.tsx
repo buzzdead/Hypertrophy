@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useLayoutEffect, useRef, useState} from "react";
 import {SafeAreaView, StyleSheet, View} from "react-native";
 import {StackScreenProps} from "@react-navigation/stack";
 import {Exercise, ExerciseWithDuplicates, IGroup} from "../../../typings/types";
@@ -10,8 +10,8 @@ import {SideBar} from "../../components/SideBar";
 import {CategorySchema, ExerciseSchema} from "../../config/realm";
 import {ExerciseListBtm} from "./ExerciseListBtm";
 import {useScreenOrientation} from "../../hooks/useScreenOrientation";
-import { useIsFocused } from "@react-navigation/native";
-import { useFocus } from "../../hooks/useFocus";
+import {useIsFocused} from "@react-navigation/native";
+import {useFocus} from "../../hooks/useFocus";
 
 type ExeciseListProps = StackScreenProps<
   {
@@ -30,10 +30,10 @@ interface State {
 }
 
 const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
-  const {data: categories, refresh: categoriesRefresh, loading: categoriesLoading} = useRealm<CategorySchema>("Category");
-  const {data: exercises, refresh: exercisesRefresh, loading: exercisesLoading} = useRealm<ExerciseSchema>("Exercise");
+  const {data: categories, loading: categoriesLoading} = useRealm<CategorySchema>({schemaName: "Category"});
+  const {data: exercises, loading: exercisesLoading} = useRealm<ExerciseSchema>({schemaName: "Exercise"});
   const screenOrientation = useScreenOrientation();
- const isFocused = useFocus()
+  const isFocused = useFocus();
 
   const [state, setState] = useState<State>({
     filteredExercises: [],
@@ -43,12 +43,6 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   });
   const currentPageRef = useRef(state.currentPage);
   const categoriesRef = useRef(state.seleectedCategories);
-
-  const _onRefresh = () => {
-    categoriesRefresh();
-    exercisesRefresh();
-    setState({...state, seleectedCategories: []});
-  };
 
   const handleNextPage = (currentPage?: number, selectedCat?: CategorySchema[]) => {
     const newCurrent = typeof currentPage === "number" ? currentPage : state.currentPage;
@@ -96,13 +90,15 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
     setState({...state, seleectedCategories: selected, filteredExercises: filtered});
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (categoriesLoading || exercisesLoading) return;
+    console.log("useefect1")
     currentPageRef.current = state.currentPage;
   }, [state.currentPage]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (categoriesLoading) return;
+    console.log("useefect2")
     const groups = groupExercisesByWeek(exercises, true);
     if (state.groupedExercises.length > groups.length) handlePrevPage();
     setState({
@@ -120,8 +116,13 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
     currentPageRef,
     categoriesRef,
   });
-  console.log("rendering exerciselist PRE ")
-  if (categoriesLoading || exercisesLoading || !isFocused.current) return <View style={{width: '100%', height: '100%'}}><LoadingIndicator /></View>;
+  console.log("rendering exerciselist PRE ");
+  if (categoriesLoading || exercisesLoading || !isFocused.current)
+    return (
+      <View style={{width: "100%", height: "100%"}}>
+        <LoadingIndicator />
+      </View>
+    );
   console.log("rendering exerciselist");
 
   return (
@@ -129,15 +130,10 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
       <SideBar
         isLandScape={screenOrientation.isLandscape}
         categories={categories}
-        icon='filter-variant'
+        icon="filter-variant"
         onFilterChange={handleFilterChange}
       />
-      <WeeklyExercises
-        navigation={navigation}
-        onRefresh={_onRefresh}
-        refreshing={exercisesLoading || categoriesLoading}
-        groupedExercises={state.filteredExercises}
-      />
+      <WeeklyExercises navigation={navigation} groupedExercises={state.filteredExercises} />
       <ExerciseListBtm
         currentWeek={state.groupedExercises[state.currentPage]?.weekNumber}
         currentPage={state.currentPage}

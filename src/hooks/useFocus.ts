@@ -1,7 +1,7 @@
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 
 export const useFocus = () => {
-    const isFocusedRef = useRef(false);
+    const isFocusedRef = useRef(true);
 
     useLayoutEffect(() => {
         isFocusedRef.current = true;

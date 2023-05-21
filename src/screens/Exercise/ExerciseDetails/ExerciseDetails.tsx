@@ -9,6 +9,7 @@ import AddExercise from "../AddExercise/AddExercise";
 import Contingent from "../../../components/Contingent";
 import {Text, View} from "react-native";
 import DuplicateModal from "./DuplicateModal";
+import { ExerciseSchema } from "../../../config/realm";
 
 type Props = StackScreenProps<
   {
@@ -19,9 +20,9 @@ type Props = StackScreenProps<
 >;
 
 const ExerciseDetails: React.FC<Props> = ({navigation, route}) => {
-  const [exercise, setExercise] = useState<Nullable<Exercise>>(null);
+  const [exercise, setExercise] = useState<Nullable<ExerciseSchema>>(null);
   const [editExercise, setEditExercise] = useState(false);
-  const [duplicateExercises, setDuplicateExercises] = useState<Exercise[]>([]);
+  const [duplicateExercises, setDuplicateExercises] = useState<ExerciseSchema[]>([]);
   const [deleted, setDeleted] = useState(false);
 
   useEffect(() => {
@@ -34,13 +35,12 @@ const ExerciseDetails: React.FC<Props> = ({navigation, route}) => {
       return;
     }
     const fetchedExercise = await fetchExerciseById(id);
-    setExercise(fetchedExercise);
+    setExercise(fetchedExercise as ExerciseSchema);
   }
 
   async function handleEditPress() {
     const a = await findAllDuplicateExercises(exercise!);
     if (a.length > 1) {
-      console.log(a);
       setDuplicateExercises(a);
     }
     setEditExercise(true);
@@ -52,14 +52,14 @@ const ExerciseDetails: React.FC<Props> = ({navigation, route}) => {
   };
 
   const handlePressDuplicate = (exercise: Exercise) => {
-    setExercise(exercise);
+    setExercise(exercise as ExerciseSchema);
     setDuplicateExercises([]);
   };
 
   if (deleted)
     return (
-      <View style={{justifyContent: "center", alignContent: "center", width: '100%', height: '100%'}}>
-        <Text style={{textAlign: "center", textAlignVertical: 'center', fontSize: 34}}>Exercise Deleted</Text>
+      <View style={{justifyContent: "center", alignContent: "center", width: "100%", height: "100%"}}>
+        <Text style={{textAlign: "center", textAlignVertical: "center", fontSize: 34}}>Exercise Deleted</Text>
       </View>
     );
 
@@ -73,7 +73,7 @@ const ExerciseDetails: React.FC<Props> = ({navigation, route}) => {
             visible={duplicateExercises.length > 1}
             onPress={(exercise: Exercise) => handlePressDuplicate(exercise)}
           />
-          <AddExercise navigation={navigation} previousExercise={exercise} />
+          <AddExercise navigation={navigation} previousExercise={exercise} onClose={() => setEditExercise(false)}/>
         </Contingent>
         <ExerciseDetailsContent
           exercise={exercise!}

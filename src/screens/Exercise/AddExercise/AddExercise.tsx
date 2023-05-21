@@ -12,13 +12,14 @@ import AddObject from "./Modal/AddObject";
 import Weight from "./Weight";
 import LoadingIndicator from "../../../components/LoadingIndicator";
 import {useRealm} from "../../../hooks/useRealm";
-import {CategorySchema} from "../../../config/realm";
-import {useMutation, useQueryClient} from "react-query";
-import { useFocus } from "../../../hooks/useFocus";
+import {CategorySchema, ExerciseSchema} from "../../../config/realm";
+import {useFocus} from "../../../hooks/useFocus";
+import { useMutations } from "../../../hooks/useMutations";
 
 type Props = {
   navigation: any;
   previousExercise?: Exercise | null;
+  onClose?: () => void;
 };
 
 const initialState: ExerciseReducerType = {
@@ -32,7 +33,7 @@ const initialState: ExerciseReducerType = {
   exerciseTypes: [],
 };
 
-const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
+const AddExercise: React.FC<Props> = ({navigation, previousExercise, onClose}) => {
   const newState = previousExercise
     ? extend({}, initialState, previousExercise, {
         category: previousExercise.type?.category,
@@ -41,38 +42,22 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
     : initialState;
 
   const [state, dispatch] = useReducer(exerciseListReducer, newState);
-  const {data: categories, refresh, loading: categoriesLoading} = useRealm<CategorySchema>("Category");
-  const queryClient = useQueryClient();
-  const [loading, setLoading] = useState(false)
+  const {data: categories, refresh, loading: categoriesLoading} = useRealm<CategorySchema>({schemaName: "Category"});
+
+  const {
+    mutateItem,
+  } = useMutations<ExerciseSchema>(
+    "Exercise",
+    (exercise: ExerciseSchema) => (previousExercise ? saveExercise(exercise) : addExercise(exercise)),
+  );
+  const [loading, setLoading] = useState(false);
   const categoryRef = useRef(-1);
-  const isFocused = useFocus()
+  const isFocused = useFocus();
 
   const _refresh = async () => {
     await refresh();
     onCategoryChange(state.category?.id || 1);
   };
-
-  const mutateExercise = useMutation(
-    ({exercise}: {exercise: Exercise}) => (previousExercise ? saveExercise(exercise) : addExercise(exercise)),
-    {
-      onMutate: async ({exercise: newExercise}) => {
-        await queryClient.cancelQueries("Exercise");
-        const previousExercises = queryClient.getQueryData<Exercise[]>("Exercise");
-        if (previousExercises) {
-          queryClient.setQueryData<Exercise[]>("Exercise", [...previousExercises, newExercise]);
-        }
-        return () => (previousExercises ? queryClient.setQueryData("Exercise", previousExercises) : null);
-      },
-      onError: (error, newExercise, rollback) => {
-        console.error(error);
-        if (rollback) rollback();
-      },
-      onSettled: async () => {
-        await queryClient.invalidateQueries("Exercise");
-        navigation.goBack()
-      },
-    },
-  );
 
   const handleAddExercise = async () => {
     const currentDate = new Date();
@@ -89,7 +74,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
     const weekNumber = getWeekNumber(currentUTCDate);
     const month = currentUTCDate.getMonth();
     const exercise: Exercise = {
-      id: 0,
+      id: previousExercise?.id || 0,
       sets: state.sets,
       type: state.exerciseType,
       reps: state.reps,
@@ -98,8 +83,15 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
       month: previousExercise?.month || month,
       date: previousExercise?.date || new Date(),
     };
-    setLoading(true)
-    setTimeout(async () => await mutateExercise.mutateAsync({exercise}), 250)
+    setLoading(true);
+    const newExercise = exercise as ExerciseSchema;
+    setTimeout(
+      async () =>
+        await mutateItem
+          .mutateAsync({item: newExercise, action: newExercise ? "ADD" : "SAVE"})
+          .then(() => navigation.goBack()),
+      50,
+    );
   };
 
   const onCategoryChange = async (categoryId: number) => {
@@ -189,7 +181,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise}) => {
               size="M"
               backgroundColor={colors.summerDark}
               title="Cancel"
-              onPress={() => navigation.goBack()}
+              onPress={() => (onClose ? onClose() : navigation.goBack())}
             />
           </View>
           <View style={{width: 180}}>

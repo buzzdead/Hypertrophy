@@ -26,8 +26,8 @@ export const Home = () => {
   const weekNumber = getWeekNumber(currentUTCDate);
   const isFocused = useFocus()
 
-  const {data: exercises, loading: exercisesLoading} = useRealm<ExerciseSchema>("Exercise");
-  const {data: categories, loading: categoriesLoading} = useRealm<CategorySchema>("Category");
+  const {data: exercises, loading: exercisesLoading} = useRealm<ExerciseSchema>({schemaName: "Exercise"});
+  const {data: categories, loading: categoriesLoading} = useRealm<CategorySchema>({schemaName: "Category"});
   const currentExercises = exercises.filter(e => e.isValid());
   
 

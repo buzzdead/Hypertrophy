@@ -1,5 +1,5 @@
 // screens/ProgressTracking.tsx
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useLayoutEffect, useRef, useState} from "react";
 import {SafeAreaView, Text, View} from "react-native";
 import {SideBar} from "../../components/SideBar";
 import {CategorySchema, MonthSchema} from "../../config/realm";
@@ -27,8 +27,8 @@ interface Chart {
 }
 
 export const ProgressTracking = () => {
-  const {data: categories, loading: categoriesLoading} = useRealm<CategorySchema>("Category");
-  const {data: months, loading: monthsLoading} = useRealm<MonthSchema>("Month");
+  const {data: categories, loading: categoriesLoading} = useRealm<CategorySchema>({schemaName: "Category"});
+  const {data: months, loading: monthsLoading} = useRealm<MonthSchema>({schemaName: "Month"});
   const screenOrientation = useScreenOrientation();
   const isFocused = useFocus()
 
@@ -99,13 +99,12 @@ export const ProgressTracking = () => {
     setState({...state, chartData: chartData, maxExercises: maxExercises, days: days, filteredCategories: newCategories});
   };
 
-  useFocusEffect(
-    React.useCallback(() => {
+  useLayoutEffect( () => {
     if (categoriesLoading) return
     if (monthsLoading) return;
     if (state.chartData.length > 0) return
     getChartData()
-  }, [monthsLoading, state.mode]));
+  }, [monthsLoading, state.mode]);
 
   const handleFilterChange = (selectedCategories: CategorySchema[]) => {
     getChartData2(selectedCategories)

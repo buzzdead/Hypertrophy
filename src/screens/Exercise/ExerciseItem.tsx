@@ -104,4 +104,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ExerciseItem;
+export default React.memo(ExerciseItem);
