@@ -15,7 +15,7 @@ interface ExerciseListBtmProps {
   navigation: StackScreenProps<any, "List">["navigation"];
 }
 
-export const ExerciseListBtm: React.FC<ExerciseListBtmProps> = ({
+export const ExerciseListBtm: React.FC<ExerciseListBtmProps> = React.memo(({
   currentWeek,
   currentPage,
   handleNextPage,
@@ -25,6 +25,7 @@ export const ExerciseListBtm: React.FC<ExerciseListBtmProps> = ({
   maxPage,
   navigation,
 }) => {
+  console.log("rendering btm")
   return (
     <SafeAreaView>
       <View style={styles.pagination}>
@@ -73,7 +74,7 @@ export const ExerciseListBtm: React.FC<ExerciseListBtmProps> = ({
       </View>
     </SafeAreaView>
   );
-};
+});
 
 const styles = StyleSheet.create({
   pagination: {

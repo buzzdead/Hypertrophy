@@ -11,7 +11,7 @@ import {handleDelete, handleEdit} from "./Settings";
 
 // Add pagination
 export function ExerciseTypes() {
-  const {data: exerciseTypes, refresh} = useRealm<ExerciseTypeSchema>("ExerciseType");
+  const {data: exerciseTypes, refresh} = useRealm<ExerciseTypeSchema>({schemaName: "ExerciseType"});
   const validExerciseTypes = validateSchema(exerciseTypes)
   const [modalVisible, setModalVisible] = useState<{visible: boolean; id: number}[]>([]);
 

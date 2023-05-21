@@ -17,6 +17,8 @@ export type Exercise = {
   reps: number;
   weight: number | string
   date: Date;
+  month: number;
+  week: number;
 };
 
 export type Plan = {
@@ -32,7 +34,6 @@ export type Plan = {
 export type Duplicate = { sets: number; reps: number; weight: string | number }
 export type ExerciseWithDuplicates = { exercise: ExerciseSchema; duplicates: Duplicate[] };
 export interface IGroup {
-  weekKey: string;
   weekNumber: number;
   exercises: Array<ExerciseWithDuplicates>;
 }

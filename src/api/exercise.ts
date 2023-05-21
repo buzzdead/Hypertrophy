@@ -67,15 +67,25 @@ export async function saveExercise(exercise: Exercise) {
     existingExercise.weight = weight;
   });
 }
-export async function fetchExercises(limitBy?: {by: "Month"; when: number}) {
+export async function fetchExercises(limitBy?: { by: "Month" | "Week"; when: number }) {
+  console.log("fetching exercises");
   if (limitBy && limitBy.by === "Month") {
     const month = limitBy.when;
-    const year = new Date().getFullYear(); // or use a specific year if needed
-    const startDate = new Date(Date.UTC(year, month, 1, 0, 0, 0, 0));
-    const endDate = new Date(year, month + 1, 1);
-    return Array.from(exercises.filtered("date >= $0 AND date < $1", startDate, endDate));
+    return Array.from(realm.objects<ExerciseSchema>('Exercise').filtered('month == $0', month));
+  }
+  else if(limitBy && limitBy.by === "Week") {
+    const week = limitBy.when;
+    return Array.from(realm.objects<ExerciseSchema>('Exercise').filtered('week == $0', week));
   }
   return Array.from(exercises);
+}
+
+export async function getWeekMinMax() {
+  const uniqueExercises = exercises
+  .filtered('TRUEPREDICATE DISTINCT(week)')
+  .sorted('week')
+  .map(exercise => exercise.week);
+  return Array.from(uniqueExercises)
 }
 
 export async function fetchExerciseById(id: number) {

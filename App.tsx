@@ -13,6 +13,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { useNavigation } from "@react-navigation/native";
 import { ActivityIndicator, Image, StyleSheet, View } from "react-native";
 import SplashScreen from 'react-native-splash-screen';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 type StackParamList = {
   Exercises: undefined;
@@ -24,6 +25,8 @@ type StackParamList = {
 
 const Stack = createStackNavigator<StackParamList>();
 
+const queryClient = new QueryClient();
+
 const App = () => {
  
   useEffect(() => {
@@ -31,12 +34,14 @@ const App = () => {
   }, []);
 
   return (
+    <QueryClientProvider client={queryClient}>
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="Exercises" component={Tabs} options={{headerShown: false}} />
         <Stack.Screen
           name="Details"
           component={ExerciseDetails}
+          
           options={{
             title: "Exercise Details",
             headerTintColor: colors.summerWhite,
@@ -134,6 +139,7 @@ const App = () => {
         />
       </Stack.Navigator>
     </NavigationContainer>
+    </QueryClientProvider>
   );
 };
 

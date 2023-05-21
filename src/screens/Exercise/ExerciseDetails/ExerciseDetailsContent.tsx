@@ -6,9 +6,13 @@ import {colors} from "../../../utils/util";
 import Contingent from "../../../components/Contingent";
 import {deleteExercise, findAllDuplicateExercises} from "../../../api/realm";
 import DuplicateModal from "./DuplicateModal";
+import LoadingIndicator from "../../../components/LoadingIndicator";
+import {ExerciseSchema} from "../../../config/realm";
+import {useRealm} from "../../../hooks/hooks";
+import { useMutations } from "../../../hooks/useMutations";
 
 interface ExerciseDetailsContentProps {
-  exercise: Exercise;
+  exercise: ExerciseSchema;
   onEditPress: () => void;
   duplicates?: Duplicate[];
   onClose: () => void;
@@ -22,9 +26,14 @@ const ExerciseDetailsContent = ({
 }: ExerciseDetailsContentProps): React.ReactElement => {
   const [loading, setLoading] = React.useState(false);
   const [currentExercise, setCurrentExercise] = useState(exercise);
-  const [duplicateExercises, setDuplicateExercises] = useState<Exercise[]>([]);
+  const [duplicateExercises, setDuplicateExercises] = useState<ExerciseSchema[]>([]);
+  const {mutateItem} = useMutations<ExerciseSchema>(
+    "Exercise",
+    (item: ExerciseSchema) => deleteExercise(item as Exercise),
+  );
+
   // Check if the exercise was created less than a day ago
-  const lessThanADayAgo = Date.now() - new Date(exercise.date).getTime() < 764 * 60 * 60 * 1000;
+  const lessThanADayAgo = React.useMemo(() => { return Date.now() - new Date(exercise.date).getTime() < 764 * 60 * 60 * 1000 }, [exercise]);
 
   const renderDuplicate = (duplicate: Duplicate) => {
     return (
@@ -35,23 +44,30 @@ const ExerciseDetailsContent = ({
   };
 
   const handleDelete = async (duplicateExercise?: Exercise) => {
+    const theExercise: ExerciseSchema =
+      duplicateExercise !== undefined ? (duplicateExercise as ExerciseSchema) : (exercise as ExerciseSchema);
     setLoading(true);
-    setTimeout(async () => await deleteExercise(duplicateExercise || exercise).then(() => onClose()), 1000);
+    setTimeout(
+      async () => await mutateItem.mutateAsync({item: theExercise, action: "DEL"}).then(() =>{onClose()}),
+      250,
+    );
   };
 
   const handleDelete2 = async () => {
     if (!duplicates || duplicates?.length === 0) await handleDelete();
     else {
       const duplicateExercises = await findAllDuplicateExercises(exercise);
-      setDuplicateExercises(duplicateExercises);
+      setDuplicateExercises(duplicateExercises.filter(e => e.isValid()));
     }
   };
 
-  const handlePressDuplicate = (exercise: Exercise) => {
+  const handlePressDuplicate = (exercise: ExerciseSchema) => {
     setCurrentExercise(exercise);
     setDuplicateExercises([]);
     handleDelete(exercise);
   };
+
+  if (loading || !exercise.isValid()) return <LoadingIndicator />;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -79,6 +95,7 @@ const ExerciseDetailsContent = ({
             size={"M"}
             onPress={onEditPress}
             title={"Edit"}
+            disabled={loading}
             backgroundColor={colors.summerDark}
             titleColor={colors.accent}
           />

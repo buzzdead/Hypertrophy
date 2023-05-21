@@ -29,6 +29,7 @@ export const PlanModal: React.FC<PlanModalProps> = ({visible, onRequestClose, on
   const handleSave = () => {
     const d = {reps: state.reps, sets: state.sets, weight: 15, type: state.exerciseType}
     onSave(d);
+    onRequestClose()
   };
 
   return (

@@ -1,51 +1,82 @@
 import React, {useState} from "react";
 import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {UseMutationResult} from "react-query";
 import {Plan} from "../../../typings/types";
-import {addPlan, deletePlan, editPlan} from "../../api/exercise";
 import Contingent from "../../components/Contingent";
 import CustomButton from "../../components/CustomButton";
-import {CategorySchema, ExerciseTypeSchema} from "../../config/realm";
-import { colors } from "../../utils/color";
+import LoadingIndicator from "../../components/LoadingIndicator";
+import {CategorySchema, ExerciseTypeSchema, PlanSchema} from "../../config/realm";
+import {useFocus} from "../../hooks/useFocus";
+import {Mutations} from "../../hooks/useRealm";
+import {colors} from "../../utils/color";
 import PlanModal from "./PlanModal";
 
 interface Props extends Partial<Plan> {
-  id?: number
+  id?: number;
   newPlan?: boolean;
   week: number;
   exerciseTypes: ExerciseTypeSchema[];
   categories: CategorySchema[];
-  refresh: () => void
+  mutatePlan: UseMutationResult<
+    void,
+    unknown,
+    {
+      item: PlanSchema;
+      action: Mutations;
+    },
+    () => PlanSchema[] | null
+  >;
 }
 
-export const PlanItem: React.FC<Props> = ({reps = 1, sets = 1, weight = 0, type = null, newPlan = false, week, categories, exerciseTypes, id, refresh}) => {
+export const PlanItem: React.FC<Props> = ({
+  reps = 1,
+  sets = 1,
+  weight = 0,
+  type = null,
+  newPlan = false,
+  week,
+  categories,
+  exerciseTypes,
+  mutatePlan,
+  id,
+}) => {
   const [showModal, setShowModal] = useState(false);
+  const isFocused = useFocus();
 
-  const handleSave = (data: Omit<Plan, 'week' | 'completed'>) => {
-    newPlan ? addPlan({...data, week: week, completed: false}) : editPlan({...data, week: week, completed: false});
-    refresh()
+  const handleSave = (data: Omit<Plan, "week" | "completed">) => {
+    const plan = {...data, week: week, completed: false} as PlanSchema;
+    mutatePlan.mutateAsync({item: plan, action: newPlan ? "ADD" : "SAVE"});
   };
 
   const handleDelete = () => {
-    if(id !== undefined) deletePlan(id)
-    refresh()
-  }
+    const data = {id: id, week: week, type: type, sets: sets, reps: reps, weight: weight};
+    if (id !== undefined) mutatePlan.mutateAsync({item: {...data} as PlanSchema, action: "DEL"});
+  };
+
+  if (!isFocused.current) return <LoadingIndicator />;
 
   return (
     <Contingent style={{width: showModal ? 300 : 150, height: showModal ? 200 : 100}} shouldRender={showModal}>
       <PlanModal
         data={{reps, sets, weight, type}}
-        onSave={(data) => handleSave(data)}
+        onSave={data => handleSave(data)}
         onRequestClose={() => setShowModal(false)}
         visible={showModal}
         categories={categories}
         exerciseTypes={exerciseTypes}
-        
       />
       <TouchableOpacity style={styles.container} onPress={() => setShowModal(true)}>
+        <Contingent shouldRender={!newPlan} style={{position: "absolute", top: -12.5, right: -12.5}}>
+          <CustomButton
+            title={"x"}
+            size="S"
+            fontSize={26}
+            titleColor={colors.summerBlue}
+            backgroundColor={""}
+            onPress={handleDelete}
+          />
+        </Contingent>
         <View style={{width: "100%"}}>
-          <Contingent shouldRender={!newPlan}>
-          <CustomButton title={"X"} size='S' titleColor={'green'} backgroundColor={colors.summerWhite} onPress={handleDelete} />
-          </Contingent>
           <Text style={{textAlign: "center", fontSize: newPlan ? 48 : 24}}>{newPlan ? "+" : type?.name}</Text>
           <Contingent shouldRender={!newPlan}>
             <View style={{flexDirection: "row", width: "100%", justifyContent: "center"}}>
