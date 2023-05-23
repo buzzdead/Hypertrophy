@@ -1,9 +1,9 @@
 import React, {useEffect, useReducer, useRef, useState} from "react";
-import {SafeAreaView, ScrollView, StyleSheet, View} from "react-native";
+import {SafeAreaView, ScrollView, StyleSheet, Text, View} from "react-native";
 import PickerField from "./Picker/PickerField";
 import {extend} from "lodash";
 import {Exercise} from "../../../../typings/types";
-import {saveExercise, addExercise, fetchExerciseTypesByCategory} from "../../../api/realm";
+import {saveExercise, addExercise, fetchExerciseTypesByCategory, setPlanCompleted} from "../../../api/realm";
 import NumberInput from "../../../components/NumberInput";
 import exerciseListReducer, {ExerciseReducerType} from "../../../Reducer";
 import {colors, getWeekNumber} from "../../../utils/util";
@@ -11,10 +11,10 @@ import CustomButton from "../../../components/CustomButton";
 import AddObject from "./Modal/AddObject";
 import Weight from "./Weight";
 import LoadingIndicator from "../../../components/LoadingIndicator";
-import {useRealm} from "../../../hooks/useRealm";
-import {CategorySchema, ExerciseSchema} from "../../../config/realm";
+import {CategorySchema, ExerciseSchema, PlanSchema} from "../../../config/realm";
 import {useFocus} from "../../../hooks/useFocus";
-import { useMutations } from "../../../hooks/useMutations";
+import { useRealm, useMutations } from "../../../hooks/hooks";
+import { CompletePlanModal } from "./Modal/CompletePlanModal";
 
 type Props = {
   navigation: any;
@@ -42,7 +42,9 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise, onClose}) =
     : initialState;
 
   const [state, dispatch] = useReducer(exerciseListReducer, newState);
+  const [planState, setPlanState] = useState<{showPlanModal: boolean, metPlanExpectations: boolean, plan: Optional<PlanSchema>}>({showPlanModal: false, metPlanExpectations: false, plan: undefined})
   const {data: categories, refresh, loading: categoriesLoading} = useRealm<CategorySchema>({schemaName: "Category"});
+  const {data: plans, loading: plansLoading, mutateItem: mutatePlan} = useRealm({schemaName: "Plan", mutateFunction: (plan: PlanSchema) => setPlanCompleted(plan)})
 
   const {
     mutateItem,
@@ -88,15 +90,22 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise, onClose}) =
     setTimeout(
       async () =>
         await mutateItem
-          .mutateAsync({item: newExercise, action: newExercise ? "ADD" : "SAVE"})
-          .then(() => navigation.goBack()),
-      50,
+          .mutateAsync({item: newExercise, action: previousExercise ? "ADD" : "SAVE"})
+          .then(async () => {
+            const planFound = plans.find(p => !p.completed && p.type.id === newExercise.type.id && p.type.category.id === newExercise.type.category.id)
+            if(planFound) {
+              const metExpectations = planFound.sets * planFound.reps * planFound.weight
+              const exerciseTotal = newExercise.reps * newExercise.sets * newExercise.weight
+              setPlanState({plan: planFound, showPlanModal: true, metPlanExpectations: metExpectations <= exerciseTotal})
+            }
+            else
+              navigation.goBack()}),
+      10,
     );
   };
 
   const onCategoryChange = async (categoryId: number) => {
     if (categories[categoryId - 1] === undefined) {
-      console.log(categories);
       return;
     }
     const exerciseTypes = await fetchExerciseTypesByCategory(categories[categoryId - 1].id);
@@ -121,9 +130,15 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise, onClose}) =
     if (categories.length > 0 && categoryRef.current !== state?.category?.id) onCategoryChange(state.category?.id || 1);
   }, [categoriesLoading, state.category]);
 
+  const handleOnComplete = async (complete: boolean) => {
+    if(complete && planState.plan) await mutatePlan.mutateAsync({item: planState.plan, action: "SAVE"})
+    navigation.goBack()
+  }
+
+  if(planState.showPlanModal) return <CompletePlanModal metExpectations={planState.metPlanExpectations} visible={planState.showPlanModal} onClose={(complete: boolean) => handleOnComplete(complete)} />
   if (categoriesLoading || !isFocused.current || loading) return <LoadingIndicator />;
 
-  console.log("renderinga dd exercise");
+  console.log("renderinga add exercise");
 
   return (
     <SafeAreaView style={styles.container}>

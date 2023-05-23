@@ -39,7 +39,7 @@ const NewObjectModal = ({
   name,
 }: NewObjectModalProps) => {
   const [objectName, setObjectName] = useState(currentValue || "");
-  const {data: categories} = useRealm<CategorySchema>("Category");
+  const {data: categories} = useRealm<CategorySchema>({schemaName: "Category"});
   const [category, setCategory] = useState<Optional<CategorySchema>>(currentCategory);
 
   const handleAdd = () => {

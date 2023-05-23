@@ -47,7 +47,6 @@ export function useRealm<T extends Schema[keyof Schema]>({schemaName, limitBy, m
   );
 
   const fetchData = async () => {
-    console.log("loading data" + schemaName);
     if(schemaName === undefined) return
     const dataArray = limitBy
       ? await rw.getRealmObject<T>(schemaName, limitBy)

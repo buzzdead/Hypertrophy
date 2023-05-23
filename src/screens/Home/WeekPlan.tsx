@@ -31,8 +31,8 @@ export const WeekPlan: React.FC<Props> = ({week}) => {
   const {data: categories, loading: categoriesLoading} = useRealm<CategorySchema>({schemaName: "Category"});
   const focused = useFocus();
 
-  const currentPlans = plans.filter(p => p.isValid());
-
+  const currentPlans = plans.filter(p => p.isValid() && p.week === week);
+  
   if (plansLoading || exerciseTypesLoading || !focused.current)
     return (
       <View style={{width: "100%", height: "100%"}}>

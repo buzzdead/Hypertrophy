@@ -48,7 +48,7 @@ const ExerciseDetails: React.FC<Props> = ({navigation, route}) => {
 
   const onClose = () => {
     setDeleted(true);
-    setTimeout(() => navigation.goBack(), 1000);
+     navigation.goBack()
   };
 
   const handlePressDuplicate = (exercise: Exercise) => {
