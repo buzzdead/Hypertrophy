@@ -49,7 +49,7 @@ const ExerciseDetailsContent = ({
     setLoading(true);
     setTimeout(
       async () => await mutateItem.mutateAsync({item: theExercise, action: "DEL"}).then(() =>{onClose()}),
-      250,
+      10,
     );
   };
 

@@ -1,17 +1,16 @@
-import React, {useEffect, useLayoutEffect, useRef, useState} from "react";
+import React, { useLayoutEffect, useRef, useState} from "react";
 import {SafeAreaView, StyleSheet, View} from "react-native";
 import {StackScreenProps} from "@react-navigation/stack";
 import {Exercise, ExerciseWithDuplicates, IGroup} from "../../../typings/types";
 import {groupExercisesByWeek} from "../../utils/util";
 import WeeklyExercises from "./WeeklyExercises";
 import LoadingIndicator from "../../components/LoadingIndicator";
-import {usePanHandler, useRealm} from "../../hooks/hooks";
+import { usePanHandler, useRealm} from "../../hooks/hooks";
 import {SideBar} from "../../components/SideBar";
 import {CategorySchema, ExerciseSchema} from "../../config/realm";
 import {ExerciseListBtm} from "./ExerciseListBtm";
 import {useScreenOrientation} from "../../hooks/useScreenOrientation";
-import {useIsFocused} from "@react-navigation/native";
-import {useFocus} from "../../hooks/useFocus";
+import { useFocus2 } from "../../hooks/useFocus2";
 
 type ExeciseListProps = StackScreenProps<
   {
@@ -33,7 +32,7 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   const {data: categories, loading: categoriesLoading} = useRealm<CategorySchema>({schemaName: "Category"});
   const {data: exercises, loading: exercisesLoading} = useRealm<ExerciseSchema>({schemaName: "Exercise"});
   const screenOrientation = useScreenOrientation();
-  const isFocused = useFocus();
+  const isFocused = useFocus2();
 
   const [state, setState] = useState<State>({
     filteredExercises: [],
@@ -92,13 +91,11 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
 
   useLayoutEffect(() => {
     if (categoriesLoading || exercisesLoading) return;
-    console.log("useefect1")
     currentPageRef.current = state.currentPage;
   }, [state.currentPage]);
 
   useLayoutEffect(() => {
     if (categoriesLoading) return;
-    console.log("useefect2")
     const groups = groupExercisesByWeek(exercises, true);
     if (state.groupedExercises.length > groups.length) handlePrevPage();
     setState({
@@ -116,8 +113,8 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
     currentPageRef,
     categoriesRef,
   });
-  console.log("rendering exerciselist PRE ");
-  if (categoriesLoading || exercisesLoading || !isFocused.current)
+
+  if (categoriesLoading || exercisesLoading || !isFocused)
     return (
       <View style={{width: "100%", height: "100%"}}>
         <LoadingIndicator />

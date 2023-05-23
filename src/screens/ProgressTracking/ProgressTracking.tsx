@@ -13,6 +13,7 @@ import {ChartData} from "./ChartData";
 import Contingent from "../../components/Contingent";
 import {getAvailableMonths, Month} from "../../utils/util";
 import {useFocus} from "../../hooks/useFocus";
+import { useFocus2 } from "../../hooks/useFocus2";
 
 interface Chart {
   chartData: number[];
@@ -29,7 +30,7 @@ export const ProgressTracking = () => {
   const {data: categories, loading: categoriesLoading} = useRealm<CategorySchema>({schemaName: "Category"});
   const {data: months, loading: monthsLoading} = useRealm<MonthSchema>({schemaName: "Month"});
   const screenOrientation = useScreenOrientation();
-  const isFocused = useFocus();
+  const isFocused = useFocus2();
 
   const [state, setState] = useState<Chart>({
     chartData: [],
@@ -128,7 +129,7 @@ export const ProgressTracking = () => {
     getChartData2(selectedCategories);
   };
 
-  if (categoriesLoading || monthsLoading || !isFocused.current)
+  if (categoriesLoading || monthsLoading || !isFocused)
     return (
       <View style={{height: "100%", width: "100%"}}>
         <LoadingIndicator />

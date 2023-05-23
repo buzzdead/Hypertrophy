@@ -19,15 +19,16 @@ export const PlanModal: React.FC<PlanModalProps> = ({visible, onRequestClose, on
   const [state, setState] = useState({
     reps: data.reps,
     sets: data.sets,
+    id: data.id,
     weight: data.weight,
     category: categories[0],
-    exerciseType: null,
+    exerciseType: data.type,
     exerciseTypes: exerciseTypes,
     categories: categories
   });
 
   const handleSave = () => {
-    const d = {reps: state.reps, sets: state.sets, weight: 15, type: state.exerciseType}
+    const d = {reps: state.reps, sets: state.sets, weight: state.weight, type: state.exerciseType, id: state.id}
     onSave(d);
     onRequestClose()
   };

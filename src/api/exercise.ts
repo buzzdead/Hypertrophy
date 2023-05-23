@@ -111,18 +111,20 @@ export async function addPlan(plan: Plan) {
   await rw.performWriteTransaction(() => {
     realm.create("Plan", {
       ...plan,
-      id: rw.getMaxId<PlanSchema>("Plan")
+      id: rw.getMaxId<PlanSchema>("Plan"),
+      weight: Number(plan.weight)
     });
   });
 }
 
 export async function editPlan(newPlan: Plan) {
+  console.log(newPlan)
   if(!newPlan?.id || !newPlan?.type) throw new Error
   const currentPlan = realm.objectForPrimaryKey<PlanSchema>("Plan", newPlan?.id)
   if(!currentPlan) throw new Error
-  const {weight, type, sets, reps, week} = newPlan
+  const {weight, type, sets, reps, week} = newPlan as PlanSchema
   await rw.performWriteTransaction(() => {
-    currentPlan.weight = weight
+    currentPlan.weight = Number(weight)
     currentPlan.reps = reps
     currentPlan.week = week
     currentPlan.sets = sets
@@ -135,6 +137,19 @@ export async function deletePlan(planId: number) {
   await rw.performWriteTransaction(() => {
     realm.delete(plan)
   })
+}
+
+export async function setPlanCompleted(plan: PlanSchema) {
+  if(!plan) throw new Error
+  await rw.performWriteTransaction(() => {
+    plan.completed = true
+  })
+}
+
+export async function fetchPlanById(planId: number) {
+  const plan = realm.objectForPrimaryKey<PlanSchema>("Plan", planId);
+  if(!plan) throw new Error
+  return plan
 }
 
 // Months
