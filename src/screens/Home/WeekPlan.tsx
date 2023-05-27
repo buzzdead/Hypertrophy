@@ -33,7 +33,7 @@ export const WeekPlan: React.FC<Props> = ({week}) => {
 
   const currentPlans = plans.filter(p => p.isValid() && p.week === week);
   
-  if (plansLoading || exerciseTypesLoading || !focused.current)
+  if (plansLoading || exerciseTypesLoading || !focused)
     return (
       <View style={{width: "100%", height: "100%"}}>
         <LoadingIndicator />

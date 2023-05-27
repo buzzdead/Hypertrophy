@@ -81,7 +81,7 @@ export const PlanItem: React.FC<Props> = ({
   }, 50)
   }
 
-  if (!isFocused.current) return <LoadingIndicator />;
+  if (!isFocused) return <LoadingIndicator />;
 
   return (
     <Contingent style={{width: showModal ? 300 : 150, height: showModal ? 200 : 100}} shouldRender={showModal}>
@@ -98,8 +98,8 @@ export const PlanItem: React.FC<Props> = ({
         <Contingent shouldRender={!newPlan} style={{position: "absolute", bottom: 5, left: 5, zIndex: 123}}>
         <MaterialCommunityIcons
             adjustsFontSizeToFit
-            name={"close-outline"}
-            size={22}
+            name={completed ? "close-thick" : "close-outline"}
+            size={26}
             color={"red"}
             onPress={handleDelete}
           />
@@ -108,18 +108,18 @@ export const PlanItem: React.FC<Props> = ({
         <MaterialCommunityIcons
             adjustsFontSizeToFit
             name={"check-outline"}
-            size={22}
+            size={26}
             color={"green"}
             onPress={handleComplete}
           />
         </Contingent>
         <View style={{width: "100%"}}>
-          <Text style={{textAlign: "center", fontSize: newPlan ? 48 : 20, paddingVertical: newPlan ? 15 : 5}}>{newPlan ? "+" : type?.name}</Text>
+          <Text style={{textAlign: "center", fontSize: newPlan ? 42 : 20, paddingVertical: newPlan ? 20 : 5, fontFamily: 'Roboto-Bold', color: colors.summerDark}}>{newPlan ? "+" : type?.name}</Text>
           <Contingent shouldRender={!newPlan}>
             <View style={{flexDirection: "row", width: "100%", justifyContent: "center"}}>
-              <Text>{sets + " x "}</Text>
-              <Text>{reps + " x "}</Text>
-              <Text>{weight + "kg"}</Text>
+              <Text style={{fontFamily: 'Roboto-Bold', color: colors.summerDark}}>{sets + " x "}</Text>
+              <Text style={{fontFamily: 'Roboto-Bold', color: colors.summerDark}}>{reps + " x "}</Text>
+              <Text style={{fontFamily: 'Roboto-Bold', color: colors.summerDark}}>{weight + "kg"}</Text>
             </View>
           </Contingent>
         </View>

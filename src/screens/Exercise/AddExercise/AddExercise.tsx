@@ -136,7 +136,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise, onClose}) =
   }
 
   if(planState.showPlanModal) return <CompletePlanModal metExpectations={planState.metPlanExpectations} visible={planState.showPlanModal} onClose={(complete: boolean) => handleOnComplete(complete)} />
-  if (categoriesLoading || !isFocused.current || loading) return <LoadingIndicator />;
+  if (categoriesLoading || !isFocused || loading) return <LoadingIndicator />;
 
   console.log("renderinga add exercise");
 

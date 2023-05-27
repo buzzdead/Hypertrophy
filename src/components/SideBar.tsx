@@ -10,10 +10,11 @@ interface SideBarProps {
   categories: CategorySchema[];
   onFilterChange: (selectedCategories: CategorySchema[]) => void;
   icon?: string;
+  prevSelectedCat?: CategorySchema[]
   isLandScape: boolean
 }
 
-export const SideBar: React.FC<SideBarProps> = React.memo(({categories, onFilterChange, icon, isLandScape}) => {
+export const SideBar: React.FC<SideBarProps> = React.memo(({categories, onFilterChange, icon, isLandScape, prevSelectedCat}) => {
   const [sideBarWidth, setSideBarWidth] = useState(isLandScape ? 300 : 150)
   const [selectedCategoryAnimations, setSelectedCategoryAnimations] = useState(
     categories.map(() => new Animated.Value(0)),
@@ -22,7 +23,7 @@ export const SideBar: React.FC<SideBarProps> = React.memo(({categories, onFilter
 const SidebarVisibleWidth = 50;
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [translateX] = useState(new Animated.Value(0));
-  const [selectedCategories, setSelectedCategories] = useState<CategorySchema[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<CategorySchema[]>(prevSelectedCat || []);
 
   const handleCategoryPress = (category: CategorySchema, index: number) => {
     if (!category) return;
@@ -39,6 +40,16 @@ const SidebarVisibleWidth = 50;
     }).start();
   };
 
+  useEffect(() => {
+    categories.forEach((s, id) => {
+      if(!prevSelectedCat?.includes(s)) return
+      Animated.timing(selectedCategoryAnimations[id], {
+        toValue: 1,
+        duration: 50,
+        useNativeDriver: false,
+      }).start();
+    })
+  }, [prevSelectedCat])
  
   const handleCloseSidebar = () => {
     Animated.timing(translateX, {

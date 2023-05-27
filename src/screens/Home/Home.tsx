@@ -8,7 +8,7 @@ import {colors, getWeekNumber} from "../../utils/util";
 import {HomeChartData} from "./HomeChartData";
 import {Chart} from "../ProgressTracking/Chart";
 import {WeekPlan} from "./WeekPlan";
-import {useRealm} from "../../hooks/hooks";
+import {useFocus, useRealm} from "../../hooks/hooks";
 import {CategorySchema, ExerciseSchema} from "../../config/realm";
 import { useFocus2 } from "../../hooks/useFocus2";
 
@@ -33,7 +33,8 @@ export const Home = () => {
     ),
   );
   const weekNumber = getWeekNumber(currentUTCDate);
-  const isFocused = useFocus2() 
+  const mounted = useFocus2()
+  const focused = useFocus()
 
   const {data: exercises, loading: exercisesLoading} = useRealm<ExerciseSchema>({schemaName: "Exercise"});
   const {data: categories, loading: categoriesLoading} = useRealm<CategorySchema>({schemaName: "Category"});
@@ -43,9 +44,9 @@ export const Home = () => {
     if (categoriesLoading || exercisesLoading) return;
     const {maxExercises, chartData, days} = HomeChartData({exercises: currentExercises, categories});
     setState({maxExercises, chartData, days});
-  }, [exercisesLoading || categoriesLoading || exercises]);
+  }, [exercises]);
 
-  if (exercisesLoading || categoriesLoading || !isFocused) return <LoadingIndicator />;
+  if (exercisesLoading || categoriesLoading || !focused) return <LoadingIndicator />;
 
   console.log("home screen");
 
@@ -77,6 +78,7 @@ export const Home = () => {
         <Contingent style={{width: "100%", height: "100%"}} shouldRender={state.maxExercises !== 0}>
           <View style={{flexDirection: "column", alignSelf: "flex-end"}}>
             <Chart
+              isLoading={!mounted}
               maxExercises={state.maxExercises}
               chartData={state.chartData}
               days={state.days}
