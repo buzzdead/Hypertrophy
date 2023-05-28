@@ -1,16 +1,16 @@
-import React, { useEffect, useLayoutEffect, useRef, useState} from "react";
+import React, {useEffect, useLayoutEffect, useRef, useState} from "react";
 import {SafeAreaView, StyleSheet, View} from "react-native";
 import {StackScreenProps} from "@react-navigation/stack";
 import {Exercise, ExerciseWithDuplicates, IGroup} from "../../../typings/types";
 import {groupExercisesByWeek} from "../../utils/util";
 import WeeklyExercises from "./WeeklyExercises";
 import LoadingIndicator from "../../components/LoadingIndicator";
-import { useFocus, usePanHandler, useRealm} from "../../hooks/hooks";
+import {useFocus, usePanHandler, useRealm} from "../../hooks/hooks";
 import {SideBar} from "../../components/SideBar";
 import {CategorySchema, ExerciseSchema} from "../../config/realm";
 import {ExerciseListBtm} from "./ExerciseListBtm";
 import {useScreenOrientation} from "../../hooks/useScreenOrientation";
-import { useFocus2 } from "../../hooks/useFocus2";
+import {useFocus2} from "../../hooks/useFocus2";
 
 type ExeciseListProps = StackScreenProps<
   {
@@ -33,10 +33,9 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   const {data: exercises, loading: exercisesLoading} = useRealm<ExerciseSchema>({schemaName: "Exercise"});
   const screenOrientation = useScreenOrientation();
   const mounted = useFocus2();
-  const focused = useFocus()
-  const [loading, setLoading] = useState(true)
+  const focused = useFocus();
+  const [loading, setLoading] = useState(true);
   const [isSwipingHorizontally, setIsSwipingHorizontally] = useState(false);
-
 
   const [state, setState] = useState<State>({
     filteredExercises: [],
@@ -51,7 +50,7 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   const handleNextPage = (currentPage?: number, selectedCat?: CategorySchema[]) => {
     const newCurrent = typeof currentPage === "number" ? currentPage : state.currentPage;
     if (newCurrent < state.groupedExercises.length - 1) {
-      setLoading(true)
+      setLoading(true);
       const filtered = updateFilteredExercises(newCurrent + 1, selectedCat);
       setState({...state, filteredExercises: filtered, currentPage: newCurrent + 1});
     }
@@ -60,22 +59,22 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   const handlePrevPage = (currentPage?: number, selectedCat?: CategorySchema[]) => {
     const newCurrent = typeof currentPage === "number" ? currentPage : state.currentPage;
     if (newCurrent > 0) {
-      setLoading(true)
+      setLoading(true);
       const filtered = updateFilteredExercises(newCurrent - 1, selectedCat);
       setState({...state, filteredExercises: filtered, currentPage: newCurrent - 1});
     }
   };
 
   const handleGoToLastPage = () => {
-    if(state.currentPage === state.groupedExercises.length - 1) return
-    setLoading(true)
+    if (state.currentPage === state.groupedExercises.length - 1) return;
+    setLoading(true);
     const filtered = updateFilteredExercises(state.groupedExercises.length - 1, categoriesRef.current);
     setState({...state, filteredExercises: filtered, currentPage: state.groupedExercises.length - 1});
   };
 
   const handleGoToFirstPage = () => {
-    if(state.currentPage === 0) return
-    setLoading(true) 
+    if (state.currentPage === 0) return;
+    setLoading(true);
     const filtered = updateFilteredExercises(0, categoriesRef.current);
     setState({...state, filteredExercises: filtered, currentPage: 0});
   };
@@ -103,17 +102,23 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   useEffect(() => {
     if (categoriesLoading || exercisesLoading) return;
     currentPageRef.current = state.currentPage;
-    setTimeout(() => setLoading(false), 0)
+    setTimeout(() => setLoading(false), 0);
   }, [state.currentPage]);
 
   useLayoutEffect(() => {
     if (categoriesLoading) return;
     const groups = groupExercisesByWeek(exercises, true);
-    if (state.groupedExercises.length > groups.length) handlePrevPage();
+    const newCurrentPage =
+      state.groupedExercises.length > groups.length && state.currentPage > 0
+        ? state.currentPage - 1
+        : state.groupedExercises.length < groups.length
+        ? state.currentPage + 1
+        : state.currentPage;
     setState({
       ...state,
       groupedExercises: groups,
-      filteredExercises: updateFilteredExercises(state.currentPage, state.seleectedCategories, groups),
+      filteredExercises: updateFilteredExercises(newCurrentPage, state.seleectedCategories, groups),
+      currentPage: newCurrentPage,
     });
   }, [exercises]);
 
@@ -124,10 +129,10 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
     groupedExercises: state.groupedExercises,
     currentPageRef,
     categoriesRef,
-    setIsSwipingHorizontally: (b: boolean) => setIsSwipingHorizontally(b)
+    setIsSwipingHorizontally: (b: boolean) => setIsSwipingHorizontally(b),
   });
 
-  if (exercisesLoading || categoriesLoading || (!focused)) return <LoadingIndicator />;
+  if (exercisesLoading || categoriesLoading || !focused) return <LoadingIndicator />;
 
   console.log("rendering exerciselist");
 
@@ -140,7 +145,12 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
         onFilterChange={handleFilterChange}
         prevSelectedCat={state.seleectedCategories || []}
       />
-      <WeeklyExercises navigation={navigation} groupedExercises={state.filteredExercises} isLoading={!mounted || loading} isSwipingHorizontally={isSwipingHorizontally}/>
+      <WeeklyExercises
+        navigation={navigation}
+        groupedExercises={state.filteredExercises}
+        isLoading={!mounted || loading}
+        isSwipingHorizontally={isSwipingHorizontally}
+      />
       <ExerciseListBtm
         currentWeek={state.groupedExercises[state.currentPage]?.weekNumber}
         currentPage={state.currentPage}

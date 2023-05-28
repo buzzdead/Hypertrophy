@@ -156,7 +156,7 @@ export const ProgressTracking = () => {
         days={state.days}
         isLoading={!mounted || state.loading}
       />
-      <Contingent shouldRender={state.mode === "Daily"}>
+      <Contingent style={{paddingTop: 30}} shouldRender={state.mode === "Daily"}>
         <ChartNavigation
           isLandScape={screenOrientation.isLandscape}
           handleNext={handleNext}

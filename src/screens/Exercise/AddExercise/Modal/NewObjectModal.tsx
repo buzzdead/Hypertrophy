@@ -72,8 +72,10 @@ const NewObjectModal = ({
             item={category!}
             items={categories}
             onChange={value => handleOnChange(value)}
-            picker={380}
-            maxWidth={300}
+            picker={460}
+            maxWidth={295}
+            left={60}
+            
           />
         )}
         <View style={{flexDirection: "row", gap: 25}}>

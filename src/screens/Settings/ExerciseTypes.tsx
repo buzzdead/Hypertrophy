@@ -55,7 +55,7 @@ export function ExerciseTypes() {
   return (
     <SafeAreaView>
       <ScrollView keyboardShouldPersistTaps="handled">
-      <Text style={{textAlign: "center", fontFamily: 'Roboto-Medium', fontSize: 28, color: 'black', paddingTop: 20}}>Active exercise types</Text>
+      <Text style={{textAlign: "center", fontFamily: 'Roboto-Medium', fontSize: 28, color: colors.summerDark, paddingVertical: 20}}>Active exercise types</Text>
         <View style={styles.container}>
           {validExerciseTypes.map(c => {
             const visible = modalVisible.find(m => m.id === c.id)?.visible || false;
@@ -66,16 +66,16 @@ export function ExerciseTypes() {
                 <View style={styles.buttonContainer}>
                   <CustomButton
                     size="L"
-                    fontSize={16}
-                    titleColor={colors.accent}
+                    fontSize={18}
+                    titleColor={colors.summerBlue}
                     backgroundColor={colors.summerDarkest}
                     title={"Edit " + c.name}
                     onPress={() => onOpen(c.id)}
                   />
                   <CustomButton
                     size="L"
-                    fontSize={16}
-                    titleColor={colors.error}
+                    fontSize={18}
+                    titleColor={colors.delete}
                     backgroundColor={colors.summerDarkest}
                     title={"Delete " + c.name}
                     onPress={() => onDelete(c)}
@@ -105,7 +105,7 @@ export function ExerciseTypes() {
 
 export const styles = StyleSheet.create({
   container: {
-    padding: 50,
+    padding: 10,
     gap: 20,
   },
   subContainer: {
@@ -114,6 +114,7 @@ export const styles = StyleSheet.create({
     gap: 5,
   },
   title: {
+    textDecorationLine: "underline",
     textAlign: "center",
     minWidth: 175,
     fontFamily: "Roboto-Bold",

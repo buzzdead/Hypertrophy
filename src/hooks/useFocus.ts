@@ -2,7 +2,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
 
 export const useFocus = () => {
-  const [isFocused, setIsFocused] = useState(false)
+  const [isFocused, setIsFocused] = useState(true)
 
   useFocusEffect(
       useCallback(() => {

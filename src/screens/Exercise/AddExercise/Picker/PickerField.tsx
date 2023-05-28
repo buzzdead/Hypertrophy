@@ -9,14 +9,15 @@ import { colors } from "../../../../utils/util";
 type Props = {
   item: Nullable<CategorySchema | ExerciseTypeSchema>;
   items: (CategorySchema | ExerciseTypeSchema)[];
-  picker?: number;
+  picker: number;
   onChange: (value: any) => void;
   setLoading?: () => void;
   name: "Exercise Type" | "Category"
+  left: number
   maxWidth?: number
 };
 
-const PickerField = ({ item, items, onChange, setLoading, picker, maxWidth, name }: Props) => {
+const PickerField = ({ item, items, onChange, setLoading, picker, left, name, maxWidth }: Props) => {
   const [pickerVisible, setPickerVisible] = useState(false);
 
   const togglePicker = () => {
@@ -44,11 +45,12 @@ const PickerField = ({ item, items, onChange, setLoading, picker, maxWidth, name
         </View>
       </View>
       <Picker
-        picker={picker}
+        top={picker || 200}
         visible={pickerVisible}
         items={items}
         onSelect={(value) => handleOnChange(value)}
         onClose={togglePicker}
+        left={left}
         maxWidth={maxWidth}
       />
     </View>

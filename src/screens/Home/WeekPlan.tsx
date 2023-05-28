@@ -32,6 +32,7 @@ export const WeekPlan: React.FC<Props> = ({week}) => {
   const focused = useFocus();
 
   const currentPlans = plans.filter(p => p.isValid() && p.week === week);
+  currentPlans.sort((a, b) => Number(b.completed) - Number(a.completed));
   
   if (plansLoading || exerciseTypesLoading || !focused)
     return (

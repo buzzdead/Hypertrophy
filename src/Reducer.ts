@@ -1,7 +1,7 @@
 import { Exercise } from "../typings/types";
 import { CategorySchema, ExerciseTypeSchema } from "./config/realm";
 
-export interface ExerciseReducerType extends Pick<Exercise, "date" | "sets" | "reps" | "weight"> {
+export interface ExerciseReducerType extends Pick<Exercise, "date" | "sets" | "reps" | "weight" | "exceptional"> {
   category: Nullable<CategorySchema>,
   exerciseType: Nullable<ExerciseTypeSchema>
   validWeight: boolean
@@ -16,12 +16,15 @@ type Action =
   | { type: "setCategory"; payload: Nullable<CategorySchema> }
   | { type: "setExerciseType"; payload: Nullable<ExerciseTypeSchema> }
   | { type: "setExerciseTypes"; payload: ExerciseTypeSchema[] }
+  | { type: "setExceptional"; payload: boolean }
   | { type: "setItAll"; payload: {exerciseType: Nullable<ExerciseTypeSchema>, exerciseTypes: ExerciseTypeSchema[], category: CategorySchema}}
 
 export default function exerciseListReducer(state: ExerciseReducerType, action: Action): ExerciseReducerType {
   switch (action.type) {
     case "setSets":
       return { ...state, sets: action.payload };
+    case "setExceptional": 
+      return { ...state, exceptional: action.payload };
     case "setReps":
       return { ...state, reps: action.payload };
     case "setWeight":

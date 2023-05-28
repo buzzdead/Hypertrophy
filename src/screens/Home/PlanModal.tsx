@@ -1,8 +1,11 @@
 import React, {useState} from "react";
 import {Modal, StyleSheet, View, TouchableOpacity, Text} from "react-native";
 import {Plan} from "../../../typings/types";
+import { CheckBox } from "../../components/Checkbox";
+import CustomButton from "../../components/CustomButton";
 import NumberInput from "../../components/NumberInput";
 import { CategorySchema, ExerciseTypeSchema } from "../../config/realm";
+import { colors } from "../../utils/color";
 import PickerField from "../Exercise/AddExercise/Picker/PickerField";
 import Weight from "../Exercise/AddExercise/Weight";
 
@@ -24,45 +27,68 @@ export const PlanModal: React.FC<PlanModalProps> = ({visible, onRequestClose, on
     category: categories[0],
     exerciseType: data.type,
     exerciseTypes: exerciseTypes,
-    categories: categories
+    categories: categories,
+    exceptional: data.exceptional
   });
 
   const handleSave = () => {
-    const d = {reps: state.reps, sets: state.sets, weight: state.weight, type: state.exerciseType, id: state.id}
+    const d = {reps: state.reps, sets: state.sets, weight: state.weight, type: state.exerciseType, id: state.id, exceptional: state.exceptional}
     onSave(d);
     onRequestClose()
   };
 
   return (
     <Modal visible={visible} onRequestClose={onRequestClose} animationType="slide" transparent>
+      
       <View style={styles.container}>
+        
         <View style={styles.content}>
+        
         <PickerField
             item={state.category || state.categories[0]}
             name={"Category"}
-            maxWidth={275}
+            left={25}
+            picker={220}
             items={state.categories}
             onChange={value => setState({...state, category: value})}
           />
           <PickerField
             name={"Exercise Type"}
-            maxWidth={275}
             picker={220}
+            left={25}
             item={state.exerciseType}
             items={state.exerciseTypes.filter(e => e.category.id === state.category.id)}
             onChange={value => setState({...state, exerciseType: value})}
           />
           <View style={{paddingTop: 100}}>
           <Weight title={'Add weight'} value={state.weight} onChange={(value: any) => setState({...state, weight: value})} />
+          <View style={{flexDirection: 'row', justifyContent: 'center'}}>
           <NumberInput title={"Sets"} value={data.sets} onChange={(value: any) => setState({...state, sets: value})} />
           <NumberInput title={"Reps"} value={data.reps} onChange={(value: any) => setState({...state, reps: value})} />
+          </View>
+          <View style={{flexDirection: 'row', justifyContent: 'center', paddingVertical: 25, gap: 25}}>
+          <Text style={{textAlignVertical: 'center', fontSize: 26, fontFamily: 'Roboto-Bold', color: colors.summerDark}}>Exceptional exercise: </Text>
+        <CheckBox isSelected={false} size="S" color={colors.summerDark} onSelection={(b: boolean) => setState({...state, exceptional: b})} />
+        </View>
           <View style={styles.buttons}>
-            <TouchableOpacity onPress={onRequestClose} style={styles.cancelButton}>
-              <Text style={styles.buttonText}>Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
-              <Text style={styles.buttonText}>Save</Text>
-            </TouchableOpacity>
+          <View style={{width: 180}}>
+            <CustomButton
+              titleColor={colors.summerWhite}
+              size="M"
+              backgroundColor={colors.summerDark}
+              title="Cancel"
+              onPress={onRequestClose}
+            />
+          </View>
+          <View style={{width: 180}}>
+            <CustomButton
+              titleColor={colors.accent}
+              size="M"
+              backgroundColor={colors.summerDark}
+              title="Save"
+              onPress={handleSave}
+            />
+          </View>
           </View>
           </View>
         </View>
@@ -75,7 +101,6 @@ export const PlanModal: React.FC<PlanModalProps> = ({visible, onRequestClose, on
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   content: {
@@ -83,12 +108,14 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     width: "100%",
+    justifyContent: 'center',
     height: '100%'
   },
   buttons: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     marginTop: 20,
+    gap: 25,
   },
   cancelButton: {
     backgroundColor: "red",

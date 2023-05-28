@@ -19,6 +19,7 @@ export type Exercise = {
   date: Date;
   month: number;
   week: number;
+  exceptional: boolean
 };
 
 export type Plan = {
@@ -29,9 +30,10 @@ export type Plan = {
   weight: number
   week: number
   completed: boolean
+  exceptional: boolean
 }
 
-export type Duplicate = { sets: number; reps: number; weight: string | number }
+export type Duplicate = { sets: number; reps: number; weight: string | number; exceptional: boolean }
 export type ExerciseWithDuplicates = { exercise: ExerciseSchema; duplicates: Duplicate[] };
 export interface IGroup {
   weekNumber: number;
