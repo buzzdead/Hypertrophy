@@ -53,7 +53,7 @@ export async function addExercise(exercise: Exercise) {
 
 //Check if exercise is duplicate matters
 export async function saveExercise(exercise: Exercise) {
-  const {id, type, sets, reps, date, weight} = exercise;
+  const {id, type, sets, reps, date, weight, exceptional} = exercise;
   if (weight === "") exercise.weight = 0;
 
   const existingExercise = realm.objectForPrimaryKey<Exercise>("Exercise", id);
@@ -65,6 +65,7 @@ export async function saveExercise(exercise: Exercise) {
     existingExercise.reps = reps;
     existingExercise.date = date;
     existingExercise.weight = weight;
+    existingExercise.exceptional = exceptional;
   });
 }
 export async function fetchExercises(limitBy?: { by: "Month" | "Week"; when: number }) {

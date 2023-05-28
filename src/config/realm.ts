@@ -44,7 +44,8 @@ export class ExerciseSchema extends Realm.Object {
       sets: "int",
       reps: "int",
       date: "date",
-      weight: "float"
+      weight: "float",
+      exceptional: "bool"
     },
   };
 
@@ -56,6 +57,7 @@ export class ExerciseSchema extends Realm.Object {
   weight!: number;
   week!: number
   month!: number
+  exceptional!: boolean
 }
 
 export class MonthSchema extends Realm.Object {
@@ -87,7 +89,8 @@ export class PlanSchema extends Realm.Object {
       sets: "int",
       reps: "int",
       weight: "float",
-      completed: "bool"
+      completed: "bool",
+      exceptional: "bool",
     }
   };
   id!: number;
@@ -96,12 +99,13 @@ export class PlanSchema extends Realm.Object {
   sets!: number;
   reps!: number;
   weight!: number;
-  completed!: boolean
+  completed!: boolean;
+  exceptional!: boolean
 }
 
 const realmConfig: Realm.Configuration = {
   schema: [ExerciseSchema, ExerciseTypeSchema, CategorySchema, MonthSchema, PlanSchema],
-  schemaVersion: 14,
+  schemaVersion: 16,
   onMigration: migration,
 };
 

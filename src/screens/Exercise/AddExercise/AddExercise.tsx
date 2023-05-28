@@ -15,6 +15,7 @@ import {CategorySchema, ExerciseSchema, PlanSchema} from "../../../config/realm"
 import {useFocus} from "../../../hooks/useFocus";
 import { useRealm, useMutations } from "../../../hooks/hooks";
 import { CompletePlanModal } from "./Modal/CompletePlanModal";
+import { CheckBox } from "../../../components/Checkbox";
 
 type Props = {
   navigation: any;
@@ -31,13 +32,16 @@ const initialState: ExerciseReducerType = {
   exerciseType: null,
   validWeight: true,
   exerciseTypes: [],
+  exceptional: false,
 };
 
 const AddExercise: React.FC<Props> = ({navigation, previousExercise, onClose}) => {
+  
   const newState = previousExercise
     ? extend({}, initialState, previousExercise, {
         category: previousExercise.type?.category,
         exerciseType: previousExercise.type,
+        exceptional: previousExercise.exceptional
       })
     : initialState;
 
@@ -84,8 +88,10 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise, onClose}) =
       week: previousExercise?.week || weekNumber,
       month: previousExercise?.month || month,
       date: previousExercise?.date || new Date(),
+      exceptional: state.exceptional
     };
     setLoading(true);
+    console.log(state.exceptional)
     const newExercise = exercise as ExerciseSchema;
     setTimeout(
       async () =>
@@ -136,19 +142,21 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise, onClose}) =
   }
 
   if(planState.showPlanModal) return <CompletePlanModal metExpectations={planState.metPlanExpectations} visible={planState.showPlanModal} onClose={(complete: boolean) => handleOnComplete(complete)} />
-  if (categoriesLoading || !isFocused.current || loading) return <LoadingIndicator />;
+  if (categoriesLoading || !isFocused || loading) return <LoadingIndicator />;
 
   console.log("renderinga add exercise");
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
+        
         <View style={{flexDirection: "row", gap: 40}}>
           <View style={{flex: 6}}>
             <PickerField
               item={state.category}
               name={"Category"}
-              maxWidth={275}
+              picker={200}
+              left={20}
               items={categories}
               onChange={value => dispatch({type: "setCategory", payload: value})}
             />
@@ -161,8 +169,8 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise, onClose}) =
           <View style={{flex: 6}}>
             <PickerField
               name={"Exercise Type"}
-              maxWidth={275}
-              picker={220}
+              picker={300}
+              left={20}
               item={state.exerciseType}
               items={state.exerciseTypes}
               onChange={value => dispatch({type: "setExerciseType", payload: value})}
@@ -172,11 +180,13 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise, onClose}) =
             <AddObject isCategory={false} s={_refresh} />
           </View>
         </View>
+        <View style={{paddingTop: 20}}>
         <Weight
           title={"Weight"}
           value={state.weight}
           onChange={(value: string | number, validWeight: boolean) => onWeightChange(value, validWeight)}
         />
+        </View>
         <View style={{flexDirection: "row", gap: 20, alignSelf: "center"}}>
           <NumberInput
             title={"Sets"}
@@ -188,6 +198,10 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise, onClose}) =
             value={state.reps}
             onChange={(value: any) => dispatch({type: "setReps", payload: value})}
           />
+        </View>
+        <View style={{flexDirection: 'row', justifyContent: 'center', paddingVertical: 25, gap: 25}}>
+          <Text style={{textAlignVertical: 'center', fontSize: 26, fontFamily: 'Roboto-Bold', color: colors.summerDark}}>Exceptional exercise: </Text>
+        <CheckBox isSelected={state.exceptional} size="S" color={colors.summerDark} onSelection={(b: boolean) => dispatch({type: "setExceptional", payload: b})} />
         </View>
         <View style={{paddingTop: 20, alignSelf: "center", flexDirection: "row", gap: 10}}>
           <View style={{width: 180}}>
@@ -220,7 +234,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     margin: 16,
-    paddingTop: 20,
+    paddingVertical: 50,
     alignSelf: "center",
   },
   inputContainer: {

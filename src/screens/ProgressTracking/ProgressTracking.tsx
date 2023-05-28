@@ -1,5 +1,5 @@
 // screens/ProgressTracking.tsx
-import React, {useLayoutEffect, useState} from "react";
+import React, {useEffect, useLayoutEffect, useState} from "react";
 import {SafeAreaView, Text, View} from "react-native";
 import {SideBar} from "../../components/SideBar";
 import {CategorySchema, MonthSchema} from "../../config/realm";
@@ -24,13 +24,15 @@ interface Chart {
   lastHalf: boolean;
   filteredCategories: CategorySchema[];
   mode: "Weekly" | "Daily";
+  loading?: boolean
 }
 
 export const ProgressTracking = () => {
   const {data: categories, loading: categoriesLoading} = useRealm<CategorySchema>({schemaName: "Category"});
   const {data: months, loading: monthsLoading} = useRealm<MonthSchema>({schemaName: "Month"});
   const screenOrientation = useScreenOrientation();
-  const isFocused = useFocus2();
+  const mounted = useFocus2();
+  const focused = useFocus()
 
   const [state, setState] = useState<Chart>({
     chartData: [],
@@ -41,6 +43,7 @@ export const ProgressTracking = () => {
     filteredCategories: [],
     availableMonths: [],
     mode: "Daily",
+    loading: false
   });
 
   const containsMonth = (month: number) => {
@@ -48,7 +51,8 @@ export const ProgressTracking = () => {
     return months?.find(e => e.month === state.availableMonths[month]?.numerical);
   };
 
-  const handleNext = async () => {
+  const handleNext =  () => {
+    if(state.lastHalf && !containsMonth(state.currentMonth + 1)) {return}
     if (!state.lastHalf) getChartData(true);
     else if (state.lastHalf && containsMonth(state.currentMonth + 1)) {
       const newCurrentMonth = state.currentMonth + 1;
@@ -57,6 +61,7 @@ export const ProgressTracking = () => {
   };
 
   const handlePrev = async () => {
+    if(!state.lastHalf && !containsMonth(state.currentMonth - 1)) {return}
     if (state.lastHalf) getChartData(false);
     else if (!state.lastHalf && containsMonth(state.currentMonth - 1)) {
       const newCurrentMonth = state.currentMonth - 1;
@@ -90,8 +95,15 @@ export const ProgressTracking = () => {
       currentMonth: newCurrentMonth,
       lastHalf: newLastHalf,
       availableMonths: availableMonths,
+      loading: mounted && true
     });
   };
+
+  useEffect(() => {
+    if(!mounted) return
+    setTimeout(() => setState({...state, loading: false}), 50)
+
+  }, [state.lastHalf, state.currentMonth, state.maxExercises])
 
   const getChartData2 = async (selectedCategories: CategorySchema[]) => {
     const newCategories =
@@ -115,7 +127,7 @@ export const ProgressTracking = () => {
       chartData: chartData,
       maxExercises: maxExercises,
       days: days,
-      filteredCategories: newCategories,
+      filteredCategories: selectedCategories,
     });
   };
 
@@ -129,20 +141,10 @@ export const ProgressTracking = () => {
     getChartData2(selectedCategories);
   };
 
-  if (categoriesLoading || monthsLoading || !isFocused)
-    return (
-      <View style={{height: "100%", width: "100%"}}>
-        <LoadingIndicator />
-      </View>
-    );
+  if (!focused) return <LoadingIndicator />;
+
   console.log("rendering progress");
 
-  if (state.chartData.length === 0 || state.availableMonths.length === 0)
-    return (
-      <View style={{justifyContent: "center", width: "100%", height: "100%", alignItems: "center"}}>
-        <Text style={{fontFamily: "Roboto-Bold"}}>No data found, add some exercises</Text>
-      </View>
-    );
 
   return (
     <SafeAreaView style={{width: "100%", height: "100%", justifyContent: "center", alignItems: "center", gap: 20}}>
@@ -152,13 +154,14 @@ export const ProgressTracking = () => {
         maxExercises={state.maxExercises}
         chartData={state.chartData}
         days={state.days}
+        isLoading={!mounted || state.loading}
       />
-      <Contingent shouldRender={state.mode === "Daily"}>
+      <Contingent style={{paddingTop: 30}} shouldRender={state.mode === "Daily"}>
         <ChartNavigation
           isLandScape={screenOrientation.isLandscape}
           handleNext={handleNext}
           handlePrev={handlePrev}
-          monthTitle={state.availableMonths[state.currentMonth].name}
+          monthTitle={state.availableMonths[state.currentMonth]?.name}
           firstPage={!state.lastHalf && state.currentMonth === 0}
           lastPage={state.lastHalf && state.currentMonth === state.availableMonths.length - 1}
         />
@@ -166,13 +169,14 @@ export const ProgressTracking = () => {
       <ProgressTrackingBtm
         mode={state.mode}
         landScapeOrientation={screenOrientation.isLandscape}
-        changeMode={newMode => setState({...state, mode: newMode})}
+        changeMode={newMode => setState({...state, mode: newMode, loading: true})}
       />
       <SideBar
         isLandScape={screenOrientation.isLandscape}
         categories={categories}
         onFilterChange={handleFilterChange}
         icon={"chart-bar"}
+        prevSelectedCat={state.filteredCategories}
       />
     </SafeAreaView>
   );

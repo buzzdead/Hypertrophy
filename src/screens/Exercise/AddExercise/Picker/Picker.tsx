@@ -10,19 +10,22 @@ type PickerProps = {
   items: (CategorySchema | ExerciseTypeSchema)[];
   onSelect: (item: CategorySchema | ExerciseTypeSchema) => void;
   onClose: () => void;
-  picker?: number
+  top: number
+  left: number
   maxWidth?: number
 };
 
-const Picker: React.FC<PickerProps> = ({ visible, items, onSelect, onClose, picker, maxWidth }) => {
+const Picker: React.FC<PickerProps> = ({ visible, items, onSelect, onClose, top, left, maxWidth}) => {
   return (
     <Modal visible={visible} transparent={true} animationType="fade" onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={onClose} accessibilityLabel='close'>
         <View style={styles.modalOverlay} />
       </TouchableWithoutFeedback>
-      <View style={{...styles.pickerContainer, top: picker ? picker : 140, maxWidth: maxWidth, left: maxWidth ? 55 : 16}}>
+      <View style={{...styles.pickerContainer, top: top, maxWidth: maxWidth || 265, left: left}}>
         <FlatList
         accessibilityLabel="menu"
+        scrollEnabled
+        style={{maxHeight: 350}}
           data={items.filter(item => item.name !== "default")}
           renderItem={({ item }) => (
             <TouchableHighlight

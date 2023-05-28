@@ -45,7 +45,7 @@ export const groupExercisesByWeek = (exercises: ExerciseSchema[], needValidation
         other.exercise.date.getDay() === exercise.date.getDay()
     );
     duplicate
-      ? duplicate.duplicates.push({sets: exercise.sets, reps: exercise.reps, weight: exercise.weight})
+      ? duplicate.duplicates.push({sets: exercise.sets, reps: exercise.reps, weight: exercise.weight, exceptional: exercise.exceptional})
       : group.exercises.push({exercise: exercise, duplicates: []});
   });
 

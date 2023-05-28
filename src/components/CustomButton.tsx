@@ -35,6 +35,13 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   size="S",
   loading=false,
 }) => {
+  const truncateTitle = (title: string, maxLength: number) => {
+    if (title.length > maxLength) {
+      return `${title.substring(0, maxLength)}...`;
+    }
+  
+    return title;
+  };
   return (
     <TouchableOpacity
       style={[styles.button, SIZE_TO_PADDING[size], { backgroundColor, borderColor, borderTopWidth: borderColor ? 1 : 0, borderBottomColor: borderColor, borderBottomWidth: borderColor ? 1.5 : 0}]}
@@ -43,7 +50,13 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       activeOpacity={0.75}
     >
       <Contingent shouldRender={!loading}>
-      <Text style={[styles.buttonTitle, { color: titleColor, fontSize: fontSize || 16 }]}>{title}</Text>
+      <Text 
+  style={[styles.buttonTitle, { color: titleColor, fontSize: fontSize || 16 }]}
+  numberOfLines={2}
+  ellipsizeMode='tail'
+>
+{truncateTitle(title, 20)}
+</Text>
       <LoadingIndicator />
       </Contingent>
     </TouchableOpacity>

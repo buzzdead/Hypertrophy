@@ -10,6 +10,7 @@ import LoadingIndicator from "../../../components/LoadingIndicator";
 import {ExerciseSchema} from "../../../config/realm";
 import {useRealm} from "../../../hooks/hooks";
 import { useMutations } from "../../../hooks/useMutations";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 interface ExerciseDetailsContentProps {
   exercise: ExerciseSchema;
@@ -37,9 +38,18 @@ const ExerciseDetailsContent = ({
 
   const renderDuplicate = (duplicate: Duplicate) => {
     return (
+      <View style={{flexDirection: "row", gap: 10, marginRight: 50}}>
+        <Contingent shouldRender={duplicate.exceptional} style={{minWidth: 50}}>
+        <MaterialCommunityIcons
+            name={"arm-flex"}
+            size={34}
+            color={colors.categories[currentExercise?.type?.category?.name as CategoryColors] || colors.categories.Default}
+          />
+          </Contingent>
       <Text style={styles.setsAndReps}>
-        {duplicate.sets} sets x {duplicate.reps} reps x {duplicate.weight} kg
+        {duplicate.sets} {duplicate.sets > 1 ? "sets" : "set"} x {duplicate.reps} reps, with {duplicate.weight} kg
       </Text>
+      </View>
     );
   };
 
@@ -67,6 +77,8 @@ const ExerciseDetailsContent = ({
     handleDelete(exercise);
   };
 
+  type CategoryColors = keyof typeof colors.categories;
+
   if (loading || !exercise.isValid()) return <LoadingIndicator />;
 
   return (
@@ -77,11 +89,21 @@ const ExerciseDetailsContent = ({
       <View style={styles.contentWrapper}>
         <View style={styles.titleContainer}>
           <Text style={styles.title}></Text>
-          <Text style={styles.name}>{currentExercise.type?.name}</Text>
+          <Text style={{...styles.name, color: colors.categories[currentExercise?.type?.category?.name as CategoryColors] || colors.categories.Default}}>{currentExercise.type?.name}</Text>
         </View>
+        <View style={{flexDirection: "row", gap: 10, marginRight: 50}}>
+        <Contingent shouldRender={currentExercise.exceptional} style={{minWidth: 50}}>
+        <MaterialCommunityIcons
+            name={"arm-flex"}
+            size={34}
+            color={colors.categories[currentExercise?.type?.category?.name as CategoryColors] || colors.categories.Default}
+          />
+          </Contingent>
         <Text style={styles.setsAndReps}>
-          {currentExercise.sets} sets of {currentExercise.reps} reps, with {currentExercise.weight} kg
+          {currentExercise.sets} {currentExercise.sets > 1 ? "sets" : "set"} x {currentExercise.reps} reps, with {currentExercise.weight} kg
         </Text>
+        </View>
+      
         <FlatList
           data={duplicates || []}
           renderItem={({item}) => renderDuplicate(item)}
@@ -95,9 +117,10 @@ const ExerciseDetailsContent = ({
             size={"M"}
             onPress={onEditPress}
             title={"Edit"}
+            fontSize={18}
             disabled={loading}
             backgroundColor={colors.summerDark}
-            titleColor={colors.accent}
+            titleColor={colors.summerBlue}
           />
           <Contingent shouldRender={duplicateExercises.length > 1}>
             <DuplicateModal
@@ -111,8 +134,9 @@ const ExerciseDetailsContent = ({
               onPress={async () => await handleDelete2()}
               title={"Delete"}
               loading={loading}
+              fontSize={18}
               backgroundColor={colors.summerDark}
-              titleColor={colors.error}
+              titleColor={colors.delete}
             />
           </Contingent>
         </Contingent>
@@ -140,6 +164,7 @@ const styles = StyleSheet.create({
   },
   contentWrapper: {
     alignItems: "center",
+    gap: 10,
   },
   content: {
     flex: 1,
@@ -147,7 +172,6 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 24,
-    color: "#4CAF50",
     fontFamily: "Roboto-Black",
   },
   title: {
@@ -160,9 +184,10 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   setsAndReps: {
-    fontSize: 18,
+    fontSize: 20,
     color: colors.summerDark,
     fontFamily: "Roboto-Medium",
+    textAlignVertical: "center",
   },
   editButton: {
     marginTop: 16,
