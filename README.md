@@ -8,7 +8,8 @@ Welcome to the Hypertrophy Exercise App! This app is designed to help you keep t
 
 The app has four main screens:
 
-1. Home - The home screen where you keep track of your current week.
+1. Home - The home screen where you keep track of your current week. Here you can also add plans for the current week, which when you complete them the exercise will be added to your exerciselist.
+Adding an exercise for which there is a plan with the same exercise type will either autocomplete the plan or ask you if you wish to do so, depending on if you meet the criteria for the plan.
 
    <img src="images/Home.png" alt="Home" width="250" />
 
@@ -18,7 +19,7 @@ The app has four main screens:
    <img src="images/Filter.png" alt="Filter" width="250" />
    <img src="images/AddExercise.png" alt="Add Exercise" width="250"/>
 
-3. Progress - On the Progress screen, you can keep track of your progress over time. The app shows you how many exercises you did each day, displayed on a graph. In the future, the app will also allow you to filter the specific exercises you want to show on the graph and adjust the date range.
+3. Progress - On the Progress screen, you can keep track of your progress over time. The app shows you how many exercises you did each day, or each week, displayed on a graph.
 
    <img src="images/Progress.png" alt="Progress" width="250"/>
    <img src="images/ProgressFilter.png" alt="ProgressFilter" width="250"/>
