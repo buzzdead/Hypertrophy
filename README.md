@@ -6,7 +6,7 @@ Welcome to the Hypertrophy Exercise App! This app is designed to help you keep t
 
 ## Screens
 
-The app has three main screens:
+The app has four main screens:
 
 1. Home - The home screen where you keep track of your current week.
 
