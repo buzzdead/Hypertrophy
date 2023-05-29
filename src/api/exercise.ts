@@ -29,6 +29,8 @@ export async function findAllDuplicateExercises(exercise: Exercise) {
 }
 
 export async function addExercise(exercise: Exercise) {
+  console.log("aisdjfasidjf")
+  let newMonthAdded = false;
   const id = getMaxId();
   exercise.id = id;
   if (exercise.weight === "") exercise.weight = 0;
@@ -46,9 +48,11 @@ export async function addExercise(exercise: Exercise) {
         month: eMonth,
         exerciseCount: 1,
       });
+      newMonthAdded = true
     }
     realm.create("Exercise", exerciseToAdd);
   });
+  return newMonthAdded
 }
 
 //Check if exercise is duplicate matters
@@ -69,7 +73,6 @@ export async function saveExercise(exercise: Exercise) {
   });
 }
 export async function fetchExercises(limitBy?: { by: "Month" | "Week"; when: number }) {
-  console.log("fetching exercises");
   if (limitBy && limitBy.by === "Month") {
     const month = limitBy.when;
     return Array.from(realm.objects<ExerciseSchema>('Exercise').filtered('month == $0', month));
@@ -95,15 +98,19 @@ export async function fetchExerciseById(id: number) {
 }
 
 export async function deleteExercise(exercise: Exercise) {
+  let monthDeleted = false
   const exerciseSchema = getRealmObjectFromPrimaryKey(exercise.id);
   const eMonth = exercise.date.getMonth();
   const eYear = exercise.date.getFullYear().toString();
   const month: Optional<MonthSchema> = months.find(m => m.year === eYear && m.month === eMonth);
   await rw.performWriteTransaction(() => {
+    console.log(month)
     if (month !== undefined) month.exerciseCount -= 1;
-    if (month?.exerciseCount === 0) realm.delete(month);
+    if (month?.exerciseCount === 0) {realm.delete(month); monthDeleted = true}
+    console.log(month)
     realm.delete(exerciseSchema);
   });
+  return monthDeleted
 }
 
 // Plans
@@ -119,7 +126,6 @@ export async function addPlan(plan: Plan) {
 }
 
 export async function editPlan(newPlan: Plan) {
-  console.log(newPlan)
   if(!newPlan?.id || !newPlan?.type) throw new Error
   const currentPlan = realm.objectForPrimaryKey<PlanSchema>("Plan", newPlan?.id)
   if(!currentPlan) throw new Error

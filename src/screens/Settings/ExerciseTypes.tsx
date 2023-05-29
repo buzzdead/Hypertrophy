@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {StyleSheet, Text, View} from "react-native";
 import {ScrollView} from "react-native-gesture-handler";
 import {SafeAreaView} from "react-native-safe-area-context";
+import { useQueryClient } from "react-query";
 import CustomButton from "../../components/CustomButton";
 import {CategorySchema, ExerciseTypeSchema} from "../../config/realm";
 import {useRealm} from "../../hooks/hooks";
@@ -14,6 +15,7 @@ export function ExerciseTypes() {
   const {data: exerciseTypes, refresh} = useRealm<ExerciseTypeSchema>({schemaName: "ExerciseType"});
   const validExerciseTypes = validateSchema(exerciseTypes)
   const [modalVisible, setModalVisible] = useState<{visible: boolean; id: number}[]>([]);
+  const qc = useQueryClient()
 
   const onEdit = (name: string, id: number, category?: CategorySchema) => {
     handleEdit(id, name, category);
@@ -21,6 +23,10 @@ export function ExerciseTypes() {
   };
   const onDelete = async (exerciseType: ExerciseTypeSchema) => {
     await handleDelete(exerciseType);
+    await qc.invalidateQueries("Exercise")
+    await qc.invalidateQueries("ExerciseType")
+    await qc.invalidateQueries("Plan")
+    await qc.invalidateQueries("Month")
     refresh();
   };
   const onOpen = (id: number) => {

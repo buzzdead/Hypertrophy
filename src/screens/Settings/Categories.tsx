@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {StyleSheet, Text, View} from "react-native";
 import {ScrollView} from "react-native-gesture-handler";
 import {SafeAreaView} from "react-native-safe-area-context";
+import { useQueryClient } from "react-query";
 import CustomButton from "../../components/CustomButton";
 import {CategorySchema} from "../../config/realm";
 import {useRealm} from "../../hooks/hooks";
@@ -13,6 +14,7 @@ export function Categories() {
   const {data: categories, refresh} = useRealm<CategorySchema>({schemaName: "Category"});
   const [modalVisible, setModalVisible] = useState<{visible: boolean; id: number}[]>([]);
   const validCategories = categories.filter(c => c.isValid());
+  const qc = useQueryClient()
 
   const onEdit = (name: string, id: number) => {
     handleEdit(id, name);
@@ -50,6 +52,11 @@ export function Categories() {
 
   const onDelete = async (c: CategorySchema) => {
     await handleDelete(c);
+    await qc.invalidateQueries("Exercise")
+    await qc.invalidateQueries("ExerciseType")
+    await qc.invalidateQueries("Category")
+    await qc.invalidateQueries("Plan")
+    await qc.invalidateQueries("Month")
     refresh();
   };
 

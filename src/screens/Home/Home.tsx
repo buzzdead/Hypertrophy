@@ -48,8 +48,6 @@ export const Home = () => {
 
   if (exercisesLoading || categoriesLoading || !focused) return <LoadingIndicator />;
 
-  console.log("home screen", state.maxExercises);
-
   return (
     <SafeAreaView style={{height: "100%", width: "100%"}}>
       <ScrollView>
@@ -69,7 +67,7 @@ export const Home = () => {
       <WeekPlan week={weekNumber} />
       </View>
       <View style={{width: "100%", height: "100%"}}>
-        <Contingent style={{width: "100%", height: "100%"}} shouldRender={state.maxExercises !== 0}>
+        <Contingent style={{width: "100%", height: "100%"}} shouldRender={state.maxExercises > 0}>
           <View style={{flexDirection: "column", alignSelf: "flex-end", justifyContent: 'center', width: '100%', alignContent: 'center', alignItems: 'center'}}>
             <Chart
               isLoading={!mounted}

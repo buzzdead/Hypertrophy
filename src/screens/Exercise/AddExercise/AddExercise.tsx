@@ -13,9 +13,10 @@ import Weight from "./Weight";
 import LoadingIndicator from "../../../components/LoadingIndicator";
 import {CategorySchema, ExerciseSchema, PlanSchema} from "../../../config/realm";
 import {useFocus} from "../../../hooks/useFocus";
-import { useRealm, useMutations } from "../../../hooks/hooks";
-import { CompletePlanModal } from "./Modal/CompletePlanModal";
-import { CheckBox } from "../../../components/Checkbox";
+import {useRealm, useMutations} from "../../../hooks/hooks";
+import {CompletePlanModal} from "./Modal/CompletePlanModal";
+import {CheckBox} from "../../../components/Checkbox";
+import Toast from 'react-native-toast-message';
 
 type Props = {
   navigation: any;
@@ -36,25 +37,29 @@ const initialState: ExerciseReducerType = {
 };
 
 const AddExercise: React.FC<Props> = ({navigation, previousExercise, onClose}) => {
-  
   const newState = previousExercise
     ? extend({}, initialState, previousExercise, {
         category: previousExercise.type?.category,
         exerciseType: previousExercise.type,
-        exceptional: previousExercise.exceptional
+        exceptional: previousExercise.exceptional,
       })
     : initialState;
 
   const [state, dispatch] = useReducer(exerciseListReducer, newState);
-  const [planState, setPlanState] = useState<{showPlanModal: boolean, metPlanExpectations: boolean, plan: Optional<PlanSchema>}>({showPlanModal: false, metPlanExpectations: false, plan: undefined})
+  const [planState, setPlanState] = useState<{
+    showPlanModal: boolean;
+    metPlanExpectations: boolean;
+    plan: Optional<PlanSchema>;
+  }>({showPlanModal: false, metPlanExpectations: false, plan: undefined});
   const {data: categories, refresh, loading: categoriesLoading} = useRealm<CategorySchema>({schemaName: "Category"});
-  const {data: plans, loading: plansLoading, mutateItem: mutatePlan} = useRealm({schemaName: "Plan", mutateFunction: (plan: PlanSchema) => setPlanCompleted(plan)})
-
   const {
-    mutateItem,
-  } = useMutations<ExerciseSchema>(
-    "Exercise",
-    (exercise: ExerciseSchema) => (previousExercise ? saveExercise(exercise) : addExercise(exercise)),
+    data: plans,
+    loading: plansLoading,
+    mutateItem: mutatePlan,
+  } = useRealm({schemaName: "Plan", mutateFunction: (plan: PlanSchema) => setPlanCompleted(plan)});
+
+  const {mutateItem} = useMutations<ExerciseSchema>("Exercise", (exercise: ExerciseSchema) =>
+    previousExercise ? saveExercise(exercise) : addExercise(exercise),
   );
   const [loading, setLoading] = useState(false);
   const categoryRef = useRef(-1);
@@ -88,24 +93,35 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise, onClose}) =
       week: previousExercise?.week || weekNumber,
       month: previousExercise?.month || month,
       date: previousExercise?.date || new Date(),
-      exceptional: state.exceptional
+      exceptional: state.exceptional,
     };
+    if(exercise.type?.id === 0 || exercise.type?.id === undefined) {
+      Toast.show({
+        type: 'error',
+        position: 'top',
+        text1: 'Error',
+        text2: 'Not a valid Exercise Type, check category\exercise type.',
+        visibilityTime: 4000,
+        topOffset: -100,
+        autoHide: true,
+      });
+      return;
+    }
     setLoading(true);
-    console.log(state.exceptional)
     const newExercise = exercise as ExerciseSchema;
     setTimeout(
       async () =>
-        await mutateItem
-          .mutateAsync({item: newExercise, action: previousExercise ? "ADD" : "SAVE"})
-          .then(async () => {
-            const planFound = plans.find(p => !p.completed && p.type.id === newExercise.type.id && p.type.category.id === newExercise.type.category.id)
-            if(planFound) {
-              const metExpectations = planFound.sets * planFound.reps * planFound.weight
-              const exerciseTotal = newExercise.reps * newExercise.sets * newExercise.weight
-              setPlanState({plan: planFound, showPlanModal: true, metPlanExpectations: metExpectations <= exerciseTotal})
-            }
-            else
-              navigation.goBack()}),
+        await mutateItem.mutateAsync({item: newExercise, action: previousExercise ? "ADD" : "SAVE"}).then(async () => {
+          const planFound = plans.find(
+            p =>
+              !p.completed && p.type.id === newExercise.type.id && p.type.category.id === newExercise.type.category.id,
+          );
+          if (planFound) {
+            const metExpectations = planFound.sets * planFound.reps * planFound.weight;
+            const exerciseTotal = newExercise.reps * newExercise.sets * newExercise.weight;
+            setPlanState({plan: planFound, showPlanModal: true, metPlanExpectations: metExpectations <= exerciseTotal});
+          } else navigation.goBack();
+        }),
       10,
     );
   };
@@ -137,19 +153,25 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise, onClose}) =
   }, [categoriesLoading, state.category]);
 
   const handleOnComplete = async (complete: boolean) => {
-    if(complete && planState.plan) await mutatePlan.mutateAsync({item: planState.plan, action: "SAVE"})
-    navigation.goBack()
-  }
+    if (complete && planState.plan) await mutatePlan.mutateAsync({item: planState.plan, action: "SAVE"});
+    navigation.goBack();
+  };
 
-  if(planState.showPlanModal) return <CompletePlanModal metExpectations={planState.metPlanExpectations} visible={planState.showPlanModal} onClose={(complete: boolean) => handleOnComplete(complete)} />
+  if (planState.showPlanModal)
+    return (
+      <CompletePlanModal
+        metExpectations={planState.metPlanExpectations}
+        visible={planState.showPlanModal}
+        onClose={(complete: boolean) => handleOnComplete(complete)}
+      />
+    );
   if (categoriesLoading || !isFocused || loading) return <LoadingIndicator />;
-
-  console.log("renderinga add exercise");
 
   return (
     <SafeAreaView style={styles.container}>
+      
+      <Toast />
       <ScrollView>
-        
         <View style={{flexDirection: "row", gap: 40}}>
           <View style={{flex: 6}}>
             <PickerField
@@ -181,11 +203,11 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise, onClose}) =
           </View>
         </View>
         <View style={{paddingTop: 20}}>
-        <Weight
-          title={"Weight"}
-          value={state.weight}
-          onChange={(value: string | number, validWeight: boolean) => onWeightChange(value, validWeight)}
-        />
+          <Weight
+            title={"Weight"}
+            value={state.weight}
+            onChange={(value: string | number, validWeight: boolean) => onWeightChange(value, validWeight)}
+          />
         </View>
         <View style={{flexDirection: "row", gap: 20, alignSelf: "center"}}>
           <NumberInput
@@ -199,9 +221,17 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise, onClose}) =
             onChange={(value: any) => dispatch({type: "setReps", payload: value})}
           />
         </View>
-        <View style={{flexDirection: 'row', justifyContent: 'center', paddingVertical: 25, gap: 25}}>
-          <Text style={{textAlignVertical: 'center', fontSize: 26, fontFamily: 'Roboto-Bold', color: colors.summerDark}}>Exceptional exercise: </Text>
-        <CheckBox isSelected={state.exceptional} size="S" color={colors.summerDark} onSelection={(b: boolean) => dispatch({type: "setExceptional", payload: b})} />
+        <View style={{flexDirection: "row", justifyContent: "center", paddingVertical: 25, gap: 25}}>
+          <Text
+            style={{textAlignVertical: "center", fontSize: 26, fontFamily: "Roboto-Bold", color: colors.summerDark}}>
+            Exceptional exercise:{" "}
+          </Text>
+          <CheckBox
+            isSelected={state.exceptional}
+            size="S"
+            color={colors.summerDark}
+            onSelection={(b: boolean) => dispatch({type: "setExceptional", payload: b})}
+          />
         </View>
         <View style={{paddingTop: 20, alignSelf: "center", flexDirection: "row", gap: 10}}>
           <View style={{width: 180}}>

@@ -10,7 +10,7 @@ interface Props {
 }
 
 export const ProgressTrackingBtm: React.FC<Props> = ({mode, landScapeOrientation = false, changeMode}) => {
-  console.log('rendering btm')
+  
     return (
         <View style={[styles.buttons, landScapeOrientation ? styles.buttonsLandScape : styles.buttonsNormal]}>
         <CustomButton

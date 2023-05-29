@@ -1,16 +1,19 @@
-import {CategorySchema, ExerciseTypeSchema, ExerciseSchema} from "./config/realm";
+import {CategorySchema, ExerciseTypeSchema, ExerciseSchema, MonthSchema, PlanSchema} from "./config/realm";
 
 export const initializeDB = (realm: Realm) => {
   const categories = realm.objects<CategorySchema>("Category");
   const exerciseTypes = realm.objects<ExerciseTypeSchema>("ExerciseType");
   const exercises = realm.objects<ExerciseSchema>("Exercise");
-  console.log(categories.length, exerciseTypes.length, exercises.length);
+  const months = realm.objects<MonthSchema>("Month")
+  const plans = realm.objects<PlanSchema>("Plan")
 
   if (categories.length === 0 && exerciseTypes.length === 0 && exercises.length === 0) {
     realm.write(() => {
       realm.delete(categories);
       realm.delete(exerciseTypes);
       realm.delete(exercises);
+      realm.delete(months);
+      realm.delete(plans)
       // Create categories
       const categoriesData = [
         {name: "Chest"},
@@ -89,12 +92,6 @@ export const initializeDB = (realm: Realm) => {
         {name: "Lunges", category: createdCategories[4]},
         {name: "Step-Up", category: createdCategories[4]},
         {name: "Kickbacks", category: createdCategories[4]},
-
-        // Calves
-        {name: "Standing Calf Raise", category: createdCategories[4]},
-        {name: "Seated Calf Raise", category: createdCategories[4]},
-        {name: "Donkey Calf Raise", category: createdCategories[4]},
-        {name: "Toe Press", category: createdCategories[4]},
       ];
       const createdExerciseTypes: ExerciseTypeSchema[] = []; // Use an array instead of a Map
       exerciseTypesData.forEach(e => {

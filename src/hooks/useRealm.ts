@@ -6,7 +6,7 @@ import {validateSchema} from "../utils/util";
 interface UseRealmConfig<T> {
   schemaName: keyof Schema;
   limitBy?: {by: "Month"; when: number};
-  mutateFunction?: (item: T, action: Mutations) => Promise<void>;
+  mutateFunction?: (item: T, action: Mutations) => Promise<void | boolean>;
 }
 
 export type Mutations = "ADD" | "SAVE" | "DEL";
@@ -40,8 +40,9 @@ export function useRealm<T extends Schema[keyof Schema]>({schemaName, limitBy, m
         console.error(error);
         if (rollback) rollback();
       },
-      onSettled: async () => {
+      onSettled: async (newMonthAdded, error, newItem, context) => {
         await queryClient.invalidateQueries(schemaName);
+        if(newMonthAdded) await queryClient.invalidateQueries("Month");
       },
     },
   );

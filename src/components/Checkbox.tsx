@@ -16,7 +16,7 @@ interface Props {
 export const CheckBox = ({isSelected, onSelection, size, color}: Props) => {
     const [checked, setChecked] = useState(isSelected)
     const SIZE_TO_PADDING: { [key in Size]: { width: number, height: number } } = {
-        S: { width: 45, height: 45 },
+        S: { width: 54, height: 54 },
         M: { width: 75, height: 75 },
         L: { width: 100, height: 100 },
       };
@@ -26,6 +26,7 @@ export const CheckBox = ({isSelected, onSelection, size, color}: Props) => {
     }
   return (
     <TouchableOpacity
+    accessibilityLabel="Checkbox"
       style={{
         ...SIZE_TO_PADDING[size],
         borderColor: 'grey',

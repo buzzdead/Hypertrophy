@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Modal, StyleSheet, View, TouchableOpacity, Text} from "react-native";
+import {Modal, StyleSheet, Text, View} from "react-native";
 import {Plan} from "../../../typings/types";
 import { CheckBox } from "../../components/Checkbox";
 import CustomButton from "../../components/CustomButton";
@@ -8,6 +8,7 @@ import { CategorySchema, ExerciseTypeSchema } from "../../config/realm";
 import { colors } from "../../utils/color";
 import PickerField from "../Exercise/AddExercise/Picker/PickerField";
 import Weight from "../Exercise/AddExercise/Weight";
+import Toast from 'react-native-toast-message';
 
 interface PlanModalProps {
   visible: boolean;
@@ -32,6 +33,18 @@ export const PlanModal: React.FC<PlanModalProps> = ({visible, onRequestClose, on
   });
 
   const handleSave = () => {
+    if(state.exerciseType?.id === 0 || state.exerciseType?.id === undefined) {
+      Toast.show({
+        type: 'error',
+        position: 'top',
+        text1: 'Error',
+        text2: 'Not a valid Exercise Type, check category\exercise type.',
+        visibilityTime: 4000,
+        autoHide: true,
+        topOffset: 0
+      });
+      return;
+    }
     const d = {reps: state.reps, sets: state.sets, weight: state.weight, type: state.exerciseType, id: state.id, exceptional: state.exceptional}
     onSave(d);
     onRequestClose()
@@ -57,10 +70,10 @@ export const PlanModal: React.FC<PlanModalProps> = ({visible, onRequestClose, on
             picker={220}
             left={25}
             item={state.exerciseType}
-            items={state.exerciseTypes.filter(e => e.category.id === state.category.id)}
+            items={state.exerciseTypes.filter(e => e.category?.id === state.category?.id)}
             onChange={value => setState({...state, exerciseType: value})}
           />
-          <View style={{paddingTop: 100}}>
+          <View style={{paddingTop: 100}}>  
           <Weight title={'Add weight'} value={state.weight} onChange={(value: any) => setState({...state, weight: value})} />
           <View style={{flexDirection: 'row', justifyContent: 'center'}}>
           <NumberInput title={"Sets"} value={data.sets} onChange={(value: any) => setState({...state, sets: value})} />
@@ -93,6 +106,7 @@ export const PlanModal: React.FC<PlanModalProps> = ({visible, onRequestClose, on
           </View>
         </View>
         
+    <Toast />
       </View>
     </Modal>
   );

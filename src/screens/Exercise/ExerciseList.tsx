@@ -111,7 +111,7 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
     const newCurrentPage =
       state.groupedExercises.length > groups.length && state.currentPage > 0
         ? state.currentPage - 1
-        : state.groupedExercises.length < groups.length
+        : state.groupedExercises.length < groups.length && state.currentPage !== 0
         ? state.currentPage + 1
         : state.currentPage;
     setState({
@@ -133,8 +133,6 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   });
 
   if (exercisesLoading || categoriesLoading || !focused) return <LoadingIndicator />;
-
-  console.log("rendering exerciselist");
 
   return (
     <SafeAreaView style={styles.container} {...panResponder?.current?.panHandlers}>
