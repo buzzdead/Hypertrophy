@@ -18,7 +18,6 @@ export const Chart: React.FC<Props> = ({chartData, days, maxExercises, mode, isL
   // If chartData is null, we're loading, so use the skeleton data
   const data = isLoading ? skeletonData : chartData || skeletonData;
 
-  console.log("rendering chart");
   return (
     <VictoryChart height={isLandScape ? 300 : 375} width={isLandScape ? 500 : 400} theme={VictoryTheme.material}>
       <VictoryAxis

@@ -42,6 +42,7 @@
     "react-native-splash-screen": "^3.3.0",
     "react-native-svg": "^13.8.0",
     "react-native-swiper": "^1.6.0",
+    "react-native-toast-message": "^2.1.6",
     "react-native-vector-icons": "^9.2.0",
     "react-query": "^3.39.3",
     "react-singleton-hook": "^4.0.1",

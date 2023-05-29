@@ -17,7 +17,6 @@ export class RealmWrapper {
 
 
   async getRealmObject<T extends Schema[keyof Schema]>(schemaName: keyof Schema, limitBy?: { by: 'Month', when: number }) {
-    console.log("getting " + schemaName)
     if (limitBy && limitBy.by === "Month") {
       const month = limitBy.when;
       const year = new Date().getFullYear(); // or use a specific year if needed

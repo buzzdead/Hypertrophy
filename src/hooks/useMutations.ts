@@ -5,7 +5,7 @@ export type Mutations = "ADD" | "SAVE" | "DEL";
 
 export function useMutations<T extends Schema[keyof Schema]>(
     schemaName: keyof Schema, 
-    mutateFunction?: (item: T, action: Mutations) => Promise<void>
+    mutateFunction?: (item: T, action: Mutations) => Promise<void | boolean>
   ) {
     const queryClient = useQueryClient()
   
@@ -33,8 +33,9 @@ export function useMutations<T extends Schema[keyof Schema]>(
             console.error(error);
             if (rollback) rollback();
           },
-          onSettled: async () => {
+          onSettled: async (newMonthAdded, error, newItem, context) => {
             await queryClient.invalidateQueries(schemaName);
+            if(newMonthAdded) await queryClient.invalidateQueries("Month");
           },
         },
       );

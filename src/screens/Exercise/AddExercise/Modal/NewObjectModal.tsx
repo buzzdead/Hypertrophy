@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   Text,
+  ScrollView,
 } from "react-native";
 import CustomButton from "../../../../components/CustomButton";
 import {CategorySchema} from "../../../../config/realm";
@@ -53,8 +54,8 @@ const NewObjectModal = ({
   };
 
   return (
+    <ScrollView>
     <Modal visible={visible} transparent onRequestClose={onClose}>
-      
       <TouchableWithoutFeedback onPress={onClose} accessibilityLabel={"modal for" + name}> 
         <View style={styles.modalOverlay}/>
       </TouchableWithoutFeedback>
@@ -74,8 +75,7 @@ const NewObjectModal = ({
             onChange={value => handleOnChange(value)}
             picker={460}
             maxWidth={295}
-            left={60}
-            
+            left={60}  
           />
         )}
         <View style={{flexDirection: "row", gap: 25}}>
@@ -86,6 +86,7 @@ const NewObjectModal = ({
         </View>
       </View>
     </Modal>
+    </ScrollView>
   );
 };
 

@@ -31,8 +31,6 @@ const WeeklyExercises: React.FC<WeeklyExercisesProps> = ({
 
   const SeparatorComponent = () => <View style={{padding: 5}}></View>;
 
-
-  console.log("rendering weekly")
   return (
     <SafeAreaView style={styles.container} >
       <FlatList

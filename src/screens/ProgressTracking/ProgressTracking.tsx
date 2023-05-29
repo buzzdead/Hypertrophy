@@ -13,7 +13,7 @@ import {ChartData} from "./ChartData";
 import Contingent from "../../components/Contingent";
 import {getAvailableMonths, Month} from "../../utils/util";
 import {useFocus} from "../../hooks/useFocus";
-import { useFocus2 } from "../../hooks/useFocus2";
+import {useFocus2} from "../../hooks/useFocus2";
 
 interface Chart {
   chartData: number[];
@@ -24,15 +24,15 @@ interface Chart {
   lastHalf: boolean;
   filteredCategories: CategorySchema[];
   mode: "Weekly" | "Daily";
-  loading?: boolean
+  loading?: boolean;
 }
 
 export const ProgressTracking = () => {
   const {data: categories, loading: categoriesLoading} = useRealm<CategorySchema>({schemaName: "Category"});
-  const {data: months, loading: monthsLoading} = useRealm<MonthSchema>({schemaName: "Month"});
+  const {data: months, loading: monthsLoading, refresh} = useRealm<MonthSchema>({schemaName: "Month"});
   const screenOrientation = useScreenOrientation();
   const mounted = useFocus2();
-  const focused = useFocus()
+  const focused = useFocus();
 
   const [state, setState] = useState<Chart>({
     chartData: [],
@@ -43,7 +43,7 @@ export const ProgressTracking = () => {
     filteredCategories: [],
     availableMonths: [],
     mode: "Daily",
-    loading: false
+    loading: false,
   });
 
   const containsMonth = (month: number) => {
@@ -51,8 +51,10 @@ export const ProgressTracking = () => {
     return months?.find(e => e.month === state.availableMonths[month]?.numerical);
   };
 
-  const handleNext =  () => {
-    if(state.lastHalf && !containsMonth(state.currentMonth + 1)) {return}
+  const handleNext = () => {
+    if (state.lastHalf && !containsMonth(state.currentMonth + 1)) {
+      return;
+    }
     if (!state.lastHalf) getChartData(true);
     else if (state.lastHalf && containsMonth(state.currentMonth + 1)) {
       const newCurrentMonth = state.currentMonth + 1;
@@ -61,7 +63,9 @@ export const ProgressTracking = () => {
   };
 
   const handlePrev = async () => {
-    if(!state.lastHalf && !containsMonth(state.currentMonth - 1)) {return}
+    if (!state.lastHalf && !containsMonth(state.currentMonth - 1)) {
+      return;
+    }
     if (state.lastHalf) getChartData(false);
     else if (!state.lastHalf && containsMonth(state.currentMonth - 1)) {
       const newCurrentMonth = state.currentMonth - 1;
@@ -70,16 +74,18 @@ export const ProgressTracking = () => {
   };
 
   const getChartData = async (lh?: boolean, cm?: number) => {
-    const newLastHalf = lh !== undefined ? lh : state.lastHalf;
+   
+    let newLastHalf = lh !== undefined ? lh : state.lastHalf;
     const newCurrentMonth = cm !== undefined ? cm : state.currentMonth;
 
     const availableMonths = state.availableMonths.length === 0 ? getAvailableMonths(months) : state.availableMonths;
+    if(availableMonths.length === 0) return
 
     const newExercises =
       state.mode === "Daily"
         ? await fetchExercises({by: "Month", when: availableMonths[newCurrentMonth]?.numerical})
         : await fetchExercises();
-    const {chartData, maxExercises, days} = ChartData({
+    let {chartData, maxExercises, days} = ChartData({
       exercises: newExercises,
       categories: state.filteredCategories,
       month: availableMonths[newCurrentMonth]?.numerical,
@@ -87,32 +93,33 @@ export const ProgressTracking = () => {
       lastHalf: newLastHalf,
       mode: state.mode,
     });
+
     setState({
       ...state,
       chartData: chartData,
       maxExercises: maxExercises,
       days: days,
-      currentMonth: newCurrentMonth,
-      lastHalf: newLastHalf,
+      currentMonth: state.mode === 'Weekly' ? 0 : newCurrentMonth,
+      lastHalf: state.mode === 'Weekly' ? false : newLastHalf,
       availableMonths: availableMonths,
-      loading: mounted && true
+      loading: mounted && true,
     });
   };
 
   useEffect(() => {
-    if(!mounted) return
-    setTimeout(() => setState({...state, loading: false}), 50)
-
-  }, [state.lastHalf, state.currentMonth, state.maxExercises])
+    if (!mounted) return;
+    setTimeout(() => setState({...state, loading: false}), 50);
+  }, [state.lastHalf, state.currentMonth, state.maxExercises]);
 
   const getChartData2 = async (selectedCategories: CategorySchema[]) => {
+    if(state.availableMonths.length === 0) return
     const newCategories =
       selectedCategories.length === 0
         ? categories
         : categories.filter(category => selectedCategories.some(c => c.id === category.id));
     const newExercises =
       state.mode === "Daily"
-        ? await fetchExercises({by: "Month", when: state.availableMonths[state.currentMonth]?.numerical})
+        ? state.availableMonths.length > 0 ? await fetchExercises({by: "Month", when: state.availableMonths[state.currentMonth]?.numerical}) : []
         : await fetchExercises();
     const {chartData, maxExercises, days} = ChartData({
       exercises: newExercises,
@@ -143,8 +150,11 @@ export const ProgressTracking = () => {
 
   if (!focused) return <LoadingIndicator />;
 
-  console.log("rendering progress");
-
+  if(months.length === 0) return <View style={{width: "100%", height: '100%', justifyContent: "center"}}>
+  <Text style={{textAlign: "center", fontFamily: "Roboto-Bold", fontSize: 22, paddingHorizontal: 50}}>
+    No data found, add some exercises.
+  </Text>
+</View>
 
   return (
     <SafeAreaView style={{width: "100%", height: "100%", justifyContent: "center", alignItems: "center", gap: 20}}>

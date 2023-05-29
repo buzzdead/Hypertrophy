@@ -6,13 +6,11 @@ export const useFocus2 = () => {
 
     useFocusEffect(
         useCallback(() => {
-        console.log("focusing")
         setTimeout(() => setIsFocused(true), 1)
         // Perform any necessary logic when the component is focused
         // You can access the current value of the ref using isFocusedRef.current
         // For example, you can conditionally render certain content based on the focus status.
         return () => {
-          console.log("unfocusing")
           setIsFocused(false)
           // Perform any necessary cleanup logic when the component loses focus
         };
