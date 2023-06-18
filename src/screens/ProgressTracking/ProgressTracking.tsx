@@ -2,7 +2,7 @@
 import React, {useEffect, useLayoutEffect, useState} from "react";
 import {SafeAreaView, Text, View} from "react-native";
 import {SideBar} from "../../components/SideBar";
-import {CategorySchema, MonthSchema} from "../../config/realm";
+import {CategorySchema, ExerciseSchema, MonthSchema} from "../../config/realm";
 import {ProgressTrackingBtm} from "./ProgressTrackingBtm";
 import {ChartNavigation} from "./ChartNavigation";
 import LoadingIndicator from "../../components/LoadingIndicator";
@@ -30,6 +30,7 @@ interface Chart {
 export const ProgressTracking = () => {
   const {data: categories, loading: categoriesLoading} = useRealm<CategorySchema>({schemaName: "Category"});
   const {data: months, loading: monthsLoading, refresh} = useRealm<MonthSchema>({schemaName: "Month"});
+  const {data: exercises, loading: exercisesLoading} = useRealm<ExerciseSchema>({schemaName: "Exercise"})
   const screenOrientation = useScreenOrientation();
   const mounted = useFocus2();
   const focused = useFocus();
@@ -119,8 +120,8 @@ export const ProgressTracking = () => {
         : categories.filter(category => selectedCategories.some(c => c.id === category.id));
     const newExercises =
       state.mode === "Daily"
-        ? state.availableMonths.length > 0 ? await fetchExercises({by: "Month", when: state.availableMonths[state.currentMonth]?.numerical}) : []
-        : await fetchExercises();
+        ? state.availableMonths.length > 0 ? exercises.filter(e => e.month === state.availableMonths[state.currentMonth].numerical): []
+        : exercises;
     const {chartData, maxExercises, days} = ChartData({
       exercises: newExercises,
       categories: newCategories,

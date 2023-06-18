@@ -11,7 +11,6 @@ import {useFocus, useMutations} from "../../hooks/hooks";
 import {Mutations} from "../../hooks/useRealm";
 import {colors} from "../../utils/color";
 import PlanModal from "./PlanModal";
-import Toast from 'react-native-toast-message';
 
 interface Props extends Partial<Plan> {
   id?: number;

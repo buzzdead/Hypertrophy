@@ -95,7 +95,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise, onClose}) =
       date: previousExercise?.date || new Date(),
       exceptional: state.exceptional,
     };
-    if(exercise.type?.id === 0 || exercise.type?.id === undefined) {
+    if(exercise.type?.id === undefined) {
       Toast.show({
         type: 'error',
         position: 'top',
