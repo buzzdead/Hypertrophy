@@ -8,7 +8,7 @@ interface Props {
   onChange: (value: string | number, validWeight: boolean) => void;
 }
 
-const Weight: React.FC<Props> = ({title, value, onChange}) => {
+const Weight: React.FC<Props> = ({value, onChange}) => {
   const [isWeightValid, setIsWeightValid] = useState(true);
 
   const handleWeightChange = (text: string) => {

@@ -34,3 +34,11 @@ export async function editCategory(categoryId: number, categoryName: string) {
     categoryToEdit.name = categoryName;
   });
 }
+
+export async function changeCategoryColor(category: CategorySchema) {
+  const categoryToEdit = realm.objectForPrimaryKey<CategorySchema>("Category", category.id);
+  if (!categoryToEdit) throw new Error();
+  await rw.performWriteTransaction(() => {
+    categoryToEdit.color = category.color;
+  });
+}

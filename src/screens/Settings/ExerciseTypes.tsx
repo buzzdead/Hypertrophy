@@ -1,21 +1,25 @@
-import React, {useEffect, useState} from "react";
-import {StyleSheet, Text, View} from "react-native";
-import {ScrollView} from "react-native-gesture-handler";
-import {SafeAreaView} from "react-native-safe-area-context";
-import { useQueryClient } from "react-query";
-import CustomButton from "../../components/CustomButton";
-import {CategorySchema, ExerciseTypeSchema} from "../../config/realm";
-import {useRealm} from "../../hooks/hooks";
-import {colors, validateSchema} from "../../utils/util";
-import NewObjectModal from "../Exercise/AddExercise/Modal/NewObjectModal";
-import {handleDelete, handleEdit} from "./Settings";
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useQueryClient } from 'react-query';
+import CustomButton from '../../components/CustomButton';
+import { CategorySchema, ExerciseTypeSchema } from '../../config/realm';
+import { useRealm } from '../../hooks/hooks';
+import { colors, validateSchema } from '../../utils/util';
+import NewObjectModal from '../Exercise/AddExercise/Modal/NewObjectModal';
+import { handleDelete, handleEdit } from './Settings';
 
 // Add pagination
 export function ExerciseTypes() {
-  const {data: exerciseTypes, refresh} = useRealm<ExerciseTypeSchema>({schemaName: "ExerciseType"});
-  const validExerciseTypes = validateSchema(exerciseTypes)
-  const [modalVisible, setModalVisible] = useState<{visible: boolean; id: number}[]>([]);
-  const qc = useQueryClient()
+  const { data: exerciseTypes, refresh } = useRealm<ExerciseTypeSchema>({
+    schemaName: 'ExerciseType',
+  });
+  const validExerciseTypes = validateSchema(exerciseTypes);
+  const [modalVisible, setModalVisible] = useState<
+    { visible: boolean; id: number }[]
+  >([]);
+  const qc = useQueryClient();
 
   const onEdit = (name: string, id: number, category?: CategorySchema) => {
     handleEdit(id, name, category);
@@ -23,81 +27,95 @@ export function ExerciseTypes() {
   };
   const onDelete = async (exerciseType: ExerciseTypeSchema) => {
     await handleDelete(exerciseType);
-    await qc.invalidateQueries("Exercise")
-    await qc.invalidateQueries("ExerciseType")
-    await qc.invalidateQueries("Plan")
-    await qc.invalidateQueries("Month")
+    await qc.invalidateQueries('Exercise');
+    await qc.invalidateQueries('ExerciseType');
+    await qc.invalidateQueries('Plan');
+    await qc.invalidateQueries('Month');
     refresh();
   };
   const onOpen = (id: number) => {
     setModalVisible(
-      modalVisible.map(m => {
+      modalVisible.map((m) => {
         if (m.id === id) {
-          return Object.assign({}, m, {visible: true});
+          return Object.assign({}, m, { visible: true });
         } else {
           return m;
         }
-      }),
+      })
     );
   };
 
   const onClose = (id: number) => {
     setModalVisible(
-      modalVisible.map(m => {
+      modalVisible.map((m) => {
         if (m.id === id) {
-          return Object.assign({}, m, {visible: false});
+          return Object.assign({}, m, { visible: false });
         } else {
           return m;
         }
-      }),
+      })
     );
   };
   useEffect(() => {
-    const mVisibles = validExerciseTypes.map(c => {
-      return {visible: false, id: c.id};
+    const mVisibles = validExerciseTypes.map((c) => {
+      return { visible: false, id: c.id };
     });
     setModalVisible(mVisibles);
   }, [exerciseTypes]);
   return (
     <SafeAreaView>
-      <ScrollView keyboardShouldPersistTaps="handled">
-      <Text style={{textAlign: "center", fontFamily: 'Roboto-Medium', fontSize: 28, color: colors.summerDark, paddingVertical: 20}}>Active exercise types</Text>
+      <ScrollView keyboardShouldPersistTaps='handled'>
+        <Text
+          style={{
+            textAlign: 'center',
+            fontFamily: 'Roboto-Medium',
+            fontSize: 28,
+            color: colors.summerDark,
+            paddingVertical: 20,
+          }}
+        >
+          Active exercise types
+        </Text>
         <View style={styles.container}>
-          {validExerciseTypes.map(c => {
-            const visible = modalVisible.find(m => m.id === c.id)?.visible || false;
+          {validExerciseTypes.map((c) => {
+            const visible =
+              modalVisible.find((m) => m.id === c.id)?.visible || false;
             const onCloseCurrent = () => onClose(c.id);
             return (
-              <View key={c.name + '-' + c.id.toString()} style={styles.subContainer}>
+              <View
+                key={c.name + '-' + c.id.toString()}
+                style={styles.subContainer}
+              >
                 <Text style={styles.title}>{c.name}</Text>
                 <View style={styles.buttonContainer}>
                   <CustomButton
-                    size="L"
+                    size='L'
                     fontSize={18}
                     titleColor={colors.summerBlue}
                     backgroundColor={colors.summerDarkest}
-                    title={"Edit " + c.name}
+                    title={'Edit ' + c.name}
                     onPress={() => onOpen(c.id)}
                   />
                   <CustomButton
-                    size="L"
+                    size='L'
                     fontSize={18}
                     titleColor={colors.delete}
                     backgroundColor={colors.summerDarkest}
-                    title={"Delete " + c.name}
+                    title={'Delete ' + c.name}
                     onPress={() => onDelete(c)}
                   />
                 </View>
                 {visible && (
                   <NewObjectModal
-                    name="Exercise Type"
+                    name='Exercise Type'
                     visible={visible}
                     modalFunction={onEdit}
                     id={c.id}
-                    objectType="Exercise Type"
+                    objectType='Exercise Type'
                     onClose={onCloseCurrent}
                     currentCategory={c.category}
                     currentValue={c.name}
-                    title={"Save"}
+                    title={'Save'}
                   />
                 )}
               </View>
@@ -115,21 +133,21 @@ export const styles = StyleSheet.create({
     gap: 20,
   },
   subContainer: {
-    flexDirection: "column",
-    justifyContent: "center",
+    flexDirection: 'column',
+    justifyContent: 'center',
     gap: 5,
   },
   title: {
-    textDecorationLine: "underline",
-    textAlign: "center",
+    textDecorationLine: 'underline',
+    textAlign: 'center',
     minWidth: 175,
-    fontFamily: "Roboto-Bold",
+    fontFamily: 'Roboto-Bold',
     fontSize: 22,
     color: colors.summerDarkest,
     marginBottom: 10,
   },
   buttonContainer: {
-    alignSelf: "center",
+    alignSelf: 'center',
     gap: 10,
   },
 });

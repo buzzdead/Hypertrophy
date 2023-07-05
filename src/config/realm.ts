@@ -1,6 +1,7 @@
 // realmConfig.ts
 import Realm from "realm";
 import { getWeekNumber } from "../utils/date";
+import { colors } from "../utils/color";
 
 export class CategorySchema extends Realm.Object {
   static schema = {
@@ -9,11 +10,13 @@ export class CategorySchema extends Realm.Object {
     properties: {
       id: { type: "int", indexed: true},
       name: "string",
+      color: "string",
     },
   };
 
   id!: number;
   name!: string;
+  color!: string;
 }
 
 export class ExerciseTypeSchema extends Realm.Object {
@@ -105,7 +108,7 @@ export class PlanSchema extends Realm.Object {
 
 const realmConfig: Realm.Configuration = {
   schema: [ExerciseSchema, ExerciseTypeSchema, CategorySchema, MonthSchema, PlanSchema],
-  schemaVersion: 16,
+  schemaVersion: 19,
   onMigration: migration,
 };
 
@@ -162,9 +165,21 @@ if(oldRealm.schemaVersion < 14) {
   }
 
 }
+if(oldRealm.schemaVersion < 19) {
+  const categories = newRealm.objects<CategorySchema>("Category");
+  type CategoryColors = keyof typeof colors.categories;
+  const categoryColors: string[] = Object.keys(colors.categories) as string[];
+  categories.forEach(category => {
+    const categoryName = category.name
+
+    if(categoryColors.includes(categoryName)) {
+      category.color = colors.categories[categoryName as CategoryColors]
+    }
+    else {
+      category.color = colors.categories.Default
+    }
+  })
 }
-
-
-
+}
 
 export default realmConfig;

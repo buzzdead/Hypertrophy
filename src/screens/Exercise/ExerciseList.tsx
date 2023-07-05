@@ -10,7 +10,7 @@ import {SideBar} from "../../components/SideBar";
 import {CategorySchema, ExerciseSchema} from "../../config/realm";
 import {ExerciseListBtm} from "./ExerciseListBtm";
 import {useScreenOrientation} from "../../hooks/useScreenOrientation";
-import {useFocus2} from "../../hooks/useFocus2";
+import {useMount} from "../../hooks/useMount";
 
 type ExeciseListProps = StackScreenProps<
   {
@@ -32,7 +32,7 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   const {data: categories, loading: categoriesLoading} = useRealm<CategorySchema>({schemaName: "Category"});
   const {data: exercises, loading: exercisesLoading} = useRealm<ExerciseSchema>({schemaName: "Exercise"});
   const screenOrientation = useScreenOrientation();
-  const mounted = useFocus2();
+  const mounted = useMount();
   const focused = useFocus();
   const [loading, setLoading] = useState(true);
   const [isSwipingHorizontally, setIsSwipingHorizontally] = useState(false);

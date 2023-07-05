@@ -100,7 +100,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise, onClose}) =
         type: 'error',
         position: 'top',
         text1: 'Error',
-        text2: 'Not a valid Exercise Type, check category\exercise type.',
+        text2: 'Not a valid Exercise Type, check category \ exercise type.',
         visibilityTime: 4000,
         topOffset: -100,
         autoHide: true,

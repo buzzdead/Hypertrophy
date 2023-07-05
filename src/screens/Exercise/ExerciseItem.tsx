@@ -1,17 +1,15 @@
+import { StackScreenProps } from "@react-navigation/stack";
 import React from "react";
-import {Text, TouchableOpacity, View, FlatList, StyleSheet} from "react-native";
-import {Duplicate, ExerciseWithDuplicates} from "../../../typings/types";
-import {colors} from "../../utils/util";
-import {StackScreenProps} from "@react-navigation/stack";
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { Duplicate, ExerciseWithDuplicates } from "../../../typings/types";
 import Contingent from "../../components/Contingent";
+import { colors } from "../../utils/util";
 
 type ExerciseItemProps = {
   item: ExerciseWithDuplicates;
   navigation: StackScreenProps<any, "List">["navigation"];
 };
-
-type CategoryColors = keyof typeof colors.categories;
 
 const ExerciseItem: React.FC<ExerciseItemProps> = ({item, navigation}) => {
   const renderDuplicate = (duplicate: Duplicate) => {
@@ -37,7 +35,7 @@ const ExerciseItem: React.FC<ExerciseItemProps> = ({item, navigation}) => {
       style={{
         ...styles.container,
         backgroundColor:
-          `${colors.categories[item?.exercise?.type?.category?.name as CategoryColors] + "50"}` ||
+          `${item?.exercise?.type?.category?.color + "50"}` ||
           colors.categories.Default,
       }}
       onPress={() => navigation.navigate("Details", {exerciseId: item.exercise.id, duplicates: item.duplicates})}>
@@ -63,7 +61,7 @@ const ExerciseItem: React.FC<ExerciseItemProps> = ({item, navigation}) => {
               ...styles.itemText2,
               fontFamily: "Roboto-Bold",
               color:
-                colors.categories[item?.exercise?.type?.category?.name as CategoryColors] || colors.categories.Default,
+                item?.exercise?.type?.category?.color || colors.categories.Default,
             }}>
             {item.exercise.type?.category.name}
           </Text>
@@ -93,7 +91,7 @@ const ExerciseItem: React.FC<ExerciseItemProps> = ({item, navigation}) => {
             name={"arm-flex"}
             size={24}
             style={{position: "absolute", bottom: 0, right: 25}}
-            color={colors.categories[item?.exercise?.type?.category?.name as CategoryColors] || colors.categories.Default}
+            color={item?.exercise?.type?.category?.color || colors.categories.Default}
           />
         </Contingent>
         <MaterialCommunityIcons

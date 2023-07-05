@@ -1,5 +1,6 @@
 import {View, StyleSheet} from "react-native";
 import { colors } from "../../utils/color";
+import React from "react";
 
 const SkeletonItem: React.FC = () => {
   return (

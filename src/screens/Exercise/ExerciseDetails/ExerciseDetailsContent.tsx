@@ -8,7 +8,6 @@ import {deleteExercise, findAllDuplicateExercises} from "../../../api/realm";
 import DuplicateModal from "./DuplicateModal";
 import LoadingIndicator from "../../../components/LoadingIndicator";
 import {ExerciseSchema} from "../../../config/realm";
-import {useRealm} from "../../../hooks/hooks";
 import { useMutations } from "../../../hooks/useMutations";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
