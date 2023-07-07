@@ -2,7 +2,7 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { SafeAreaView, Text, View } from 'react-native';
 import { SideBar } from '../../components/SideBar';
-import { CategorySchema, MonthSchema } from '../../config/realm';
+import { CategorySchema, ExerciseSchema, ExerciseTypeSchema, MonthSchema } from '../../config/realm';
 import { ProgressTrackingBtm } from './ProgressTrackingBtm';
 import { ChartNavigation } from './ChartNavigation';
 import LoadingIndicator from '../../components/LoadingIndicator';
@@ -23,6 +23,7 @@ interface Chart {
   availableMonths: Month[];
   lastHalf: boolean;
   filteredCategories: CategorySchema[];
+  availableExerciseTypes: ExerciseTypeSchema[];
   mode: 'Weekly' | 'Daily';
   loading?: boolean;
 }
@@ -30,6 +31,8 @@ interface Chart {
 export const ProgressTracking = () => {
   const { data: categories, loading: categoriesLoading } = useRealm<CategorySchema>({ schemaName: 'Category' });
   const { data: months, loading: monthsLoading, refresh } = useRealm<MonthSchema>({ schemaName: 'Month' });
+  const { data: allExerciseTypes, loading: exerciseTypesLoading } = useRealm<ExerciseTypeSchema>({ schemaName: 'ExerciseType' });
+  const { data: exercises, loading: exercisesLoading } = useRealm<ExerciseSchema>({ schemaName: 'Exercise' });
   const screenOrientation = useScreenOrientation();
   const mounted = useMount();
   const focused = useFocus();
@@ -41,6 +44,7 @@ export const ProgressTracking = () => {
     currentMonth: 0,
     lastHalf: false,
     filteredCategories: [],
+    availableExerciseTypes: allExerciseTypes,
     availableMonths: [],
     mode: 'Daily',
     loading: false,
@@ -81,9 +85,8 @@ export const ProgressTracking = () => {
     if (availableMonths.length === 0) return;
 
     const newExercises =
-      state.mode === 'Daily'
-        ? await fetchExercises({ by: 'Month', when: availableMonths[newCurrentMonth]?.numerical })
-        : await fetchExercises();
+      state.mode === 'Daily' ? exercises.filter((e) => e.month === availableMonths[newCurrentMonth]?.numerical) : exercises;
+
     let { chartData, maxExercises, days } = ChartData({
       exercises: newExercises,
       categories: state.filteredCategories,
@@ -114,12 +117,15 @@ export const ProgressTracking = () => {
     if (state.availableMonths.length === 0) return;
     const newCategories =
       selectedCategories.length === 0 ? categories : categories.filter((category) => selectedCategories.some((c) => c.id === category.id));
+
+    const newExerciseTypes =
+      selectedCategories.length === 0
+        ? allExerciseTypes
+        : allExerciseTypes.filter((e) => selectedCategories.some((s) => s.id === e.category.id));
+
     const newExercises =
-      state.mode === 'Daily'
-        ? state.availableMonths.length > 0
-          ? await fetchExercises({ by: 'Month', when: state.availableMonths[state.currentMonth]?.numerical })
-          : []
-        : await fetchExercises();
+      state.mode === 'Daily' ? exercises.filter((e) => e.month === state.availableMonths[state.currentMonth]?.numerical) : exercises;
+
     const { chartData, maxExercises, days } = ChartData({
       exercises: newExercises,
       categories: newCategories,
@@ -133,6 +139,7 @@ export const ProgressTracking = () => {
       chartData: chartData,
       maxExercises: maxExercises,
       days: days,
+      availableExerciseTypes: newExerciseTypes,
       filteredCategories: selectedCategories,
     });
   };
@@ -145,6 +152,24 @@ export const ProgressTracking = () => {
 
   const handleFilterChange = (selectedCategories: CategorySchema[]) => {
     getChartData2(selectedCategories);
+  };
+
+  const onExerciseTypesChange = async (exerciseTypes: ExerciseTypeSchema[]) => {
+    const newExerciseTypes =
+      exerciseTypes.length > 0 ? allExerciseTypes.filter((e) => exerciseTypes.some((et) => et.id === e.id)) : allExerciseTypes;
+
+    const newExercises =
+      state.mode === 'Daily' ? exercises.filter((e) => e.month === state.availableMonths[state.currentMonth]?.numerical) : exercises;
+
+    const { chartData, maxExercises, days } = ChartData({
+      exercises: newExercises.filter((e) => newExerciseTypes.some((et) => et.id === e.type.id)),
+      categories: state.filteredCategories,
+      month: state.availableMonths[state.currentMonth]?.numerical,
+      year: '2023',
+      lastHalf: state.lastHalf,
+      mode: state.mode,
+    });
+    setState({ ...state, chartData: chartData, days: days, maxExercises: maxExercises, availableExerciseTypes: newExerciseTypes });
   };
 
   if (!focused) return <LoadingIndicator />;
@@ -186,7 +211,9 @@ export const ProgressTracking = () => {
       <SideBar
         isLandScape={screenOrientation.isLandscape}
         categories={categories}
-        onFilterChange={handleFilterChange}
+        onCategoriesChange={handleFilterChange}
+        onExerciseTypesChange={(e: ExerciseTypeSchema[]) => onExerciseTypesChange(e)}
+        exerciseTypes={allExerciseTypes}
         icon={'chart-bar'}
         prevSelectedCat={state.filteredCategories}
       />

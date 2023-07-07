@@ -140,7 +140,7 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
         isLandScape={screenOrientation.isLandscape}
         categories={categories}
         icon="filter-variant"
-        onFilterChange={handleFilterChange}
+        onCategoriesChange={handleFilterChange}
         prevSelectedCat={state.seleectedCategories || []}
       />
       <WeeklyExercises
