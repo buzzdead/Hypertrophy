@@ -8,12 +8,13 @@ type Size = "S" | "M" | "L"
 interface Props {
     isSelected: boolean
     onSelection: (b: boolean) => void
-    size: Size
-    color: string
+    size?: Size
+    color?: string
     icon?: string
+    disabled?: boolean
 }
 
-export const CheckBox = ({isSelected, onSelection, size, color}: Props) => {
+export const CheckBox = ({isSelected, onSelection, size = "S", color = colors.summerBlue, disabled = false}: Props) => {
     const [checked, setChecked] = useState(isSelected)
     const SIZE_TO_PADDING: { [key in Size]: { width: number, height: number } } = {
         S: { width: 54, height: 54 },
@@ -21,7 +22,8 @@ export const CheckBox = ({isSelected, onSelection, size, color}: Props) => {
         L: { width: 100, height: 100 },
       };
     const handleOnPress = () => {
-        setChecked(!checked)
+
+        !disabled && setChecked(!checked)
         onSelection(!checked)
     }
   return (

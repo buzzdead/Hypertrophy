@@ -9,16 +9,18 @@ import Contingent from './Contingent';
 interface SideBarProps {
   categories: CategorySchema[];
   exerciseTypes?: ExerciseTypeSchema[];
-  onCategoriesChange: (selectedCategories: CategorySchema[]) => void;
+  onCategoriesChange: (selectedCategories: CategorySchema[], exerciseTypes?: ExerciseTypeSchema[]) => void;
   onExerciseTypesChange?: (selectedExerciseTypes: ExerciseTypeSchema[]) => void;
   icon?: string;
   prevSelectedCat?: CategorySchema[];
   subCategories?: ExerciseTypeSchema[];
   isLandScape: boolean;
+  pr?: boolean
+  decativatePR?: () => void
 }
 
 export const SideBar: React.FC<SideBarProps> = React.memo(
-  ({ categories, onCategoriesChange, onExerciseTypesChange, exerciseTypes, icon, isLandScape, prevSelectedCat }) => {
+  ({ categories, onCategoriesChange, onExerciseTypesChange, exerciseTypes, icon, isLandScape, prevSelectedCat, subCategories, pr }) => {
     const [sideBarWidth, setSideBarWidth] = useState(isLandScape ? 300 : 150);
     const [selectedCategoryAnimations, setSelectedCategoryAnimations] = useState(categories.map(() => new Animated.Value(0)));
 
@@ -26,7 +28,7 @@ export const SideBar: React.FC<SideBarProps> = React.memo(
     const [sidebarVisible, setSidebarVisible] = useState(true);
     const [translateX] = useState(new Animated.Value(0));
     const [selectedCategories, setSelectedCategories] = useState<CategorySchema[]>(prevSelectedCat || []);
-    const [selectedExerciseTypes, setSElectedExerciseTypes] = useState<ExerciseTypeSchema[]>([]);
+    const [selectedExerciseTypes, setSElectedExerciseTypes] = useState<ExerciseTypeSchema[]>(subCategories || []);
     const [currentExerciseTypes, setCurrentExerciseTypes] = useState<ExerciseTypeSchema[]>([]);
 
     const mappedExerciseTypes = categories.map((c) => {
@@ -36,11 +38,12 @@ export const SideBar: React.FC<SideBarProps> = React.memo(
     const handleCategoryPress = (category: CategorySchema, index: number) => {
       if (!category) return;
       if(selectedCategories.includes(category)) setCurrentExerciseTypes([])
+      if(selectedCategories.includes(category)) {const newET = selectedExerciseTypes.filter(e => e.category.id !== category.id); setSElectedExerciseTypes(newET);}
       const newSelectedCategories = selectedCategories.includes(category)
         ? selectedCategories.filter((c) => c !== category)
         : [...selectedCategories, category];
       setSelectedCategories(newSelectedCategories);
-      onCategoriesChange(newSelectedCategories);
+      onCategoriesChange(newSelectedCategories, selectedCategories.includes(category) ? selectedExerciseTypes.filter(e => e.category.id !== category.id) : selectedExerciseTypes);
 
       Animated.timing(selectedCategoryAnimations[index], {
         toValue: newSelectedCategories.includes(category) ? 1 : 0,
@@ -52,7 +55,10 @@ export const SideBar: React.FC<SideBarProps> = React.memo(
     const handleExerciseTypePress = (exerciseType: ExerciseTypeSchema) => {
       const newSelectedExerciseTypes = selectedExerciseTypes.includes(exerciseType)
         ? selectedExerciseTypes.filter((e) => e !== exerciseType)
-        : [...selectedExerciseTypes, exerciseType];
+        : 
+        pr ? [exerciseType] 
+        :
+        [...selectedExerciseTypes, exerciseType];
       setSElectedExerciseTypes(newSelectedExerciseTypes);
       onExerciseTypesChange && onExerciseTypesChange(newSelectedExerciseTypes)
     };
