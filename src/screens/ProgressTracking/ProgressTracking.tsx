@@ -8,12 +8,13 @@ import { ChartNavigation } from './ChartNavigation';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import { Chart } from './Chart';
 import { useRealm, useScreenOrientation } from '../../hooks/hooks';
-import { fetchExercises } from '../../api/realm';
 import { ChartData } from './ChartData';
 import Contingent from '../../components/Contingent';
 import { getAvailableMonths, Month } from '../../utils/util';
 import { useFocus } from '../../hooks/useFocus';
 import { useMount } from '../../hooks/useMount';
+import CustomButton from '../../components/CustomButton';
+import { CheckBox } from '../../components/Checkbox';
 
 interface Chart {
   chartData: number[];
@@ -23,9 +24,11 @@ interface Chart {
   availableMonths: Month[];
   lastHalf: boolean;
   filteredCategories: CategorySchema[];
-  availableExerciseTypes: ExerciseTypeSchema[];
+  filteredExerciseTypes: ExerciseTypeSchema[]
   mode: 'Weekly' | 'Daily';
-  loading?: boolean;
+  loading: boolean;
+  metric: boolean
+  pr: boolean
 }
 
 export const ProgressTracking = () => {
@@ -44,10 +47,12 @@ export const ProgressTracking = () => {
     currentMonth: 0,
     lastHalf: false,
     filteredCategories: [],
-    availableExerciseTypes: allExerciseTypes,
+    filteredExerciseTypes: [],
     availableMonths: [],
     mode: 'Daily',
     loading: false,
+    metric: false,
+    pr: false,
   });
 
   const containsMonth = (month: number) => {
@@ -77,22 +82,26 @@ export const ProgressTracking = () => {
     }
   };
 
-  const getChartData = async (lh?: boolean, cm?: number) => {
-    let newLastHalf = lh !== undefined ? lh : state.lastHalf;
-    const newCurrentMonth = cm !== undefined ? cm : state.currentMonth;
+  const updateChart = (
+    availableMonths: Month[],
+    newCurrentMonth: number,
+    lh: boolean,
+    filteredExerciseTypes: ExerciseTypeSchema[],
+    newCategories?: CategorySchema[],
+    selectedCategories?: CategorySchema[]
+  ) => {
+    const exc = state.mode === 'Daily' ? exercises.filter((e) => e.month === availableMonths[newCurrentMonth]?.numerical) : exercises;
 
-    const availableMonths = state.availableMonths.length === 0 ? getAvailableMonths(months) : state.availableMonths;
-    if (availableMonths.length === 0) return;
-
-    const newExercises =
-      state.mode === 'Daily' ? exercises.filter((e) => e.month === availableMonths[newCurrentMonth]?.numerical) : exercises;
+    const filteredExercises = filteredExerciseTypes.length === 0 ? exc : exc.filter(e => filteredExerciseTypes.some((et) => et.id === e.type.id))
 
     let { chartData, maxExercises, days } = ChartData({
-      exercises: newExercises,
-      categories: state.filteredCategories,
+      exercises: filteredExercises,
+      categories: newCategories || state.filteredCategories,
       month: availableMonths[newCurrentMonth]?.numerical,
       year: '2023',
-      lastHalf: newLastHalf,
+      metric: state.metric,
+      lastHalf: lh,
+      pr: state.pr,
       mode: state.mode,
     });
 
@@ -102,75 +111,56 @@ export const ProgressTracking = () => {
       maxExercises: maxExercises,
       days: days,
       currentMonth: state.mode === 'Weekly' ? 0 : newCurrentMonth,
-      lastHalf: state.mode === 'Weekly' ? false : newLastHalf,
+      lastHalf: state.mode === 'Weekly' ? false : lh,
       availableMonths: availableMonths,
       loading: mounted && true,
+      filteredExerciseTypes: filteredExerciseTypes,
+      filteredCategories: selectedCategories || state.filteredCategories,
     });
+  };
+
+  const getChartData = async (lh?: boolean, cm?: number, selectedCategories?: CategorySchema[], newExerciseTypes?: ExerciseTypeSchema[]) => {
+    const newLastHalf = lh !== undefined ? lh : state.lastHalf;
+    const newCurrentMonth = cm !== undefined ? cm : state.currentMonth;
+    const newCategories =
+      selectedCategories?.length === 0
+        ? categories
+        : categories.filter((category) => selectedCategories?.some((c) => c.id === category.id));
+
+    const availableMonths = state.availableMonths.length === 0 ? getAvailableMonths(months) : state.availableMonths;
+    if (availableMonths.length === 0) return;
+
+    updateChart(availableMonths, newCurrentMonth, newLastHalf, newExerciseTypes || state.filteredExerciseTypes, newCategories, selectedCategories);
+  };
+
+  const onExerciseTypesChange = async (exerciseTypes: ExerciseTypeSchema[]) => {
+    const newExerciseTypes =
+      exerciseTypes.length > 0 ? allExerciseTypes.filter((e) => exerciseTypes.some((et) => et.id === e.id)) : [];
+
+    updateChart(
+      state.availableMonths,
+      state.currentMonth,
+      state.lastHalf,
+      newExerciseTypes
+    );
+  };
+
+  const onCategoryChange = (selectedCategories: CategorySchema[], exerciseTypes?: ExerciseTypeSchema[]) => {
+    const newExerciseTypes =
+      exerciseTypes ? exerciseTypes?.length > 0 ? allExerciseTypes.filter((e) => exerciseTypes?.some((et) => et.id === e.id)) : [] : state.filteredExerciseTypes
+    getChartData(state.lastHalf, state.currentMonth, selectedCategories, newExerciseTypes);
   };
 
   useEffect(() => {
     if (!mounted) return;
     setTimeout(() => setState({ ...state, loading: false }), 50);
-  }, [state.lastHalf, state.currentMonth, state.maxExercises]);
-
-  const getChartData2 = async (selectedCategories: CategorySchema[]) => {
-    if (state.availableMonths.length === 0) return;
-    const newCategories =
-      selectedCategories.length === 0 ? categories : categories.filter((category) => selectedCategories.some((c) => c.id === category.id));
-
-    const newExerciseTypes =
-      selectedCategories.length === 0
-        ? allExerciseTypes
-        : allExerciseTypes.filter((e) => selectedCategories.some((s) => s.id === e.category.id));
-
-    const newExercises =
-      state.mode === 'Daily' ? exercises.filter((e) => e.month === state.availableMonths[state.currentMonth]?.numerical) : exercises;
-
-    const { chartData, maxExercises, days } = ChartData({
-      exercises: newExercises,
-      categories: newCategories,
-      month: state.availableMonths[state.currentMonth]?.numerical,
-      year: '2023',
-      lastHalf: state.lastHalf,
-      mode: state.mode,
-    });
-    setState({
-      ...state,
-      chartData: chartData,
-      maxExercises: maxExercises,
-      days: days,
-      availableExerciseTypes: newExerciseTypes,
-      filteredCategories: selectedCategories,
-    });
-  };
+  }, [state.lastHalf, state.currentMonth, state.maxExercises, state.filteredCategories, state.chartData]);
 
   useLayoutEffect(() => {
     if (categoriesLoading) return;
     if (monthsLoading) return;
-    getChartData();
-  }, [monthsLoading, state.mode]);
-
-  const handleFilterChange = (selectedCategories: CategorySchema[]) => {
-    getChartData2(selectedCategories);
-  };
-
-  const onExerciseTypesChange = async (exerciseTypes: ExerciseTypeSchema[]) => {
-    const newExerciseTypes =
-      exerciseTypes.length > 0 ? allExerciseTypes.filter((e) => exerciseTypes.some((et) => et.id === e.id)) : allExerciseTypes;
-
-    const newExercises =
-      state.mode === 'Daily' ? exercises.filter((e) => e.month === state.availableMonths[state.currentMonth]?.numerical) : exercises;
-
-    const { chartData, maxExercises, days } = ChartData({
-      exercises: newExercises.filter((e) => newExerciseTypes.some((et) => et.id === e.type.id)),
-      categories: state.filteredCategories,
-      month: state.availableMonths[state.currentMonth]?.numerical,
-      year: '2023',
-      lastHalf: state.lastHalf,
-      mode: state.mode,
-    });
-    setState({ ...state, chartData: chartData, days: days, maxExercises: maxExercises, availableExerciseTypes: newExerciseTypes });
-  };
+    else getChartData();
+  }, [monthsLoading, state.mode, state.metric, state.pr]);
 
   if (!focused) return <LoadingIndicator />;
 
@@ -183,11 +173,22 @@ export const ProgressTracking = () => {
       </View>
     );
 
+  const onChangePR = () => {
+    if(state.filteredExerciseTypes.length === 1)
+      setState({...state, pr: !state.pr})
+  }
+
   return (
     <SafeAreaView style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', gap: 20 }}>
+      <View style={{flexDirection: 'row'}}>
+      <CustomButton size={"SM"} title={state.metric ? "Exercises" : "Metric"} onPress={() => setState({...state, metric: !state.metric})} />
+        <Text style={{textAlignVertical: 'center', fontFamily: 'Roboto-Bold', fontSize: 20, marginHorizontal: 10, paddingLeft: 10}}>Show PR</Text>
+        <CheckBox disabled={state.filteredExerciseTypes.length !== 1} isSelected={state.pr} onSelection={onChangePR}/>
+      </View>
       <Chart
         isLandScape={screenOrientation.isLandscape}
         mode={state.mode}
+        toggle
         maxExercises={state.maxExercises}
         chartData={state.chartData}
         days={state.days}
@@ -211,11 +212,14 @@ export const ProgressTracking = () => {
       <SideBar
         isLandScape={screenOrientation.isLandscape}
         categories={categories}
-        onCategoriesChange={handleFilterChange}
+        onCategoriesChange={onCategoryChange}
         onExerciseTypesChange={(e: ExerciseTypeSchema[]) => onExerciseTypesChange(e)}
         exerciseTypes={allExerciseTypes}
         icon={'chart-bar'}
         prevSelectedCat={state.filteredCategories}
+        subCategories={state.filteredExerciseTypes}
+        pr={state.pr}
+        decativatePR={() => setState({...state, pr: false})}
       />
     </SafeAreaView>
   );

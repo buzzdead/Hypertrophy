@@ -6,12 +6,14 @@ interface Props {
   exercises: ExerciseSchema[];
   categories: CategorySchema[];
   mode: "Daily" | "Weekly";
+  metric?: boolean
+  pr?: boolean
   month: number;
   year: string;
   lastHalf?: boolean;
 }
 
-export const ChartData = ({exercises, categories, month, year, lastHalf = false, mode}: Props) => {
+export const ChartData = ({exercises, categories, month, year, lastHalf = false, mode, metric = false, pr = false}: Props) => {
   const endDate = new Date(parseInt(year), month + 1, 0);
 
   const daysInMonth = endDate.getDate(); // Number of days in the given month
@@ -35,13 +37,20 @@ export const ChartData = ({exercises, categories, month, year, lastHalf = false,
       .fill(0)
       .map((_, index) => {
         let fixedIndex = lastHalf ? index + halfMonth : index;
-        const filteredExercises = categorised.filter(e => e.date.getDate() === fixedIndex);
+        const filteredExercises = categorised.filter(e => e.date.getDate() === fixedIndex && e.date.getMonth() === month);
         tickValues.push(fixedIndex);
+        if(metric) return filteredExercises.reduce((sum, exercise) => {
+          let m = exercise.metric
+      if(lastHalf && index === 0) return 0
+      if(pr && sum > 0 && m > sum) return sum - sum + m
+      if(pr && sum > 0) return sum
+      return sum + m
+        }, 0)
         return lastHalf && index === 0 ? 0 : filteredExercises.length || 0;
       });
   }
 
-  if (mode === "Daily" && typeof chartData[0] === "number") {
+  if (mode === "Daily") {
     tickValues = tickValues;
   } else {
     const modifiedData = chartData.map(e => (typeof e === "number" ? e : e.weekNumber));
@@ -49,10 +58,23 @@ export const ChartData = ({exercises, categories, month, year, lastHalf = false,
   }
 
   return {
-    chartData: mode === 'Daily' ? chartData as number[] : chartData.map(e => (typeof e === "number" ? e : e.exercises.length)),
+    chartData: mode === 'Daily' ? chartData as number[] : chartData.map(e => (typeof e === "number" ? e : metric ? e.exercises.reduce((sum, exercise) => {
+      
+      let metric = exercise.exercise.metric
+
+      let dupSum = 0
+      exercise.duplicates.forEach((dup) => {
+        let dupMetric = dup.metric
+        if(pr && dupSum > 0) return dupSum > dupMetric ? dupSum : dupMetric
+        dupSum += dupMetric
+      })
+      if(pr && sum > 0 && metric > sum || dupSum > sum) return sum - sum + dupSum > metric ? dupSum : metric
+      if(pr && sum > 0) return sum
+      return sum + metric + dupSum;
+  }, 0) : e.exercises.length)),
     maxExercises:
       mode === "Daily"
-        ? Math.max(...(chartData as number[]))
+        ? metric ? 25 : Math.max(...(chartData as number[]))
         : Math.max(...chartData.map(e => (typeof e === "number" ? e : e.exercises.length))),
     days: tickValues,
   };

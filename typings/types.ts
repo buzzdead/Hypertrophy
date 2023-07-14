@@ -33,7 +33,7 @@ export type Plan = {
   exceptional: boolean
 }
 
-export type Duplicate = { sets: number; reps: number; weight: string | number; exceptional: boolean }
+export type Duplicate = { sets: number; reps: number; weight: string | number; exceptional: boolean; metric: number }
 
 export type ExerciseWithDuplicates = { exercise: ExerciseSchema; duplicates: Duplicate[] };
 export interface IGroup {
