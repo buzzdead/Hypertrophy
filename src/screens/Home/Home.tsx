@@ -70,7 +70,7 @@ export const Home = () => {
 
   if (exercisesLoading || categoriesLoading || !focused)
     return <LoadingIndicator />;
-
+    
   return (
     <SafeAreaView style={{ height: '100%', width: '100%' }}>
       <ScrollView>
