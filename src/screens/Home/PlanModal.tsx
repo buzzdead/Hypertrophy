@@ -40,7 +40,7 @@ export const PlanModal: React.FC<PlanModalProps> = ({
   });
 
   const handleSave = () => {
-    if (state.exerciseType?.id === 0 || state.exerciseType?.id === undefined) {
+    if (state.exerciseType?.id === undefined) {
       Toast.show({
         type: 'error',
         position: 'top',

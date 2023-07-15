@@ -96,7 +96,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise, onClose}) =
       exceptional: state.exceptional,
       metric: state.sets * state.reps * (state.weight as number)
     };
-    if(exercise.type?.id === 0 || exercise.type?.id === undefined) {
+    if(exercise.type?.id === undefined) {
       Toast.show({
         type: 'error',
         position: 'top',
