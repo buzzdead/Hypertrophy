@@ -15,6 +15,7 @@ import { useFocus } from '../../hooks/useFocus';
 import { useMount } from '../../hooks/useMount';
 import CustomButton from '../../components/CustomButton';
 import { CheckBox } from '../../components/Checkbox';
+import Toast from 'react-native-toast-message';
 
 interface Chart {
   chartData: number[];
@@ -88,7 +89,8 @@ export const ProgressTracking = () => {
     lh: boolean,
     filteredExerciseTypes: ExerciseTypeSchema[],
     newCategories?: CategorySchema[],
-    selectedCategories?: CategorySchema[]
+    selectedCategories?: CategorySchema[],
+    pr?: boolean
   ) => {
     const exc = state.mode === 'Daily' ? exercises.filter((e) => e.month === availableMonths[newCurrentMonth]?.numerical) : exercises;
 
@@ -101,7 +103,7 @@ export const ProgressTracking = () => {
       year: '2023',
       metric: state.metric,
       lastHalf: lh,
-      pr: state.pr,
+      pr: pr !== undefined ? pr : state.pr && filteredExerciseTypes.length !== 1 ? false : state.pr,
       mode: state.mode,
     });
 
@@ -116,12 +118,14 @@ export const ProgressTracking = () => {
       loading: mounted && true,
       filteredExerciseTypes: filteredExerciseTypes,
       filteredCategories: selectedCategories || state.filteredCategories,
+      pr: pr !== undefined ? pr : state.pr && filteredExerciseTypes.length !== 1 ? false : state.pr
     });
   };
 
-  const getChartData = async (lh?: boolean, cm?: number, selectedCategories?: CategorySchema[], newExerciseTypes?: ExerciseTypeSchema[]) => {
+  const getChartData = async (lh?: boolean, cm?: number, selectedCategories?: CategorySchema[], newExerciseTypes?: ExerciseTypeSchema[], pr?: boolean) => {
     const newLastHalf = lh !== undefined ? lh : state.lastHalf;
     const newCurrentMonth = cm !== undefined ? cm : state.currentMonth;
+    const newPR = pr !== undefined ? pr : state.pr
     const newCategories =
       selectedCategories?.length === 0
         ? categories
@@ -130,7 +134,7 @@ export const ProgressTracking = () => {
     const availableMonths = state.availableMonths.length === 0 ? getAvailableMonths(months) : state.availableMonths;
     if (availableMonths.length === 0) return;
 
-    updateChart(availableMonths, newCurrentMonth, newLastHalf, newExerciseTypes || state.filteredExerciseTypes, newCategories, selectedCategories);
+    updateChart(availableMonths, newCurrentMonth, newLastHalf, newExerciseTypes || state.filteredExerciseTypes, newCategories, selectedCategories, newPR);
   };
 
   const onExerciseTypesChange = async (exerciseTypes: ExerciseTypeSchema[]) => {
@@ -141,14 +145,14 @@ export const ProgressTracking = () => {
       state.availableMonths,
       state.currentMonth,
       state.lastHalf,
-      newExerciseTypes
+      newExerciseTypes,
     );
   };
 
   const onCategoryChange = (selectedCategories: CategorySchema[], exerciseTypes?: ExerciseTypeSchema[]) => {
     const newExerciseTypes =
       exerciseTypes ? exerciseTypes?.length > 0 ? allExerciseTypes.filter((e) => exerciseTypes?.some((et) => et.id === e.id)) : [] : state.filteredExerciseTypes
-    getChartData(state.lastHalf, state.currentMonth, selectedCategories, newExerciseTypes);
+    getChartData(state.lastHalf, state.currentMonth, selectedCategories, newExerciseTypes, state.pr && newExerciseTypes.length !== 1 ? false : state.pr);
   };
 
   useEffect(() => {
@@ -160,7 +164,7 @@ export const ProgressTracking = () => {
     if (categoriesLoading) return;
     if (monthsLoading) return;
     else getChartData();
-  }, [monthsLoading, state.mode, state.metric, state.pr]);
+  }, [monthsLoading, state.mode, state.metric]);
 
   if (!focused) return <LoadingIndicator />;
 
@@ -175,12 +179,27 @@ export const ProgressTracking = () => {
 
   const onChangePR = () => {
     if(state.filteredExerciseTypes.length === 1)
-      setState({...state, pr: !state.pr})
+      getChartData(state.lastHalf, state.currentMonth, state.filteredCategories, state.filteredExerciseTypes, !state.pr)
+    else {
+      Toast.show({
+        type: 'error',
+        position: 'top',
+        text1: 'Error',
+        text2: 'One and only one type of exercise must be selected.',
+        visibilityTime: 4000,
+        autoHide: true,
+        topOffset: 0,
+      });
+    }
   }
 
   return (
     <SafeAreaView style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', gap: 20 }}>
+       <Contingent shouldRender={state.pr} style={{position: 'absolute', top: 15, left: 15}}>
+          <Text style={{fontFamily: 'Roboto-Black'}}>{`Exercise: ${state?.filteredExerciseTypes[0]?.name} - Averge Metric: ${Math.round(state?.filteredExerciseTypes[0]?.averageMetric)}`}</Text>
+        </Contingent>
       <View style={{flexDirection: 'row'}}>
+       
       <CustomButton size={"SM"} title={state.metric ? "Exercises" : "Metric"} onPress={() => setState({...state, metric: !state.metric})} />
         <Text style={{textAlignVertical: 'center', fontFamily: 'Roboto-Bold', fontSize: 20, marginHorizontal: 10, paddingLeft: 10}}>Show PR</Text>
         <CheckBox disabled={state.filteredExerciseTypes.length !== 1} isSelected={state.pr} onSelection={onChangePR}/>
@@ -221,6 +240,7 @@ export const ProgressTracking = () => {
         pr={state.pr}
         decativatePR={() => setState({...state, pr: false})}
       />
+      <Toast />
     </SafeAreaView>
   );
 };

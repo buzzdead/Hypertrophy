@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { colors } from '../utils/color';
@@ -26,6 +26,9 @@ export const CheckBox = ({isSelected, onSelection, size = "S", color = colors.su
         !disabled && setChecked(!checked)
         onSelection(!checked)
     }
+  useEffect(() => {
+    if(isSelected !== checked) setChecked(isSelected)
+  }, [isSelected])
   return (
     <TouchableOpacity
     accessibilityLabel="Checkbox"
