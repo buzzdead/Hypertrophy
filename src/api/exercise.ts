@@ -1,5 +1,5 @@
 import {Exercise, Plan} from "../../typings/types";
-import {ExerciseSchema, MonthSchema, PlanSchema} from "../config/realm";
+import {ExerciseSchema, ExerciseTypeSchema, MonthSchema, PlanSchema} from "../config/realm";
 import {RealmWrapper} from "./RealmWrapper";
 
 const rw = new RealmWrapper();
@@ -28,8 +28,21 @@ export async function findAllDuplicateExercises(exercise: Exercise) {
   );
 }
 
+const addMetric = (exercise: ExerciseSchema, metric: number) => {
+  const exerciseType = exercise.type
+  exerciseType.averageMetric = ((exerciseType.exerciseCount * exerciseType.averageMetric) + metric) / (exerciseType.exerciseCount + 1)
+  exerciseType.exerciseCount += 1
+}
+
+const removeMetric = (exercise: ExerciseSchema) => {
+  const exerciseType = exercise.type
+  const avgMetricTotal = exerciseType.averageMetric * exerciseType.exerciseCount
+  const newAvgMetric = (avgMetricTotal - exercise.metric) / (exerciseType.exerciseCount - 1)
+  exerciseType.averageMetric = newAvgMetric
+  exerciseType.exerciseCount -= 1
+}
+
 export async function addExercise(exercise: Exercise) {
-  console.log("aisdjfasidjf")
   let newMonthAdded = false;
   const id = getMaxId();
   exercise.id = id;
@@ -39,6 +52,15 @@ export async function addExercise(exercise: Exercise) {
   const month = months.find(m => m.year === eYear && m.month === eMonth);
   const exerciseToAdd: ExerciseSchema = exercise as ExerciseSchema
 
+  let metric = exercise.weight as number * exercise.reps * exercise.sets;
+        let stdMetric = exercise.weight as number * 10 * 3
+        if (exercise.sets > 3) { stdMetric *= (0.1 * (exercise.sets - 3)) }
+        if(exercise.type){
+        const howMuchBigger = stdMetric / exercise.type.averageMetric
+        if (howMuchBigger > 1.4) {
+          metric *= (stdMetric / exercise.type.averageMetric)
+        }}
+  exerciseToAdd.metric = metric
   await rw.performWriteTransaction(() => {
     if (month !== undefined) month.exerciseCount += 1;
     else {
@@ -51,25 +73,29 @@ export async function addExercise(exercise: Exercise) {
       newMonthAdded = true
     }
     realm.create("Exercise", exerciseToAdd);
+    addMetric(exerciseToAdd, metric)
   });
   return newMonthAdded
 }
 
 //Check if exercise is duplicate matters
 export async function saveExercise(exercise: Exercise) {
-  const {id, type, sets, reps, date, weight, exceptional} = exercise;
+  const {id, type, sets, reps, date, weight, exceptional, metric} = exercise;
   if (weight === "") exercise.weight = 0;
 
   const existingExercise = realm.objectForPrimaryKey<Exercise>("Exercise", id);
   if (!existingExercise) throw new Error();
 
   await rw.performWriteTransaction(() => {
+    removeMetric(existingExercise as ExerciseSchema)
     existingExercise.type = type;
     existingExercise.sets = sets;
     existingExercise.reps = reps;
     existingExercise.date = date;
     existingExercise.weight = weight;
+    existingExercise.metric = metric;
     existingExercise.exceptional = exceptional;
+    addMetric(existingExercise as ExerciseSchema, metric)
   });
 }
 export async function fetchExercises(limitBy?: { by: "Month" | "Week"; when: number }) {
@@ -104,10 +130,9 @@ export async function deleteExercise(exercise: Exercise) {
   const eYear = exercise.date.getFullYear().toString();
   const month: Optional<MonthSchema> = months.find(m => m.year === eYear && m.month === eMonth);
   await rw.performWriteTransaction(() => {
-    console.log(month)
     if (month !== undefined) month.exerciseCount -= 1;
     if (month?.exerciseCount === 0) {realm.delete(month); monthDeleted = true}
-    console.log(month)
+    removeMetric(exercise as ExerciseSchema)
     realm.delete(exerciseSchema);
   });
   return monthDeleted

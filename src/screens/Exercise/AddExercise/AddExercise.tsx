@@ -94,6 +94,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise, onClose}) =
       month: previousExercise?.month || month,
       date: previousExercise?.date || new Date(),
       exceptional: state.exceptional,
+      metric: state.sets * state.reps * (state.weight as number)
     };
     if(exercise.type?.id === 0 || exercise.type?.id === undefined) {
       Toast.show({

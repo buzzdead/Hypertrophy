@@ -201,6 +201,7 @@ function migration(oldRealm: Realm, newRealm: Realm) {
       // Calculate the average by dividing the sum by the number of exercises
       const averageMetric = sumOfMetrics / theseExercises.length;
       et.averageMetric = averageMetric
+      console.log(et.name, averageMetric)
       et.exerciseCount = theseExercises.length
     })
   }
@@ -212,16 +213,16 @@ function migration(oldRealm: Realm, newRealm: Realm) {
       const filteredExercises = exercises.filter(e => e.type.id === et.id)
       const newETMetric = filteredExercises.reduce((sum, exercise) => {
         let metric = exercise.weight * exercise.reps * exercise.sets;
-        let stdMetric = exercise.weight * 10 * 3
-        if (exercise.sets > 3) { stdMetric *= (0.1 * (exercise.sets - 3)) }
+        const stdMetric = exercise.weight * 10 * 3
+        if (exercise.sets > 3) { metric *= (1 - (0.1 * (exercise.sets - 3))) }
         const howMuchBigger = stdMetric / exercise.type.averageMetric
         if (howMuchBigger > 1.4) {
           metric *= (stdMetric / exercise.type.averageMetric)
         }
-        exercise.metric = stdMetric
+        exercise.metric = metric
         return sum + metric
       }, 0)
-      et.averageMetric = newETMetric
+      et.averageMetric = newETMetric / filteredExercises.length
     })
   }
 }

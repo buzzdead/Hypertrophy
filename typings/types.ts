@@ -20,6 +20,7 @@ export type Exercise = {
   month: number;
   week: number;
   exceptional: boolean
+  metric: number
 };
 
 export type Plan = {
