@@ -1,14 +1,18 @@
 import {CategorySchema, ExerciseTypeSchema, ExerciseSchema} from "../config/realm";
+import { colors } from "../utils/color";
 import {RealmWrapper} from "./RealmWrapper";
 
 const rw = new RealmWrapper();
 const realm = rw.getRealm();
+const realmObject = realm.objects<CategorySchema>("Category")
 
 export async function addCategory(category: string) {
+  const newCategoryName = realmObject.find(c => c.name === category) ? category + '(1)' : category
   await rw.performWriteTransaction(() => {
     realm.create("Category", {
       id: rw.getMaxId<CategorySchema>("Category"),
-      name: category,
+      name: newCategoryName,
+      color: colors.categories.Default
     });
   });
 }
@@ -30,8 +34,10 @@ export async function deleteCategory(category: CategorySchema) {
 export async function editCategory(categoryId: number, categoryName: string) {
   const categoryToEdit = realm.objectForPrimaryKey<CategorySchema>("Category", categoryId);
   if (!categoryToEdit) throw new Error();
+  if(categoryToEdit.name === categoryName) return
+  const newCategoryName = realmObject.find(c => c.name === categoryName) ? categoryName + '(1)' : categoryName
   await rw.performWriteTransaction(() => {
-    categoryToEdit.name = categoryName;
+    categoryToEdit.name = newCategoryName;
   });
 }
 

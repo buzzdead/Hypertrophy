@@ -157,25 +157,15 @@ export const ProgressTracking = () => {
 
   useEffect(() => {
     if (!mounted) return;
+    console.log("rendering timeout shit")
     setTimeout(() => setState({ ...state, loading: false }), 50);
   }, [state.lastHalf, state.currentMonth, state.maxExercises, state.filteredCategories, state.chartData]);
 
   useLayoutEffect(() => {
-    if (categoriesLoading) return;
-    if (monthsLoading) return;
-    else getChartData();
-  }, [monthsLoading, state.mode, state.metric]);
-
-  if (!focused) return <LoadingIndicator />;
-
-  if (months.length === 0)
-    return (
-      <View style={{ width: '100%', height: '100%', justifyContent: 'center' }}>
-        <Text style={{ textAlign: 'center', fontFamily: 'Roboto-Bold', fontSize: 22, paddingHorizontal: 50 }}>
-          No data found, add some exercises.
-        </Text>
-      </View>
-    );
+    if (categoriesLoading || exerciseTypesLoading || exercisesLoading || monthsLoading) return;
+    console.log("rendering standard get chart")
+    getChartData();
+  }, [monthsLoading, state.mode, state.metric, exercises]);
 
   const onChangePR = () => {
     if(state.filteredExerciseTypes.length === 1)
@@ -193,17 +183,31 @@ export const ProgressTracking = () => {
     }
   }
 
+  if (!focused || !mounted) return <LoadingIndicator />;
+
+  if (months.length === 0)
+    return (
+      <View style={{ width: '100%', height: '100%', justifyContent: 'center' }}>
+        <Text style={{ textAlign: 'center', fontFamily: 'Roboto-Bold', fontSize: 22, paddingHorizontal: 50 }}>
+          No data found, add some exercises.
+        </Text>
+      </View>
+
+    );
+
   return (
     <SafeAreaView style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', gap: 20 }}>
-       <Contingent shouldRender={state.pr} style={{position: 'absolute', top: 15, left: 15}}>
+       <Contingent shouldRender={state.pr} style={{position: 'absolute', top: 10, left: 15}}>
           <Text style={{fontFamily: 'Roboto-Black'}}>{`Exercise: ${state?.filteredExerciseTypes[0]?.name} - Averge Metric: ${Math.round(state?.filteredExerciseTypes[0]?.averageMetric)}`}</Text>
         </Contingent>
-      <View style={{flexDirection: 'row'}}>
-       
+      <View style={{position: 'absolute', top: 25, flexDirection: 'column', gap: 20, marginTop: 25, width: '100%', alignItems: 'center'}}>
       <CustomButton size={"SM"} title={state.metric ? "Exercises" : "Metric"} onPress={() => setState({...state, metric: !state.metric})} />
+      <View style={{flexDirection: 'row', marginRight: 15}}>
         <Text style={{textAlignVertical: 'center', fontFamily: 'Roboto-Bold', fontSize: 20, marginHorizontal: 10, paddingLeft: 10}}>Show PR</Text>
         <CheckBox disabled={state.filteredExerciseTypes.length !== 1} isSelected={state.pr} onSelection={onChangePR}/>
+        </View>
       </View>
+      <View style={{marginTop: 100}}>
       <Chart
         isLandScape={screenOrientation.isLandscape}
         mode={state.mode}
@@ -213,6 +217,7 @@ export const ProgressTracking = () => {
         days={state.days}
         isLoading={!mounted || state.loading}
       />
+      </View>
       <Contingent style={{ paddingTop: 30 }} shouldRender={state.mode === 'Daily'}>
         <ChartNavigation
           isLandScape={screenOrientation.isLandscape}

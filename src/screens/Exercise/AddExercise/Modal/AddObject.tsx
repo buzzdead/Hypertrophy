@@ -24,6 +24,7 @@ const AddObject = ({isCategory, s}: Props) => {
   };
 
   const handleAdd = async (name: string, isCategory: boolean, category?: Nullable<CategorySchema>) => {
+    if(name === "" || !isCategory && category === undefined) return
     isCategory ? await addCategory(name) : await addExerciseType(name, category!);
     closeModal();
     s()

@@ -27,12 +27,12 @@ export const SideBar: React.FC<SideBarProps> = React.memo(
     const SidebarVisibleWidth = 50;
     const [sidebarVisible, setSidebarVisible] = useState(true);
     const [translateX] = useState(new Animated.Value(0));
-    const [selectedCategories, setSelectedCategories] = useState<CategorySchema[]>(prevSelectedCat || []);
+    const [selectedCategories, setSelectedCategories] = useState<CategorySchema[]>(prevSelectedCat?.filter(p => p.isValid()) || []);
     const [selectedExerciseTypes, setSElectedExerciseTypes] = useState<ExerciseTypeSchema[]>(subCategories || []);
     const [currentExerciseTypes, setCurrentExerciseTypes] = useState<ExerciseTypeSchema[]>([]);
 
     const mappedExerciseTypes = categories.map((c) => {
-      return { categoryId: c.id, exerciseTypes: exerciseTypes?.filter((e) => e.category.id === c.id) };
+      return { categoryId: c.id, exerciseTypes: exerciseTypes?.filter((e) => e?.category?.id === c?.id) || [] };
     });
 
     const handleCategoryPress = (category: CategorySchema, index: number) => {
@@ -131,10 +131,10 @@ export const SideBar: React.FC<SideBarProps> = React.memo(
         <Text style={styles.sidebarTitle}>Filter</Text>
         <View style={{ flexDirection: 'row' }}>
           
-          <View style={{ position: 'absolute', left: -100, alignSelf: 'center', width: '100%' }}>
+          <View style={{ position: 'absolute', left: -125, width: 105 }}>
           <Contingent shouldRender={!sidebarVisible}>
             {currentExerciseTypes.map((e) => (
-              <TouchableOpacity style={{backgroundColor: selectedExerciseTypes.includes(e) ? 'grey' : colors.summerWhite}} onPress={() => handleExerciseTypePress(e)}>
+              <TouchableOpacity key={`${e.name}-${e.id}`} style={{backgroundColor: selectedExerciseTypes.includes(e) ? 'grey' : colors.summerWhite}} onPress={() => handleExerciseTypePress(e)}>
               <Text style={styles.sidebarItemText}>{e.name}</Text>
               </TouchableOpacity>
             ))}
@@ -142,17 +142,18 @@ export const SideBar: React.FC<SideBarProps> = React.memo(
           </View>
           
           <View style={isLandScape ? styles.sidebarItemsRow : styles.sidebarItemsColumn}>
-            {categories.map((category, index) => (
-              <View style={{ flexDirection: 'row' }}>
+            {categories.filter(c => c.isValid()).map((category, index) => (
+              <View key={`${category.name}-${category.id}`} style={{ flexDirection: 'row' }}>
                 <Contingent
                   shouldRender={
                     selectedCategories.length > 0 &&
-                    selectedCategories.length !== categories.length &&
+                    subCategories !== undefined &&
+                    !sidebarVisible &&
                     selectedCategories.some((e) => e.id === category.id)
                   }
                 >
                   <TouchableOpacity
-                    style={{ width: 10, height: 70, alignSelf: 'center', backgroundColor: colors.summerBlue }}
+                    style={{position: 'absolute', left: -20, width: 20, height: 70, alignSelf: 'center', backgroundColor: colors.summerBlue }}
                     onPress={() => handleShowExerciseTypes(category.id)}
                   />
                 </Contingent>

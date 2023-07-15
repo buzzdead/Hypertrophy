@@ -43,10 +43,8 @@ export const Home = () => {
   const mounted = useMount();
   const focused = useFocus();
 
-  const { data: exercises, loading: exercisesLoading } =
-    useRealm<ExerciseSchema>({ schemaName: 'Exercise' });
-  const { data: categories, loading: categoriesLoading } =
-    useRealm<CategorySchema>({ schemaName: 'Category' });
+  const { data: exercises, loading: exercisesLoading } = useRealm<ExerciseSchema>({ schemaName: 'Exercise' });
+  const { data: categories, loading: categoriesLoading } = useRealm<CategorySchema>({ schemaName: 'Category' });
   const currentExercises = exercises.filter((e) => e.isValid());
 
   useLayoutEffect(() => {
@@ -68,9 +66,8 @@ export const Home = () => {
     }
   });
 
-  if (exercisesLoading || categoriesLoading || !focused)
-    return <LoadingIndicator />;
-    
+  if (exercisesLoading || categoriesLoading || !focused) return <LoadingIndicator />;
+
   return (
     <SafeAreaView style={{ height: '100%', width: '100%' }}>
       <ScrollView>
@@ -85,20 +82,13 @@ export const Home = () => {
         >
           Week {state.weekNumber}
         </Text>
-        <MaterialCommunityIcons
-          name={'weight-lifter'}
-          size={125}
-          style={{ textAlign: 'center', paddingTop: 5 }}
-        />
+        <MaterialCommunityIcons name={'weight-lifter'} size={125} style={{ textAlign: 'center', paddingTop: 5 }} />
 
         <View style={{ paddingVertical: 20 }}>
           <WeekPlan week={state.weekNumber} />
         </View>
         <View style={{ width: '100%', height: '100%' }}>
-          <Contingent
-            style={{ width: '100%', height: '100%' }}
-            shouldRender={state.maxExercises > 0}
-          >
+          <Contingent style={{ width: '100%', height: '100%' }} shouldRender={state.maxExercises > 0}>
             <View
               style={{
                 flexDirection: 'column',

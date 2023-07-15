@@ -28,19 +28,25 @@ export async function editExerciseType(exerciseTypeId: number, exerciseTypeName:
     throw new Error(`Exercise Type with ID ${exerciseTypeId} not found`);
   }
 
+  const newExerciseTypeName = realmObject.find(et => et.name === exerciseTypeName && et.id !== exerciseTypeId) ? exerciseTypeName + '(1)' : exerciseTypeName
+
+
   await rw.performWriteTransaction(() => {
-    exerciseTypeToEdit.name = exerciseTypeName;
+    exerciseTypeToEdit.name = newExerciseTypeName;
     exerciseTypeToEdit.category = category;
   });
 }
 
 export async function addExerciseType(exerciseType: string, category: CategorySchema) {
   if (!category) throw new Error(`Category not found`);
+  const newExerciseTypeName = realmObject.find(et => et.name === exerciseType) ? exerciseType + '(1)' : exerciseType
   await rw.performWriteTransaction(() => {
     realm.create("ExerciseType", {
       id: getMaxId(),
-      name: exerciseType,
+      name: newExerciseTypeName,
       category: category,
+      exerciseCount: 0,
+      averageMetric: 0
     });
   });
 }

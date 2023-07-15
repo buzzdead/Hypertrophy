@@ -1,4 +1,5 @@
 import {CategorySchema, ExerciseTypeSchema, ExerciseSchema, MonthSchema, PlanSchema} from "./config/realm";
+import { colors } from "./utils/color";
 
 export const initializeDB = (realm: Realm) => {
   const categories = realm.objects<CategorySchema>("Category");
@@ -6,6 +7,8 @@ export const initializeDB = (realm: Realm) => {
   const exercises = realm.objects<ExerciseSchema>("Exercise");
   const months = realm.objects<MonthSchema>("Month")
   const plans = realm.objects<PlanSchema>("Plan")
+
+  type catColors = keyof typeof colors.categories
 
   if (categories.length === 0 && exerciseTypes.length === 0 && exercises.length === 0) {
     realm.write(() => {
@@ -29,6 +32,7 @@ export const initializeDB = (realm: Realm) => {
         const createdCategory = realm.create<CategorySchema>("Category", {
           id: realm.objects<CategorySchema>("Category").length + 1,
           name: e.name,
+          color: colors.categories[e.name as catColors]
         });
         createdCategories.push(createdCategory); // Add the created object to the array
       });
@@ -76,7 +80,7 @@ export const initializeDB = (realm: Realm) => {
         {name: "Lunges", category: createdCategories[4]},
         {name: "Leg Extension", category: createdCategories[4]},
         {name: "Leg Curl", category: createdCategories[4]},
-        {name: "Calf Raise", category: createdCategories[7]},
+        {name: "Calf Raise", category: createdCategories[4]},
         {name: "Seated Leg Curl", category: createdCategories[4]},
 
         // Abs
@@ -99,6 +103,8 @@ export const initializeDB = (realm: Realm) => {
           id: realm.objects<ExerciseTypeSchema>("ExerciseType").length + 1,
           name: e.name,
           category: e.category,
+          exerciseCount: 0,
+          averageMetric: 0
         });
         createdExerciseTypes.push(createdExerciseType); // Add the created object to the array
       });

@@ -80,7 +80,8 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   };
 
   const updateFilteredExercises = (cPage: number, currentSelectedCategories?: CategorySchema[], groups?: IGroup[]) => {
-    const newCategories = currentSelectedCategories ? currentSelectedCategories : state.seleectedCategories;
+    const newCurrentSelectedCategories = currentSelectedCategories?.filter(c => c.isValid())
+    const newCategories = newCurrentSelectedCategories ? newCurrentSelectedCategories : state.seleectedCategories;
 
     const newGroups = groups ? groups : state.groupedExercises;
     const filtered =
