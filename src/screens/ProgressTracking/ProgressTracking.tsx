@@ -10,7 +10,7 @@ import { Chart } from './Chart';
 import { useRealm, useScreenOrientation } from '../../hooks/hooks';
 import { ChartData } from './ChartData';
 import Contingent from '../../components/Contingent';
-import { getAvailableMonths, Month } from '../../utils/util';
+import { colors, getAvailableMonths, Month } from '../../utils/util';
 import { useFocus } from '../../hooks/useFocus';
 import { useMount } from '../../hooks/useMount';
 import CustomButton from '../../components/CustomButton';
@@ -195,13 +195,13 @@ export const ProgressTracking = () => {
 
   return (
     <SafeAreaView style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', gap: 20 }}>
-       <Contingent shouldRender={state.pr} style={{position: 'absolute', top: 10, left: 15}}>
+       <Contingent shouldRender={state.pr} style={{position: 'absolute', top: 10, left: 15, width: '100%', alignItems: screenOrientation.isLandscape ? 'center' : 'flex-start'}}>
           <Text style={{fontFamily: 'Roboto-Black'}}>{`Exercise: ${state?.filteredExerciseTypes[0]?.name} - Averge Metric: ${Math.round(state?.filteredExerciseTypes[0]?.averageMetric)}`}</Text>
         </Contingent>
       <View style={{position: 'absolute', top: 25, flexDirection: 'column', gap: 20, marginTop: 25, width: '100%', alignItems: screenOrientation.isLandscape ? 'flex-start' : 'center'}}>
       <CustomButton size={"SM"} title={state.metric ? "Exercises" : "Metric"} onPress={() => setState({...state, metric: !state.metric})} />
       <View style={{flexDirection: 'row', marginRight: 15}}>
-        <Text style={{textAlignVertical: 'center', fontFamily: 'Roboto-Bold', fontSize: 20, marginHorizontal: 10, paddingLeft: 10}}>PR</Text>
+        <Text style={{textAlignVertical: 'center', fontFamily: 'Roboto-Bold', color: colors.summerDarkest, fontSize: 20, marginHorizontal: 10, paddingLeft: 10}}>Show PR</Text>
         <CheckBox disabled={state.filteredExerciseTypes.length !== 1} isSelected={state.pr} onSelection={onChangePR}/>
         </View>
       </View>
