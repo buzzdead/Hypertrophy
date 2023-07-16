@@ -15,8 +15,8 @@ interface SideBarProps {
   prevSelectedCat?: CategorySchema[];
   subCategories?: ExerciseTypeSchema[];
   isLandScape: boolean;
-  pr?: boolean
-  decativatePR?: () => void
+  pr?: boolean;
+  decativatePR?: () => void;
 }
 
 export const SideBar: React.FC<SideBarProps> = React.memo(
@@ -27,7 +27,7 @@ export const SideBar: React.FC<SideBarProps> = React.memo(
     const SidebarVisibleWidth = 50;
     const [sidebarVisible, setSidebarVisible] = useState(true);
     const [translateX] = useState(new Animated.Value(0));
-    const [selectedCategories, setSelectedCategories] = useState<CategorySchema[]>(prevSelectedCat?.filter(p => p.isValid()) || []);
+    const [selectedCategories, setSelectedCategories] = useState<CategorySchema[]>(prevSelectedCat?.filter((p) => p.isValid()) || []);
     const [selectedExerciseTypes, setSElectedExerciseTypes] = useState<ExerciseTypeSchema[]>(subCategories || []);
     const [currentExerciseTypes, setCurrentExerciseTypes] = useState<ExerciseTypeSchema[]>([]);
 
@@ -37,13 +37,19 @@ export const SideBar: React.FC<SideBarProps> = React.memo(
 
     const handleCategoryPress = (category: CategorySchema, index: number) => {
       if (!category) return;
-      if(selectedCategories.includes(category)) setCurrentExerciseTypes([])
-      if(selectedCategories.includes(category)) {const newET = selectedExerciseTypes.filter(e => e.category.id !== category.id); setSElectedExerciseTypes(newET);}
+      if (selectedCategories.includes(category)) setCurrentExerciseTypes([]);
+      if (selectedCategories.includes(category)) {
+        const newET = selectedExerciseTypes.filter((e) => e.category.id !== category.id);
+        setSElectedExerciseTypes(newET);
+      }
       const newSelectedCategories = selectedCategories.includes(category)
         ? selectedCategories.filter((c) => c !== category)
         : [...selectedCategories, category];
       setSelectedCategories(newSelectedCategories);
-      onCategoriesChange(newSelectedCategories, selectedCategories.includes(category) ? selectedExerciseTypes.filter(e => e.category.id !== category.id) : selectedExerciseTypes);
+      onCategoriesChange(
+        newSelectedCategories,
+        selectedCategories.includes(category) ? selectedExerciseTypes.filter((e) => e.category.id !== category.id) : selectedExerciseTypes
+      );
 
       Animated.timing(selectedCategoryAnimations[index], {
         toValue: newSelectedCategories.includes(category) ? 1 : 0,
@@ -55,12 +61,11 @@ export const SideBar: React.FC<SideBarProps> = React.memo(
     const handleExerciseTypePress = (exerciseType: ExerciseTypeSchema) => {
       const newSelectedExerciseTypes = selectedExerciseTypes.includes(exerciseType)
         ? selectedExerciseTypes.filter((e) => e !== exerciseType)
-        : 
-        pr ? [exerciseType] 
-        :
-        [...selectedExerciseTypes, exerciseType];
+        : pr
+        ? [exerciseType]
+        : [...selectedExerciseTypes, exerciseType];
       setSElectedExerciseTypes(newSelectedExerciseTypes);
-      onExerciseTypesChange && onExerciseTypesChange(newSelectedExerciseTypes)
+      onExerciseTypesChange && onExerciseTypesChange(newSelectedExerciseTypes);
     };
 
     const handleShowExerciseTypes = (id: number) => {
@@ -130,52 +135,65 @@ export const SideBar: React.FC<SideBarProps> = React.memo(
         </View>
         <Text style={styles.sidebarTitle}>Filter</Text>
         <View style={{ flexDirection: 'row' }}>
-          
           <View style={{ position: 'absolute', left: -125, width: 105 }}>
-          <Contingent shouldRender={!sidebarVisible}>
-            {currentExerciseTypes.map((e) => (
-              <TouchableOpacity key={`${e.name}-${e.id}`} style={{backgroundColor: selectedExerciseTypes.includes(e) ? 'grey' : colors.summerWhite}} onPress={() => handleExerciseTypePress(e)}>
-              <Text style={styles.sidebarItemText}>{e.name}</Text>
-              </TouchableOpacity>
-            ))}
-          </Contingent>
+            <Contingent shouldRender={!sidebarVisible}>
+              {currentExerciseTypes.map((e) => (
+                <TouchableOpacity
+                  key={`${e.name}-${e.id}`}
+                  style={{ backgroundColor: selectedExerciseTypes.includes(e) ? 'grey' : colors.summerWhite }}
+                  onPress={() => handleExerciseTypePress(e)}
+                  activeOpacity={1}
+                >
+                  <Text style={styles.sidebarItemText}>{e.name}</Text>
+                </TouchableOpacity>
+              ))}
+            </Contingent>
           </View>
-          
+
           <View style={isLandScape ? styles.sidebarItemsRow : styles.sidebarItemsColumn}>
-            {categories.filter(c => c.isValid()).map((category, index) => (
-              <View key={`${category.name}-${category.id}`} style={{ flexDirection: 'row' }}>
-                <Contingent
-                  shouldRender={
-                    selectedCategories.length > 0 &&
-                    subCategories !== undefined &&
-                    !sidebarVisible &&
-                    selectedCategories.some((e) => e.id === category.id)
-                  }
-                >
-                  <TouchableOpacity
-                    style={{position: 'absolute', left: -20, width: 20, height: 70, alignSelf: 'center', backgroundColor: colors.summerBlue }}
-                    onPress={() => handleShowExerciseTypes(category.id)}
-                  />
-                </Contingent>
-                <Animated.View
-                  key={category?.name}
-                  style={[
-                    styles.sidebarItem,
-                    {
-                      width: '100%',
-                      backgroundColor: selectedCategoryAnimations[index]?.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: ['transparent', 'grey'],
-                      }),
-                    },
-                  ]}
-                >
-                  <TouchableOpacity onPress={() => handleCategoryPress(category, index)}>
-                    <Text style={styles.sidebarItemText}>{category?.name}</Text>
-                  </TouchableOpacity>
-                </Animated.View>
-              </View>
-            ))}
+            {categories
+              .filter((c) => c.isValid())
+              .map((category, index) => (
+                <View key={`${category.name}-${category.id}`} style={{ flexDirection: 'row' }}>
+                  <Contingent
+                    shouldRender={
+                      selectedCategories.length > 0 &&
+                      subCategories !== undefined &&
+                      !sidebarVisible &&
+                      selectedCategories.some((e) => e.id === category.id)
+                    }
+                  >
+                    <TouchableOpacity
+                      style={{
+                        position: 'absolute',
+                        left: -20,
+                        width: 20,
+                        height: 70,
+                        alignSelf: 'center',
+                        backgroundColor: colors.summerBlue,
+                      }}
+                      onPress={() => handleShowExerciseTypes(category.id)}
+                    />
+                  </Contingent>
+                  <Animated.View
+                    key={category?.name}
+                    style={[
+                      styles.sidebarItem,
+                      {
+                        width: '100%',
+                        backgroundColor: selectedCategoryAnimations[index]?.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: ['transparent', 'grey'],
+                        }),
+                      },
+                    ]}
+                  >
+                    <TouchableOpacity onPress={() => handleCategoryPress(category, index)}>
+                      <Text style={styles.sidebarItemText}>{category?.name}</Text>
+                    </TouchableOpacity>
+                  </Animated.View>
+                </View>
+              ))}
           </View>
         </View>
       </Animated.View>

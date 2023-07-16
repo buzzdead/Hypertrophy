@@ -203,7 +203,7 @@ export const ProgressTracking = () => {
       <View style={{position: 'absolute', top: 25, flexDirection: 'column', gap: 20, marginTop: 25, width: '100%', alignItems: 'center'}}>
       <CustomButton size={"SM"} title={state.metric ? "Exercises" : "Metric"} onPress={() => setState({...state, metric: !state.metric})} />
       <View style={{flexDirection: 'row', marginRight: 15}}>
-        <Text style={{textAlignVertical: 'center', fontFamily: 'Roboto-Bold', fontSize: 20, marginHorizontal: 10, paddingLeft: 10}}>Show PR</Text>
+        <Text style={{textAlignVertical: 'center', fontFamily: 'Roboto-Bold', fontSize: 20, marginHorizontal: 10, paddingLeft: 10}}>PR</Text>
         <CheckBox disabled={state.filteredExerciseTypes.length !== 1} isSelected={state.pr} onSelection={onChangePR}/>
         </View>
       </View>

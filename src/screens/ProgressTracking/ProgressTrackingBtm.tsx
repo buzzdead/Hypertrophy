@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
       flexDirection: "column",
     },
     buttonsNormal: {
-      bottom: 5,
+      bottom: 10,
       alignSelf: "center",
       flexDirection: "row",
     },

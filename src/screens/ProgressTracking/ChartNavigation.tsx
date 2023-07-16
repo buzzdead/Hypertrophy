@@ -21,7 +21,8 @@ export const ChartNavigation: React.FC<Props> = ({isLandScape, firstPage, lastPa
         flexDirection: "row",
         justifyContent: "center",
         gap: 10,
-        position: isLandScape ? "absolute" : "relative",
+        position: isLandScape ? "absolute" : "absolute",
+        alignSelf: 'center'
       }}>
       <View style={isLandScape && styles.contingentButtonLeft}>
         <CustomButton

@@ -29,7 +29,7 @@ export const Chart: React.FC<Props> = ({ chartData, days, maxExercises, mode, is
   return (
     <>
     <Contingent style={{width: '100%', zIndex: 18723812738127381723}} shouldRender={toggle}>
-      <View style={{alignSelf: 'flex-start', top: 0, position: 'absolute'}}>
+      <View style={{alignSelf: 'flex-start', top: -25, position: 'absolute'}}>
       <CustomButton
         backgroundColor={colors.summerWhite}
         titleColor={colors.summerBlue}
