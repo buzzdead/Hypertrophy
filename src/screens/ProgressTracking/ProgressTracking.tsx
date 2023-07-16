@@ -157,13 +157,11 @@ export const ProgressTracking = () => {
 
   useEffect(() => {
     if (!mounted) return;
-    console.log("rendering timeout shit")
     setTimeout(() => setState({ ...state, loading: false }), 50);
   }, [state.lastHalf, state.currentMonth, state.maxExercises, state.filteredCategories, state.chartData]);
 
   useLayoutEffect(() => {
     if (categoriesLoading || exerciseTypesLoading || exercisesLoading || monthsLoading) return;
-    console.log("rendering standard get chart")
     getChartData();
   }, [monthsLoading, state.mode, state.metric, exercises]);
 
@@ -200,7 +198,7 @@ export const ProgressTracking = () => {
        <Contingent shouldRender={state.pr} style={{position: 'absolute', top: 10, left: 15}}>
           <Text style={{fontFamily: 'Roboto-Black'}}>{`Exercise: ${state?.filteredExerciseTypes[0]?.name} - Averge Metric: ${Math.round(state?.filteredExerciseTypes[0]?.averageMetric)}`}</Text>
         </Contingent>
-      <View style={{position: 'absolute', top: 25, flexDirection: 'column', gap: 20, marginTop: 25, width: '100%', alignItems: 'center'}}>
+      <View style={{position: 'absolute', top: 25, flexDirection: 'column', gap: 20, marginTop: 25, width: '100%', alignItems: screenOrientation.isLandscape ? 'flex-start' : 'center'}}>
       <CustomButton size={"SM"} title={state.metric ? "Exercises" : "Metric"} onPress={() => setState({...state, metric: !state.metric})} />
       <View style={{flexDirection: 'row', marginRight: 15}}>
         <Text style={{textAlignVertical: 'center', fontFamily: 'Roboto-Bold', fontSize: 20, marginHorizontal: 10, paddingLeft: 10}}>PR</Text>

@@ -201,7 +201,6 @@ function migration(oldRealm: Realm, newRealm: Realm) {
       // Calculate the average by dividing the sum by the number of exercises
       const averageMetric = sumOfMetrics / theseExercises.length;
       et.averageMetric = averageMetric
-      console.log(et.name, averageMetric)
       et.exerciseCount = theseExercises.length
     })
   }

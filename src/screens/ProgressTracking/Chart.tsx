@@ -38,7 +38,7 @@ export const Chart: React.FC<Props> = ({ chartData, days, maxExercises, mode, is
       />
       </View>
       </Contingent>
-      <VictoryChart height={isLandScape ? 300 : 375} width={isLandScape ? 500 : 400} theme={VictoryTheme.material}>
+      <VictoryChart height={isLandScape ? 275 : 375} width={isLandScape ? 500 : 400} theme={VictoryTheme.material}>
         <VictoryAxis
           style={{ axisLabel: { padding: 30, fontSize: 16 } }}
           tickCount={isLoading ? 8 : data.length || 1}

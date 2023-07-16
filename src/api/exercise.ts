@@ -29,7 +29,6 @@ export async function findAllDuplicateExercises(exercise: Exercise) {
 }
 
 const addMetric = (exercise: ExerciseSchema, metric: number) => {
-  console.log(exercise, metric)
   const exerciseType = exercise.type
   exerciseType.exerciseCount += 1
   if(exerciseType.exerciseCount === 1) exercise.type.averageMetric = metric
@@ -59,18 +58,14 @@ export async function addExercise(exercise: Exercise) {
   const eYear = exercise.date.getFullYear().toString();
   const month = months.find(m => m.year === eYear && m.month === eMonth);
   const exerciseToAdd: ExerciseSchema = exercise as ExerciseSchema
-  console.log(exercise.weight)
-
   let metric = (exercise.weight as number) * exercise.reps * exercise.sets;
-  console.log(metric)
         let stdMetric = (exercise.weight as number) * 10 * 3
         if (exercise.sets > 3) { stdMetric *= (0.1 * (exercise.sets - 3)) }
         if(exercise.type && exercise.type.exerciseCount > 0){
         const howMuchBigger = stdMetric / exercise.type.averageMetric
         if (howMuchBigger > 1.4) {
-          metric *= (stdMetric / exercise.type.averageMetric)
+          metric *= Math.min((stdMetric / exercise.type.averageMetric), 1.6)
         }}
-  console.log(metric)
   exerciseToAdd.metric = metric
   await rw.performWriteTransaction(() => {
     if (month !== undefined) month.exerciseCount += 1;
