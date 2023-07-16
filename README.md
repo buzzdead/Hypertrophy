@@ -25,7 +25,7 @@ Adding an exercise for which there is a plan with the same exercise type will ei
    <img src="images/ProgressFilter.png" alt="ProgressFilter" width="250"/>
    <img src="images/ProgressWeekly.png" alt="ProgressWeekly" width="250"/>
 
-4. Settings - The Settings screen, here you can edit / delete your categories / exercise types
+4. Settings - The Settings screen, here you can edit or delete your categories / exercise types, change colors, read more about the app etc. 
 
    <img src="images/Settings.png" alt="Settings" width="250"/>
    <img src="images/Categories.png" alt="Categories" width="250"/>
