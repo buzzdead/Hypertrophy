@@ -216,7 +216,7 @@ function migration(oldRealm: Realm, newRealm: Realm) {
         if (exercise.sets > 3) { metric *= (1 - (0.1 * (exercise.sets - 3))) }
         const howMuchBigger = stdMetric / exercise.type.averageMetric
         if (howMuchBigger > 1.4) {
-          metric *= (stdMetric / exercise.type.averageMetric)
+          metric *= Math.min((stdMetric / exercise.type.averageMetric), 1.8)
         }
         exercise.metric = metric
         return sum + metric

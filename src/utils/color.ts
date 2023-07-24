@@ -35,6 +35,6 @@ const MyTheme = {
     },
   },
 };
-export type CatColors = typeof MyTheme.colors.categories;
+export type CatColors = keyof typeof MyTheme.colors.categories;
 
 export const colors = MyTheme.colors;

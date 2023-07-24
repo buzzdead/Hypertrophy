@@ -53,24 +53,20 @@ export const WeekPlan: React.FC<Props> = ({week}) => {
           <PlanItem
             categories={categories}
             exerciseTypes={exerciseTypes}
-            reps={item.reps}
-            sets={item.sets}
-            weight={item.weight}
-            type={item.type}
             week={week}
             completed={item.completed}
-            id={item.id}
             mutatePlan={mutatePlan}
+            plan={item}
           />
         )}
         ListFooterComponent={
           <View style={{paddingLeft: 10}}>
             <PlanItem
               categories={categories}
+              completed={false}
               exerciseTypes={exerciseTypes}
               newPlan
               week={week}
-              completed={false}
               mutatePlan={mutatePlan}
             />
           </View>

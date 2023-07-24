@@ -48,6 +48,7 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   const categoriesRef = useRef(state.seleectedCategories);
 
   const handleNextPage = (currentPage?: number, selectedCat?: CategorySchema[]) => {
+    if(loading) return
     const newCurrent = typeof currentPage === "number" ? currentPage : state.currentPage;
     if (newCurrent < state.groupedExercises.length - 1) {
       setLoading(true);
@@ -57,6 +58,7 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   };
 
   const handlePrevPage = (currentPage?: number, selectedCat?: CategorySchema[]) => {
+    if(loading) return
     const newCurrent = typeof currentPage === "number" ? currentPage : state.currentPage;
     if (newCurrent > 0) {
       setLoading(true);

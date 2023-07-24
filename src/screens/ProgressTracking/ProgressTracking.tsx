@@ -62,6 +62,7 @@ export const ProgressTracking = () => {
   };
 
   const handleNext = () => {
+    if(state.loading) return
     if (state.lastHalf && !containsMonth(state.currentMonth + 1)) {
       return;
     }
@@ -73,6 +74,7 @@ export const ProgressTracking = () => {
   };
 
   const handlePrev = async () => {
+    if(state.loading) return
     if (!state.lastHalf && !containsMonth(state.currentMonth - 1)) {
       return;
     }

@@ -19,14 +19,8 @@ interface PlanModalProps {
   categories: CategorySchema[];
 }
 
-export const PlanModal: React.FC<PlanModalProps> = ({
-  visible,
-  onRequestClose,
-  onSave,
-  data,
-  exerciseTypes,
-  categories,
-}) => {
+export const PlanModal: React.FC<PlanModalProps> = ({ visible, onRequestClose, onSave, data, exerciseTypes, categories }) => {
+  //samme her, fixe properties.
   const [state, setState] = useState({
     reps: data.reps,
     sets: data.sets,
@@ -65,12 +59,7 @@ export const PlanModal: React.FC<PlanModalProps> = ({
   };
 
   return (
-    <Modal
-      visible={visible}
-      onRequestClose={onRequestClose}
-      animationType='slide'
-      transparent
-    >
+    <Modal visible={visible} onRequestClose={onRequestClose} animationType='slide' transparent>
       <View style={styles.container}>
         <View style={styles.content}>
           <PickerField
@@ -86,28 +75,14 @@ export const PlanModal: React.FC<PlanModalProps> = ({
             picker={220}
             left={25}
             item={state.exerciseType}
-            items={state.exerciseTypes.filter(
-              (e) => e.category?.id === state.category?.id
-            )}
+            items={state.exerciseTypes.filter((e) => e.category?.id === state.category?.id)}
             onChange={(value) => setState({ ...state, exerciseType: value })}
           />
           <View style={{ paddingTop: 100 }}>
-            <Weight
-              title={'Add weight'}
-              value={state.weight}
-              onChange={(value: any) => setState({ ...state, weight: value })}
-            />
+            <Weight title={'Add weight'} value={state.weight} onChange={(value: any) => setState({ ...state, weight: value })} />
             <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-              <NumberInput
-                title={'Sets'}
-                value={data.sets}
-                onChange={(value: any) => setState({ ...state, sets: value })}
-              />
-              <NumberInput
-                title={'Reps'}
-                value={data.reps}
-                onChange={(value: any) => setState({ ...state, reps: value })}
-              />
+              <NumberInput title={'Sets'} value={data.sets} onChange={(value: any) => setState({ ...state, sets: value })} />
+              <NumberInput title={'Reps'} value={data.reps} onChange={(value: any) => setState({ ...state, reps: value })} />
             </View>
             <View
               style={{
@@ -131,9 +106,7 @@ export const PlanModal: React.FC<PlanModalProps> = ({
                 isSelected={false}
                 size='S'
                 color={colors.summerDark}
-                onSelection={(b: boolean) =>
-                  setState({ ...state, exceptional: b })
-                }
+                onSelection={(b: boolean) => setState({ ...state, exceptional: b })}
               />
             </View>
             <View style={styles.buttons}>
@@ -147,13 +120,7 @@ export const PlanModal: React.FC<PlanModalProps> = ({
                 />
               </View>
               <View style={{ width: 180 }}>
-                <CustomButton
-                  titleColor={colors.accent}
-                  size='M'
-                  backgroundColor={colors.summerDark}
-                  title='Save'
-                  onPress={handleSave}
-                />
+                <CustomButton titleColor={colors.accent} size='M' backgroundColor={colors.summerDark} title='Save' onPress={handleSave} />
               </View>
             </View>
           </View>

@@ -9,13 +9,16 @@ import LoadingIndicator from '../../components/LoadingIndicator';
 import { CategorySchema, ExerciseSchema, ExerciseTypeSchema, PlanSchema } from '../../config/realm';
 import { useFocus, useMutations } from '../../hooks/hooks';
 import { Mutations } from '../../hooks/useRealm';
-import { colors } from '../../utils/color';
+import { CatColors, colors } from '../../utils/color';
 import PlanModal from './PlanModal';
+import { PlanToExercise, withLoading } from '../../utils/util';
 
-interface Props extends Partial<Plan> {
+interface Props {
+  plan?: Plan;
   id?: number;
   newPlan?: boolean;
   week: number;
+  completed: boolean;
   exerciseTypes: ExerciseTypeSchema[];
   categories: CategorySchema[];
   mutatePlan: UseMutationResult<
@@ -30,74 +33,59 @@ interface Props extends Partial<Plan> {
 }
 
 export const PlanItem: React.FC<Props> = ({
-  reps = 1,
-  sets = 1,
-  weight = 0,
-  type = null,
+  plan = {
+    reps: 1,
+    sets: 1,
+    weight: 0,
+    type: null,
+    exceptional: false,
+    id: undefined,
+  },
   newPlan = false,
-  completed,
   week,
   categories,
   exerciseTypes,
   mutatePlan,
-  exceptional = false,
-  id,
+  completed,
 }) => {
   const [showModal, setShowModal] = useState(false);
   const isFocused = useFocus();
   const { mutateItem: completePlan } = useMutations('Plan', (plan: PlanSchema) => setPlanCompleted(plan));
-  const { mutateItem: completeExercise } = useMutations('Exercise', (exercise: ExerciseSchema) => addExercise(exercise));
+  const { mutateItem: exercises } = useMutations('Exercise', (exercise: ExerciseSchema) => addExercise(exercise));
   const [loading, setLoading] = useState(false);
 
   const handleSave = (data: Omit<Plan, 'week' | 'completed'>) => {
-    setLoading(true);
     const plan = { ...data, week: week, completed: false } as PlanSchema;
-    setTimeout(() => mutatePlan.mutateAsync({ item: plan, action: newPlan ? 'ADD' : 'SAVE' }).then(() => setLoading(false)), 50);
+    withLoading(() => mutatePlan.mutateAsync({ item: plan, action: newPlan ? 'ADD' : 'SAVE' }), setLoading);
   };
 
-  const handleDelete = async () => {
-    setLoading(true);
-    const data = { id: id, week: week, type: type, sets: sets, reps: reps, weight: weight, exceptional: exceptional };
-    setTimeout(async () => {
-      if (id !== undefined) await mutatePlan.mutateAsync({ item: { ...data } as PlanSchema, action: 'DEL' }).then(() => setLoading(false));
-    });
+  const handleDelete = () => {
+    if (plan.id) {
+      withLoading(() => mutatePlan.mutateAsync({ item: { id: plan.id } as PlanSchema, action: 'DEL' }), setLoading);
+    }
   };
 
   const handleComplete = async () => {
-    if (!id) return;
-    setLoading(true);
-    setTimeout(async () => {
-      const plan = await fetchPlanById(id);
+    if (!plan.id) return;
 
-      const currentDate = new Date();
+    const currentPlan = await fetchPlanById(plan.id);
+    const currentDate = new Date();
+    const month = currentDate.getMonth();
 
-      const month = currentDate.getMonth();
+    const newExercise = PlanToExercise(currentPlan, currentDate, month, 0);
 
-      const newExercise = {
-        date: currentDate,
-        month: month,
-        id: 0,
-        week: plan.week,
-        sets: plan.sets,
-        reps: plan.reps,
-        weight: plan.weight,
-        type: plan.type,
-        exceptional: plan.exceptional,
-      } as ExerciseSchema;
-
-      await completePlan.mutateAsync({ item: plan, action: 'SAVE' });
-      await completeExercise.mutateAsync({ item: newExercise, action: 'ADD' }).then(() => setLoading(false));
-    }, 50);
+    withLoading(() => [
+      completePlan.mutateAsync({ item: currentPlan, action: 'SAVE' }),
+      exercises.mutateAsync({ item: newExercise, action: 'ADD' }),
+    ], setLoading);
   };
-
-  type CategoryColors = keyof typeof colors.categories;
 
   if (!isFocused) return <LoadingIndicator />;
 
   return (
     <Contingent style={{ width: showModal ? 300 : 150, height: showModal ? 200 : 100 }} shouldRender={showModal}>
       <PlanModal
-        data={{ reps, sets, weight, type, id, exceptional }}
+        data={plan}
         onSave={(data) => handleSave(data)}
         onRequestClose={() => setShowModal(false)}
         visible={showModal}
@@ -109,8 +97,8 @@ export const PlanItem: React.FC<Props> = ({
           style={{
             ...styles.container,
             backgroundColor: completed
-              ? `${colors.categories[type?.category?.name as CategoryColors] + `66`}` || colors.categories.Default
-              : `${colors.categories[type?.category?.name as CategoryColors] + `25`}` || colors.categories.Default,
+              ? `${colors.categories[plan.type?.category?.name as CatColors] + `66`}` || colors.categories.Default
+              : `${colors.categories[plan.type?.category?.name as CatColors] + `25`}` || colors.categories.Default,
           }}
           onPress={() => setShowModal(true)}
         >
@@ -141,13 +129,13 @@ export const PlanItem: React.FC<Props> = ({
                 color: colors.summerDark,
               }}
             >
-              {newPlan ? '+' : type?.name}
+              {newPlan ? '+' : plan.type?.name}
             </Text>
             <Contingent shouldRender={!newPlan}>
               <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'center' }}>
-                <Text style={{ fontFamily: 'Roboto-Bold', color: colors.summerDark, fontSize: 16 }}>{sets + ' x '}</Text>
-                <Text style={{ fontFamily: 'Roboto-Bold', color: colors.summerDark, fontSize: 16 }}>{reps + ' x '}</Text>
-                <Text style={{ fontFamily: 'Roboto-Bold', color: colors.summerDark, fontSize: 16 }}>{weight + 'kg'}</Text>
+                <Text style={styles.newPlan}>{plan.sets + ' x '}</Text>
+                <Text style={styles.newPlan}>{plan.reps + ' x '}</Text>
+                <Text style={styles.newPlan}>{plan.weight + 'kg'}</Text>
               </View>
             </Contingent>
           </View>
@@ -169,6 +157,11 @@ const styles = StyleSheet.create({
     borderColor: colors.summerDark,
     width: 150,
     height: 100,
+  },
+  newPlan: {
+    fontFamily: 'Roboto-Bold',
+    color: colors.summerDark,
+    fontSize: 16,
   },
 });
 
