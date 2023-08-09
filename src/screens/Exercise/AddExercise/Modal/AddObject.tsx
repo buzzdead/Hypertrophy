@@ -9,9 +9,10 @@ import NewObjectModal from "./NewObjectModal";
 type Props = {
   isCategory: boolean;
   s: () => void
+  isLandscape?: boolean
 };
 
-const AddObject = ({isCategory, s}: Props) => {
+const AddObject = ({isCategory, s, isLandscape=false}: Props) => {
   const [modalVisible, setModalVisible] = useState(false);
   const name = isCategory ? "Exercise Type" : "Category"
 
@@ -44,6 +45,7 @@ const AddObject = ({isCategory, s}: Props) => {
       <NewObjectModal
       name={name === 'Category' ? 'Exercise Type' : 'Category'}
         visible={modalVisible}
+        isLandscape={isLandscape}
         onClose={closeModal}
         onAdd={handleAdd}
         objectType={isCategory ? "Category" : "Exercise Type"}

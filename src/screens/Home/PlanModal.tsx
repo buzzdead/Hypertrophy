@@ -9,6 +9,8 @@ import { colors } from '../../utils/color';
 import PickerField from '../Exercise/AddExercise/Picker/PickerField';
 import Weight from '../Exercise/AddExercise/Weight';
 import Toast from 'react-native-toast-message';
+import { showToast } from '../../utils/util';
+import { ScrollView } from 'react-native-gesture-handler';
 
 interface PlanModalProps {
   visible: boolean;
@@ -17,9 +19,10 @@ interface PlanModalProps {
   data: Omit<Plan, 'week' | 'completed'>;
   exerciseTypes: ExerciseTypeSchema[];
   categories: CategorySchema[];
+  isLandscape?: boolean
 }
 
-export const PlanModal: React.FC<PlanModalProps> = ({ visible, onRequestClose, onSave, data, exerciseTypes, categories }) => {
+export const PlanModal: React.FC<PlanModalProps> = ({ visible, onRequestClose, onSave, data, exerciseTypes, categories, isLandscape=false }) => {
   //samme her, fixe properties.
   const [state, setState] = useState({
     reps: data.reps,
@@ -35,15 +38,7 @@ export const PlanModal: React.FC<PlanModalProps> = ({ visible, onRequestClose, o
 
   const handleSave = () => {
     if (state.exerciseType?.id === undefined) {
-      Toast.show({
-        type: 'error',
-        position: 'top',
-        text1: 'Error',
-        text2: 'Not a valid Exercise Type, check category  exercise type.',
-        visibilityTime: 4000,
-        autoHide: true,
-        topOffset: 0,
-      });
+      showToast('Error', 'Not a valid Exercise Type, check category  exercise type.')
       return;
     }
     const d = {
@@ -60,21 +55,23 @@ export const PlanModal: React.FC<PlanModalProps> = ({ visible, onRequestClose, o
 
   return (
     <Modal visible={visible} onRequestClose={onRequestClose} animationType='slide' transparent>
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
         <View style={styles.content}>
           <PickerField
             item={state.category || state.categories[0]}
             name={'Category'}
             left={25}
-            picker={220}
+            maxWidth={isLandscape ? 800 : 400}
+            picker={100}
             items={state.categories}
             onChange={(value) => setState({ ...state, category: value })}
           />
           <PickerField
             name={'Exercise Type'}
-            picker={220}
+            picker={isLandscape ? 150 : 200}
+            maxWidth={isLandscape ? 800 : 400}
             left={25}
-            item={state.exerciseType}
+            item={state.exerciseType || state.category ? state.exerciseTypes.find(e => e.category.id === state.category.id) : state.exerciseTypes.find(e => e.category.id === state.categories[0].id)}
             items={state.exerciseTypes.filter((e) => e.category?.id === state.category?.id)}
             onChange={(value) => setState({ ...state, exerciseType: value })}
           />
@@ -124,10 +121,9 @@ export const PlanModal: React.FC<PlanModalProps> = ({ visible, onRequestClose, o
               </View>
             </View>
           </View>
+          <Toast />
         </View>
-
-        <Toast />
-      </View>
+      </ScrollView>
     </Modal>
   );
 };

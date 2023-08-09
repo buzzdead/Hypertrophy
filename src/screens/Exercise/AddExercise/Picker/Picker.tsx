@@ -21,7 +21,7 @@ const Picker: React.FC<PickerProps> = ({ visible, items, onSelect, onClose, top,
       <TouchableWithoutFeedback onPress={onClose} accessibilityLabel='close'>
         <View style={styles.modalOverlay} />
       </TouchableWithoutFeedback>
-      <View style={{...styles.pickerContainer, top: top, maxWidth: maxWidth || 265, left: left}}>
+      <View style={{...styles.pickerContainer, top: top, maxWidth: maxWidth || 265, left: left, maxHeight: 275}}>
         <FlatList
         accessibilityLabel="menu"
         scrollEnabled

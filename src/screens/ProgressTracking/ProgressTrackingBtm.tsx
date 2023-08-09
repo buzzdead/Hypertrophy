@@ -14,7 +14,7 @@ export const ProgressTrackingBtm: React.FC<Props> = ({mode, landScapeOrientation
     return (
         <View style={[styles.buttons, landScapeOrientation ? styles.buttonsLandScape : styles.buttonsNormal]}>
         <CustomButton
-          size={landScapeOrientation ? "S" : "M"}
+          size={landScapeOrientation ? "S" : "SM"}
           title={landScapeOrientation ? "W" : "Weekly"}
           backgroundColor={colors.summerDark}
           titleColor={mode === "Weekly" ? colors.summerBlue : colors.summerWhite}
@@ -22,7 +22,7 @@ export const ProgressTrackingBtm: React.FC<Props> = ({mode, landScapeOrientation
           disabled={mode === "Weekly"}
         />
         <CustomButton
-          size={landScapeOrientation ? "S" : "M"}
+          size={landScapeOrientation ? "S" : "SM"}
           title={landScapeOrientation ? "D" : "Daily"}
           backgroundColor={colors.summerDark}
           titleColor={mode === "Daily" ? colors.summerBlue : colors.summerWhite}
@@ -44,9 +44,9 @@ const styles = StyleSheet.create({
       gap: 10,
     },
     buttonsLandScape: {
-      right: 5,
-      bottom: 5,
-      flexDirection: "column",
+      right: 67.5,
+      bottom: -72.5,
+      flexDirection: "row",
     },
     buttonsNormal: {
       bottom: 10,

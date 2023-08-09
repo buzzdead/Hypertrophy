@@ -58,9 +58,11 @@ export async function addExercise(exercise: Exercise) {
   const eYear = exercise.date.getFullYear().toString();
   const month = months.find(m => m.year === eYear && m.month === eMonth);
   const exerciseToAdd: ExerciseSchema = exercise as ExerciseSchema
+  const stdReps = exercise.type?.stdMetricReps || 10
+  const stdSets = exercise.type?.stdMetricSets || 3
   let metric = (exercise.weight as number) * exercise.reps * exercise.sets;
-        let stdMetric = (exercise.weight as number) * 10 * 3
-        if (exercise.sets > 3) { stdMetric *= (0.1 * (exercise.sets - 3)) }
+        let stdMetric = (exercise.weight as number) * stdSets * stdReps
+        if (exercise.sets > stdSets) { stdMetric *= (0.1 * (exercise.sets - stdSets)) }
         if(exercise.type && exercise.type.exerciseCount > 0){
         const howMuchBigger = stdMetric / exercise.type.averageMetric
         if (howMuchBigger > 1.4) {

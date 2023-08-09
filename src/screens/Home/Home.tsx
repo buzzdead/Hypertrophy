@@ -7,7 +7,7 @@ import { colors, getWeekNumber } from '../../utils/util';
 import { HomeChartData } from './HomeChartData';
 import { Chart } from '../ProgressTracking/Chart';
 import { WeekPlan } from './WeekPlan';
-import { useFocus, useRealm } from '../../hooks/hooks';
+import { useFocus, useRealm, useScreenOrientation } from '../../hooks/hooks';
 import { CategorySchema, ExerciseSchema } from '../../config/realm';
 import { useMount } from '../../hooks/useMount';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -42,6 +42,7 @@ export const Home = () => {
   const weekNumber = getWeekNumber(currentUTCDate);
   const mounted = useMount();
   const focused = useFocus();
+  const screenOrientation = useScreenOrientation()
 
   const { data: exercises, loading: exercisesLoading } = useRealm<ExerciseSchema>({ schemaName: 'Exercise' });
   const { data: categories, loading: categoriesLoading } = useRealm<CategorySchema>({ schemaName: 'Category' });
@@ -70,7 +71,7 @@ export const Home = () => {
 
   return (
     <SafeAreaView style={{ height: '100%', width: '100%' }}>
-      <ScrollView>
+      <ScrollView >
         <Text
           style={{
             paddingTop: 5,
@@ -101,11 +102,11 @@ export const Home = () => {
             >
               <Chart
                 isLoading={!mounted}
-                maxExercises={state.maxExercises}
+                maxExercises={state.maxExercises} 
                 chartData={state.chartData}
                 days={state.days}
                 mode='Categories'
-                isLandScape={false}
+                isLandScape={screenOrientation.isLandscape}
               />
             </View>
             <View style={{ width: '100%', height: '100%', paddingTop: 150 }}>

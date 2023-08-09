@@ -1,5 +1,6 @@
 import { Schema } from "../../typings/types";
 import { ExerciseSchema, PlanSchema } from "../config/realm";
+import Toast from 'react-native-toast-message';
 
 export * from "./date";
 export * from "./color";
@@ -38,4 +39,16 @@ export const withLoading = async (
         setLoading(false);
       });
   }, delay);
+};
+
+export const showToast = (text1: string, text2: string) => {
+  Toast.show({
+    type: 'error',
+    position: 'top',
+    text1: text1,
+    text2: text2,
+    visibilityTime: 4000,
+    autoHide: true,
+    topOffset: 0,
+  });
 };

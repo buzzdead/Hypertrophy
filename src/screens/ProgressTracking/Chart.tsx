@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { VictoryChart, VictoryAxis, VictoryGroup, VictoryBar, VictoryTheme, VictoryLine } from 'victory-native';
 import { colors } from '../../utils/util';
 import Contingent from '../../components/Contingent';
-import CustomButton from '../../components/CustomButton';
 import { View } from 'react-native';
 
 interface Props {
@@ -12,33 +11,32 @@ interface Props {
   mode: 'Daily' | 'Weekly' | 'Categories';
   isLandScape: boolean;
   isLoading?: boolean;
-  toggle?: boolean
+  toggle?: boolean;
+  chartType?: 'Line' | 'Bar';
+  isMetric?: boolean
 }
 
-export const Chart: React.FC<Props> = ({ chartData, days, maxExercises, mode, isLandScape, isLoading = false, toggle = false }) => {
+export const Chart: React.FC<Props> = ({
+  chartData,
+  days,
+  maxExercises,
+  mode,
+  isLandScape,
+  isLoading = false,
+  toggle = false,
+  isMetric = false,
+  chartType = 'Bar',
+}) => {
   // Dummy data for the skeleton
-  const skeletonData = [0, 0, 2, 4, 6, 7, 6, 5, 0, 0];
-  const [chartType, setChartType] = useState<'Bar' | 'Line'>('Bar');
+  const randomNum = () => Math.floor(Math.random() * 8);
+  const skeletonData = Array.from({ length: 10 }, (_, i) => (i === 0 ? 0 : randomNum()));
 
   // If chartData is null, we're loading, so use the skeleton data
   const data = isLoading ? skeletonData : chartData || skeletonData;
-  
-  const toggleChartType = () => {
-    setChartType((prevChartType) => (prevChartType === 'Bar' ? 'Line' : 'Bar'));
-  };
+
   return (
     <>
-    <Contingent style={{width: '100%', zIndex: 18723812738127381723}} shouldRender={toggle}>
-      <View style={{alignSelf: 'flex-start', top: -25, position: 'absolute'}}>
-      <CustomButton
-        backgroundColor={colors.summerWhite}
-        titleColor={colors.summerBlue}
-        title={`${chartType === 'Bar' ? 'Line' : 'Bar'}`}
-        onPress={toggleChartType}
-      />
-      </View>
-      </Contingent>
-      <VictoryChart height={isLandScape ? 275 : 375} width={isLandScape ? 500 : 400} theme={VictoryTheme.material}>
+      <VictoryChart height={isLandScape ? 225 : 375} width={isLandScape ? 500 : 400} theme={VictoryTheme.material}>
         <VictoryAxis
           style={{ axisLabel: { padding: 30, fontSize: 16 } }}
           tickCount={isLoading ? 8 : data.length || 1}
@@ -48,8 +46,8 @@ export const Chart: React.FC<Props> = ({ chartData, days, maxExercises, mode, is
         <VictoryAxis
           style={{ axisLabel: { padding: 30, fontSize: 16 } }}
           dependentAxis
-          label={'Exercises'}
-          tickCount={isLoading ? 7 : maxExercises > 14 ? Math.ceil(maxExercises / 2) : maxExercises || 1}
+          label={isMetric ? '' : 'Exercises'}
+          tickCount={isLoading ? 7 : maxExercises > 14 ? Math.ceil(maxExercises / (isLandScape ? 4 : 2)) : isLandScape ? Math.ceil(maxExercises / 2) : maxExercises || 1}
           tickFormat={(i) => (isLoading ? '' : Math.round(i))}
         />
         <VictoryGroup offset={20}>
@@ -72,6 +70,7 @@ export const Chart: React.FC<Props> = ({ chartData, days, maxExercises, mode, is
                 data: {
                   fill: isLoading ? 'grey' : colors.graphColor,
                   stroke: 'none', // add this line
+                  
                 },
               }}
             />

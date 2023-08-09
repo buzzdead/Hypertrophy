@@ -28,7 +28,9 @@ export class ExerciseTypeSchema extends Realm.Object {
       name: "string",
       category: "Category",
       exerciseCount: "int",
-      averageMetric: "float"
+      averageMetric: "float",
+      stdMetricReps: "int",
+      stdMetricSets: "int"
     },
   };
 
@@ -36,6 +38,8 @@ export class ExerciseTypeSchema extends Realm.Object {
   name!: string;
   exerciseCount!: number;
   averageMetric!: number;
+  stdMetricReps!: number;
+  stdMetricSets!: number;
   category!: CategorySchema;
 }
 
@@ -114,7 +118,7 @@ export class PlanSchema extends Realm.Object {
 
 const realmConfig: Realm.Configuration = {
   schema: [ExerciseSchema, ExerciseTypeSchema, CategorySchema, MonthSchema, PlanSchema],
-  schemaVersion: 21,
+  schemaVersion: 22,
   onMigration: migration,
 };
 
@@ -222,6 +226,13 @@ function migration(oldRealm: Realm, newRealm: Realm) {
         return sum + metric
       }, 0)
       et.averageMetric = newETMetric / filteredExercises.length
+    })
+  }
+  if (oldRealm.schemaVersion < 22) {
+    const exerciseTypes = newRealm.objects<ExerciseTypeSchema>("ExerciseType")
+    exerciseTypes.forEach(ex => {
+      ex.stdMetricReps = 10
+      ex.stdMetricSets = 3
     })
   }
 }

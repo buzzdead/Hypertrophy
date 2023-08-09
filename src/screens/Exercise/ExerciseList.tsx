@@ -8,7 +8,7 @@ import LoadingIndicator from "../../components/LoadingIndicator";
 import {useFocus, usePanHandler, useRealm} from "../../hooks/hooks";
 import {SideBar} from "../../components/SideBar";
 import {CategorySchema, ExerciseSchema} from "../../config/realm";
-import {ExerciseListBtm} from "./ExerciseListBtm";
+import {Navigation} from "../../components/Navigation";
 import {useScreenOrientation} from "../../hooks/useScreenOrientation";
 import {useMount} from "../../hooks/useMount";
 
@@ -48,7 +48,6 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   const categoriesRef = useRef(state.seleectedCategories);
 
   const handleNextPage = (currentPage?: number, selectedCat?: CategorySchema[]) => {
-    if(loading) return
     const newCurrent = typeof currentPage === "number" ? currentPage : state.currentPage;
     if (newCurrent < state.groupedExercises.length - 1) {
       setLoading(true);
@@ -58,7 +57,6 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   };
 
   const handlePrevPage = (currentPage?: number, selectedCat?: CategorySchema[]) => {
-    if(loading) return
     const newCurrent = typeof currentPage === "number" ? currentPage : state.currentPage;
     if (newCurrent > 0) {
       setLoading(true);
@@ -152,15 +150,16 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
         isLoading={!mounted || loading}
         isSwipingHorizontally={isSwipingHorizontally}
       />
-      <ExerciseListBtm
-        currentWeek={state.groupedExercises[state.currentPage]?.weekNumber}
-        currentPage={state.currentPage}
-        maxPage={state.groupedExercises.length - 1 > 0 ? state.groupedExercises.length - 1 : 0}
+      <Navigation
+        textDisplay={state.groupedExercises[state.currentPage]?.weekNumber}
+        firstPage={state.currentPage === 0}
+        lastPage={state.groupedExercises.length - 1 > 0 ? state.currentPage === state.groupedExercises.length - 1 : state.currentPage === 0}
         handleNextPage={handleNextPage}
         handlePrevPage={handlePrevPage}
         handleGoToLastPage={handleGoToLastPage}
         handleGoToFirstPage={handleGoToFirstPage}
-        navigation={navigation}
+        sideBtnFnc={() => navigation.navigate("AddExercise", {previousExercise: null})}
+        sideBtnTxt="+"
       />
     </SafeAreaView>
   );

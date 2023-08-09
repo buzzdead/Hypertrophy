@@ -11,51 +11,75 @@ interface Props {
   monthTitle: string
   handleNext: () => void
   handlePrev: () => void
+  handleFirst: () => void
+  handleLast: () => void
 }
 
-export const ChartNavigation: React.FC<Props> = ({isLandScape, firstPage, lastPage, monthTitle, handleNext, handlePrev}) => {
+export const ChartNavigation: React.FC<Props> = ({isLandScape, firstPage, lastPage, monthTitle, handleNext, handlePrev, handleLast, handleFirst}) => {
 
   return (
     <View
       style={{
         flexDirection: "row",
-        justifyContent: "center",
         gap: 10,
         position: isLandScape ? "absolute" : "absolute",
-        alignSelf: 'center'
+        justifyContent: 'center',
+        bottom: 0,
+        borderTopWidth: 1,
+        borderTopColor: 'grey',
+        width: '100%',
+        backgroundColor: colors.summerWhite
       }}>
-      <View style={isLandScape && styles.contingentButtonLeft}>
+      <View style={isLandScape ? styles.contingentButtonLeft : styles.abc}>
+      <CustomButton
+          size="S"
+          titleColor={firstPage ? colors.summerDark : colors.summerBlue}
+          fontSize={30}
+          backgroundColor={colors.summerWhite}
+          onPress={handleFirst}
+          title={"<<"}
+        />
         <CustomButton
           size="S"
           titleColor={firstPage ? colors.summerDark : colors.summerBlue}
           fontSize={30}
-          backgroundColor={colors.test6}
+          backgroundColor={colors.summerWhite}
           onPress={handlePrev}
           title={"<"}
         />
       </View>
-      <Contingent shouldRender={!isLandScape}>
+      <Contingent style={{justifyContent: 'center'}} shouldRender={!isLandScape}>
         <Text
           style={{
             minWidth: 100,
             textAlign: "center",
             fontFamily: "Roboto-Medium",
-            fontSize: 32,
+            fontSize: 16,
             color: colors.summerDarkest
           }}>
           {monthTitle}
         </Text>
       </Contingent>
-      <View style={isLandScape && styles.contingentButtonRight}>
+      <View style={isLandScape ? styles.contingentButtonRight : styles.abc}>
         <CustomButton
           titleColor={
             lastPage ? colors.summerDark : colors.summerBlue
           }
           onPress={handleNext}
-          backgroundColor={colors.test6}
+          backgroundColor={colors.summerWhite}
           size="S"
           fontSize={30}
           title={">"}
+        />
+        <CustomButton
+          titleColor={
+            lastPage ? colors.summerDark : colors.summerBlue
+          }
+          onPress={handleLast}
+          backgroundColor={colors.summerWhite}
+          size="S"
+          fontSize={30}
+          title={">>"}
         />
       </View>
     </View>
@@ -69,4 +93,8 @@ const styles = StyleSheet.create({
   contingentButtonRight: {
     right: -250,
   },
+  abc: {
+    flexDirection: 'row',
+    gap: 5
+  }
 });

@@ -104,7 +104,9 @@ export const initializeDB = (realm: Realm) => {
           name: e.name,
           category: e.category,
           exerciseCount: 0,
-          averageMetric: 0
+          averageMetric: 0,
+          stdMetricReps: 10,
+          stdMetricSets: 3
         });
         createdExerciseTypes.push(createdExerciseType); // Add the created object to the array
       });

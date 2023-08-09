@@ -4,7 +4,7 @@ import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { CategorySchema, ExerciseTypeSchema } from '../config/realm';
 import { colors } from '../utils/util';
-import Contingent from './Contingent';
+import { FlatList } from 'react-native-gesture-handler'
 
 interface SideBarProps {
   categories: CategorySchema[];
@@ -21,7 +21,7 @@ interface SideBarProps {
 
 export const SideBar: React.FC<SideBarProps> = React.memo(
   ({ categories, onCategoriesChange, onExerciseTypesChange, exerciseTypes, icon, isLandScape, prevSelectedCat, subCategories, pr }) => {
-    const [sideBarWidth, setSideBarWidth] = useState(isLandScape ? 300 : 150);
+    const [sideBarWidth, setSideBarWidth] = useState(175);
     const [selectedCategoryAnimations, setSelectedCategoryAnimations] = useState(categories.map(() => new Animated.Value(0)));
 
     const SidebarVisibleWidth = 50;
@@ -135,46 +135,47 @@ export const SideBar: React.FC<SideBarProps> = React.memo(
         </View>
         <Text style={styles.sidebarTitle}>Filter</Text>
         <View style={{ flexDirection: 'row' }}>
-          <View style={{ position: 'absolute', left: -125, width: 105 }}>
-            <Contingent shouldRender={!sidebarVisible}>
-              {currentExerciseTypes.map((e) => (
-                <TouchableOpacity
-                  key={`${e.name}-${e.id}`}
-                  style={{ backgroundColor: selectedExerciseTypes.includes(e) ? 'grey' : colors.summerWhite }}
-                  onPress={() => handleExerciseTypePress(e)}
-                  activeOpacity={1}
-                >
-                  <Text style={styles.sidebarItemText}>{e.name}</Text>
-                </TouchableOpacity>
-              ))}
-            </Contingent>
-          </View>
+              <FlatList
+                data={currentExerciseTypes}
+                keyExtractor={(e) => `${e.name}-${e.id}`}
+                scrollEnabled
+                style={{maxHeight: isLandScape ? 125 : '100%', zIndex: 9128738127, position: 'absolute', left: -105, width: 105,}}
+                
+                renderItem={({ item: e }) => (
+                  <TouchableOpacity
+                    style={{ backgroundColor: selectedExerciseTypes.includes(e) ? 'grey' : colors.summerWhite }}
+                    onPress={() => handleExerciseTypePress(e)}
+                    activeOpacity={1}
+                  >
+                    <Text style={styles.sidebarItemText}>{e.name}</Text>
+                  </TouchableOpacity>
+                )}
+              />
 
           <View style={isLandScape ? styles.sidebarItemsRow : styles.sidebarItemsColumn}>
-            {categories
-              .filter((c) => c.isValid())
-              .map((category, index) => (
-                <View key={`${category.name}-${category.id}`} style={{ flexDirection: 'row' }}>
-                  <Contingent
-                    shouldRender={
-                      selectedCategories.length > 0 &&
-                      subCategories !== undefined &&
-                      !sidebarVisible &&
-                      selectedCategories.some((e) => e.id === category.id)
-                    }
-                  >
-                    <TouchableOpacity
-                      style={{
-                        position: 'absolute',
-                        left: -20,
-                        width: 20,
-                        height: 70,
-                        alignSelf: 'center',
-                        backgroundColor: colors.summerBlue,
-                      }}
-                      onPress={() => handleShowExerciseTypes(category.id)}
-                    />
-                  </Contingent>
+            <FlatList
+              data={categories.filter((c) => c.isValid())}
+              keyExtractor={(category) => `${category.name}-${category.id}`}
+              renderItem={({ item: category, index }) => (
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  {selectedCategories.length > 0 &&
+                    subCategories !== undefined &&
+                    !sidebarVisible &&
+                    selectedCategories.some((e) => e.id === category.id) && (
+                      <View
+                        style={{
+                          width: 20,
+                          height: 70,
+                          zIndex: 10, // A more reasonable zIndex value
+                          backgroundColor: currentExerciseTypes[0]?.category.id === category.id ? colors.error : colors.summerBlue,
+                        }}
+                      >
+                        <TouchableOpacity
+                          style={{ flex: 1 }} // Ensures the TouchableOpacity takes up the full space
+                          onPress={() => handleShowExerciseTypes(category.id)}
+                        />
+                      </View>
+                    )}
                   <Animated.View
                     key={category?.name}
                     style={[
@@ -193,7 +194,8 @@ export const SideBar: React.FC<SideBarProps> = React.memo(
                     </TouchableOpacity>
                   </Animated.View>
                 </View>
-              ))}
+              )}
+            />
           </View>
         </View>
       </Animated.View>
@@ -251,11 +253,8 @@ const styles = StyleSheet.create({
     opacity: 0.95,
   },
   sidebarItemsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    maxHeight: 150,
-    overflow: 'hidden',
+    flexDirection: 'column',
+    maxHeight: 125,
   },
   sidebarItemsColumn: {
     flexDirection: 'column',

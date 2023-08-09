@@ -16,6 +16,8 @@ import { useMount } from '../../hooks/useMount';
 import CustomButton from '../../components/CustomButton';
 import { CheckBox } from '../../components/Checkbox';
 import Toast from 'react-native-toast-message';
+import { Navigation } from '../../components/Navigation';
+import { ProgressTrackingTop } from './ProgressTrackingTop';
 
 interface Chart {
   chartData: number[];
@@ -25,11 +27,11 @@ interface Chart {
   availableMonths: Month[];
   lastHalf: boolean;
   filteredCategories: CategorySchema[];
-  filteredExerciseTypes: ExerciseTypeSchema[]
+  filteredExerciseTypes: ExerciseTypeSchema[];
   mode: 'Weekly' | 'Daily';
   loading: boolean;
-  metric: boolean
-  pr: boolean
+  metric: boolean;
+  pr: boolean;
 }
 
 export const ProgressTracking = () => {
@@ -56,13 +58,15 @@ export const ProgressTracking = () => {
     pr: false,
   });
 
+  const [chartType, setChartType] = useState<'Bar' | 'Line'>('Bar');
+
   const containsMonth = (month: number) => {
     if (!state.availableMonths) return;
     return months?.find((e) => e.month === state.availableMonths[month]?.numerical);
   };
 
   const handleNext = () => {
-    if(state.loading) return
+    if (state.loading) return;
     if (state.lastHalf && !containsMonth(state.currentMonth + 1)) {
       return;
     }
@@ -74,7 +78,7 @@ export const ProgressTracking = () => {
   };
 
   const handlePrev = async () => {
-    if(state.loading) return
+    if (state.loading) return;
     if (!state.lastHalf && !containsMonth(state.currentMonth - 1)) {
       return;
     }
@@ -83,6 +87,16 @@ export const ProgressTracking = () => {
       const newCurrentMonth = state.currentMonth - 1;
       getChartData(true, newCurrentMonth);
     }
+  };
+
+  const handleFirst = () => {
+    if (state.loading) return;
+    getChartData(false, 0);
+  };
+
+  const handleLast = () => {
+    if (state.loading) return;
+    getChartData(true, state.availableMonths.length - 1);
   };
 
   const updateChart = (
@@ -96,7 +110,8 @@ export const ProgressTracking = () => {
   ) => {
     const exc = state.mode === 'Daily' ? exercises.filter((e) => e.month === availableMonths[newCurrentMonth]?.numerical) : exercises;
 
-    const filteredExercises = filteredExerciseTypes.length === 0 ? exc : exc.filter(e => filteredExerciseTypes.some((et) => et.id === e.type.id))
+    const filteredExercises =
+      filteredExerciseTypes.length === 0 ? exc : exc.filter((e) => filteredExerciseTypes.some((et) => et.id === e.type.id));
 
     let { chartData, maxExercises, days } = ChartData({
       exercises: filteredExercises,
@@ -120,14 +135,20 @@ export const ProgressTracking = () => {
       loading: mounted && true,
       filteredExerciseTypes: filteredExerciseTypes,
       filteredCategories: selectedCategories || state.filteredCategories,
-      pr: pr !== undefined ? pr : state.pr && filteredExerciseTypes.length !== 1 ? false : state.pr
+      pr: pr !== undefined ? pr : state.pr && filteredExerciseTypes.length !== 1 ? false : state.pr,
     });
   };
 
-  const getChartData = async (lh?: boolean, cm?: number, selectedCategories?: CategorySchema[], newExerciseTypes?: ExerciseTypeSchema[], pr?: boolean) => {
+  const getChartData = async (
+    lh?: boolean,
+    cm?: number,
+    selectedCategories?: CategorySchema[],
+    newExerciseTypes?: ExerciseTypeSchema[],
+    pr?: boolean
+  ) => {
     const newLastHalf = lh !== undefined ? lh : state.lastHalf;
     const newCurrentMonth = cm !== undefined ? cm : state.currentMonth;
-    const newPR = pr !== undefined ? pr : state.pr
+    const newPR = pr !== undefined ? pr : state.pr;
     const newCategories =
       selectedCategories?.length === 0
         ? categories
@@ -136,25 +157,56 @@ export const ProgressTracking = () => {
     const availableMonths = state.availableMonths.length === 0 ? getAvailableMonths(months) : state.availableMonths;
     if (availableMonths.length === 0) return;
 
-    updateChart(availableMonths, newCurrentMonth, newLastHalf, newExerciseTypes || state.filteredExerciseTypes, newCategories, selectedCategories, newPR);
-  };
-
-  const onExerciseTypesChange = async (exerciseTypes: ExerciseTypeSchema[]) => {
-    const newExerciseTypes =
-      exerciseTypes.length > 0 ? allExerciseTypes.filter((e) => exerciseTypes.some((et) => et.id === e.id)) : [];
-
     updateChart(
-      state.availableMonths,
-      state.currentMonth,
-      state.lastHalf,
-      newExerciseTypes,
+      availableMonths,
+      newCurrentMonth,
+      newLastHalf,
+      newExerciseTypes || state.filteredExerciseTypes,
+      newCategories,
+      selectedCategories,
+      newPR
     );
   };
 
+  const onExerciseTypesChange = async (exerciseTypes: ExerciseTypeSchema[]) => {
+    const newExerciseTypes = exerciseTypes.length > 0 ? allExerciseTypes.filter((e) => exerciseTypes.some((et) => et.id === e.id)) : [];
+
+    updateChart(state.availableMonths, state.currentMonth, state.lastHalf, newExerciseTypes);
+  };
+
   const onCategoryChange = (selectedCategories: CategorySchema[], exerciseTypes?: ExerciseTypeSchema[]) => {
-    const newExerciseTypes =
-      exerciseTypes ? exerciseTypes?.length > 0 ? allExerciseTypes.filter((e) => exerciseTypes?.some((et) => et.id === e.id)) : [] : state.filteredExerciseTypes
-    getChartData(state.lastHalf, state.currentMonth, selectedCategories, newExerciseTypes, state.pr && newExerciseTypes.length !== 1 ? false : state.pr);
+    const newExerciseTypes = exerciseTypes
+      ? exerciseTypes?.length > 0
+        ? allExerciseTypes.filter((e) => exerciseTypes?.some((et) => et.id === e.id))
+        : []
+      : state.filteredExerciseTypes;
+    getChartData(
+      state.lastHalf,
+      state.currentMonth,
+      selectedCategories,
+      newExerciseTypes,
+      state.pr && newExerciseTypes.length !== 1 ? false : state.pr
+    );
+  };
+
+  const onChangePR = () => {
+    if (state.filteredExerciseTypes.length === 1)
+      getChartData(state.lastHalf, state.currentMonth, state.filteredCategories, state.filteredExerciseTypes, !state.pr);
+    else {
+      Toast.show({
+        type: 'error',
+        position: 'top',
+        text1: 'Error',
+        text2: 'One and only one type of exercise must be selected.',
+        visibilityTime: 4000,
+        autoHide: true,
+        topOffset: 0,
+      });
+    }
+  };
+
+  const toggleChartType = () => {
+    setChartType((prevChartType) => (prevChartType === 'Bar' ? 'Line' : 'Bar'));
   };
 
   useEffect(() => {
@@ -167,22 +219,6 @@ export const ProgressTracking = () => {
     getChartData();
   }, [monthsLoading, state.mode, state.metric, exercises]);
 
-  const onChangePR = () => {
-    if(state.filteredExerciseTypes.length === 1)
-      getChartData(state.lastHalf, state.currentMonth, state.filteredCategories, state.filteredExerciseTypes, !state.pr)
-    else {
-      Toast.show({
-        type: 'error',
-        position: 'top',
-        text1: 'Error',
-        text2: 'One and only one type of exercise must be selected.',
-        visibilityTime: 4000,
-        autoHide: true,
-        topOffset: 0,
-      });
-    }
-  }
-
   if (!focused || !mounted) return <LoadingIndicator />;
 
   if (months.length === 0)
@@ -192,47 +228,53 @@ export const ProgressTracking = () => {
           No data found, add some exercises.
         </Text>
       </View>
-
     );
 
   return (
-    <SafeAreaView style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', gap: 20 }}>
-       <Contingent shouldRender={state.pr} style={{position: 'absolute', top: 10, left: 15, width: '100%', alignItems: screenOrientation.isLandscape ? 'center' : 'flex-start'}}>
-          <Text style={{fontFamily: 'Roboto-Black'}}>{`Exercise: ${state?.filteredExerciseTypes[0]?.name} - Averge Metric: ${Math.round(state?.filteredExerciseTypes[0]?.averageMetric)}`}</Text>
-        </Contingent>
-      <View style={{position: 'absolute', top: 25, flexDirection: 'column', gap: 20, marginTop: 25, width: '100%', alignItems: screenOrientation.isLandscape ? 'flex-start' : 'center'}}>
-      <CustomButton size={"SM"} title={state.metric ? "Exercises" : "Metric"} onPress={() => setState({...state, metric: !state.metric})} />
-      <View style={{flexDirection: 'row', marginRight: 15}}>
-        <Text style={{textAlignVertical: 'center', fontFamily: 'Roboto-Bold', color: colors.summerDarkest, fontSize: 20, marginHorizontal: 10, paddingLeft: 10}}>Show PR</Text>
-        <CheckBox disabled={state.filteredExerciseTypes.length !== 1} isSelected={state.pr} onSelection={onChangePR}/>
-        </View>
-      </View>
-      <View style={{marginTop: 100}}>
-      <Chart
-        isLandScape={screenOrientation.isLandscape}
-        mode={state.mode}
-        toggle
-        maxExercises={state.maxExercises}
-        chartData={state.chartData}
-        days={state.days}
-        isLoading={!mounted || state.loading}
+    <SafeAreaView style={{ width: '100%', height: '100%', justifyContent: screenOrientation.isLandscape ? 'flex-start' : 'center', alignItems: 'center', gap: 20 }}>
+      <ProgressTrackingTop
+        pr={state.pr}
+        isLandscape={screenOrientation.isLandscape}
+        numberOfExerciseTypes={state.filteredExerciseTypes.length}
+        exerciseType={state?.filteredExerciseTypes[0]}
+        metric={state.metric}
+        onChangeMetric={() => setState({ ...state, metric: !state.metric })}
+        onChangePr={onChangePR}
       />
-      </View>
-      <Contingent style={{ paddingTop: 30 }} shouldRender={state.mode === 'Daily'}>
-        <ChartNavigation
+      <View style={{ marginTop: screenOrientation.isLandscape ? 0 : 50 }}>
+        <Chart
           isLandScape={screenOrientation.isLandscape}
-          handleNext={handleNext}
-          handlePrev={handlePrev}
-          monthTitle={state.availableMonths[state.currentMonth]?.name}
+          mode={state.mode}
+          isMetric={state.metric}
+          toggle
+          maxExercises={state.maxExercises}
+          chartData={state.chartData}
+          days={state.days}
+          chartType={chartType}
+          isLoading={!mounted || state.loading}
+        />
+      </View>
+      <View style={{ position: 'absolute', width: '100%', bottom: 75, zIndex: 821276312763 }}>
+        <ProgressTrackingBtm
+          mode={state.mode}
+          landScapeOrientation={screenOrientation.isLandscape}
+          changeMode={(newMode) => setState({ ...state, mode: newMode, loading: true })}
+        />
+      </View>
+      <View style={{ position: 'absolute', bottom: 0, width: '100%' }}>
+        <Navigation
+          textDisplay={state.availableMonths[state.currentMonth]?.name}
           firstPage={!state.lastHalf && state.currentMonth === 0}
           lastPage={state.lastHalf && state.currentMonth === state.availableMonths.length - 1}
+          handleNextPage={handleNext}
+          handlePrevPage={handlePrev}
+          handleGoToLastPage={handleLast}
+          handleGoToFirstPage={handleFirst}
+          sideBtnFnc={toggleChartType}
+          sideBtnTxt={chartType}
+          disableNavigation={state.mode === 'Weekly'}
         />
-      </Contingent>
-      <ProgressTrackingBtm
-        mode={state.mode}
-        landScapeOrientation={screenOrientation.isLandscape}
-        changeMode={(newMode) => setState({ ...state, mode: newMode, loading: true })}
-      />
+      </View>
       <SideBar
         isLandScape={screenOrientation.isLandscape}
         categories={categories}
@@ -243,7 +285,7 @@ export const ProgressTracking = () => {
         prevSelectedCat={state.filteredCategories}
         subCategories={state.filteredExerciseTypes}
         pr={state.pr}
-        decativatePR={() => setState({...state, pr: false})}
+        decativatePR={() => setState({ ...state, pr: false })}
       />
       <Toast />
     </SafeAreaView>

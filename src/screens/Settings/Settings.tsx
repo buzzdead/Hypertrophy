@@ -90,6 +90,13 @@ const Settings: React.FC<Props> = ({ navigation }) => {
               title={'ColorScheme'}
               onPress={() => navigation.navigate('ColorScheme')}
             />
+            <CustomButton
+              backgroundColor={colors.summerDark}
+              titleColor={colors.summerWhite}
+              size='L'
+              title={'Metrics'}
+              onPress={() => navigation.navigate('Metrics')}
+            />
           </View>
           <Text
             style={{

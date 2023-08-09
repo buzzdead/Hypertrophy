@@ -11,6 +11,7 @@ import { Duplicate } from '../../typings/types';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 import { ColorScheme } from './Settings/ColorScheme';
+import { Metrics } from './Settings/Metrics';
 
 type StackParamList = {
   Exercises: undefined;
@@ -19,6 +20,7 @@ type StackParamList = {
   ExerciseTypes: undefined;
   Categories: undefined;
   ColorScheme: undefined;
+  Metrics: undefined;
 };
 
 const Stack = createStackNavigator<StackParamList>();
@@ -53,6 +55,7 @@ const Screens = () => {
       <Stack.Screen name='Categories' component={Categories} options={navigationOptions('Categories')} />
       <Stack.Screen name='ExerciseTypes' component={ExerciseTypes} options={navigationOptions('Exercise Types')} />
       <Stack.Screen name='ColorScheme' component={ColorScheme} options={navigationOptions('Color Scheme')} />
+      <Stack.Screen name='Metrics' component={Metrics} options={navigationOptions('Metrics')} />
     </Stack.Navigator>
   );
 };

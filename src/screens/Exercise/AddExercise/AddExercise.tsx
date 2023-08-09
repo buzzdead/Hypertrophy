@@ -1,21 +1,21 @@
-import React, {useEffect, useReducer, useRef, useState} from "react";
-import {SafeAreaView, ScrollView, StyleSheet, Text, View} from "react-native";
-import PickerField from "./Picker/PickerField";
-import {extend} from "lodash";
-import {Exercise} from "../../../../typings/types";
-import {saveExercise, addExercise, fetchExerciseTypesByCategory, setPlanCompleted} from "../../../api/realm";
-import NumberInput from "../../../components/NumberInput";
-import exerciseListReducer, {ExerciseReducerType} from "../../../Reducer";
-import {colors, getWeekNumber} from "../../../utils/util";
-import CustomButton from "../../../components/CustomButton";
-import AddObject from "./Modal/AddObject";
-import Weight from "./Weight";
-import LoadingIndicator from "../../../components/LoadingIndicator";
-import {CategorySchema, ExerciseSchema, PlanSchema} from "../../../config/realm";
-import {useFocus} from "../../../hooks/useFocus";
-import {useRealm, useMutations} from "../../../hooks/hooks";
-import {CompletePlanModal} from "./Modal/CompletePlanModal";
-import {CheckBox} from "../../../components/Checkbox";
+import React, { useEffect, useReducer, useRef, useState } from 'react';
+import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import PickerField from './Picker/PickerField';
+import { extend } from 'lodash';
+import { Exercise } from '../../../../typings/types';
+import { saveExercise, addExercise, fetchExerciseTypesByCategory, setPlanCompleted } from '../../../api/realm';
+import NumberInput from '../../../components/NumberInput';
+import exerciseListReducer, { ExerciseReducerType } from '../../../Reducer';
+import { colors, getWeekNumber, showToast } from '../../../utils/util';
+import CustomButton from '../../../components/CustomButton';
+import AddObject from './Modal/AddObject';
+import Weight from './Weight';
+import LoadingIndicator from '../../../components/LoadingIndicator';
+import { CategorySchema, ExerciseSchema, PlanSchema } from '../../../config/realm';
+import { useFocus } from '../../../hooks/useFocus';
+import { useRealm, useMutations, useScreenOrientation } from '../../../hooks/hooks';
+import { CompletePlanModal } from './Modal/CompletePlanModal';
+import { CheckBox } from '../../../components/Checkbox';
 import Toast from 'react-native-toast-message';
 
 type Props = {
@@ -36,7 +36,7 @@ const initialState: ExerciseReducerType = {
   exceptional: false,
 };
 
-const AddExercise: React.FC<Props> = ({navigation, previousExercise, onClose}) => {
+const AddExercise: React.FC<Props> = ({ navigation, previousExercise, onClose }) => {
   const newState = previousExercise
     ? extend({}, initialState, previousExercise, {
         category: previousExercise.type?.category,
@@ -50,20 +50,23 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise, onClose}) =
     showPlanModal: boolean;
     metPlanExpectations: boolean;
     plan: Optional<PlanSchema>;
-  }>({showPlanModal: false, metPlanExpectations: false, plan: undefined});
-  const {data: categories, refresh, loading: categoriesLoading} = useRealm<CategorySchema>({schemaName: "Category"});
+  }>({ showPlanModal: false, metPlanExpectations: false, plan: undefined });
+
+  const { data: categories, refresh, loading: categoriesLoading } = useRealm<CategorySchema>({ schemaName: 'Category' });
+
   const {
     data: plans,
     loading: plansLoading,
     mutateItem: mutatePlan,
-  } = useRealm({schemaName: "Plan", mutateFunction: (plan: PlanSchema) => setPlanCompleted(plan)});
+  } = useRealm({ schemaName: 'Plan', mutateFunction: (plan: PlanSchema) => setPlanCompleted(plan) });
 
-  const {mutateItem} = useMutations<ExerciseSchema>("Exercise", (exercise: ExerciseSchema) =>
-    previousExercise ? saveExercise(exercise) : addExercise(exercise),
+  const { mutateItem } = useMutations<ExerciseSchema>('Exercise', (exercise: ExerciseSchema) =>
+    previousExercise ? saveExercise(exercise) : addExercise(exercise)
   );
   const [loading, setLoading] = useState(false);
   const categoryRef = useRef(-1);
   const isFocused = useFocus();
+  const screenOrientation = useScreenOrientation()
 
   const _refresh = async () => {
     await refresh();
@@ -79,8 +82,8 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise, onClose}) =
         currentDate.getUTCDate(),
         currentDate.getUTCHours(),
         currentDate.getUTCMinutes(),
-        currentDate.getUTCSeconds(),
-      ),
+        currentDate.getUTCSeconds()
+      )
     );
     const weekNumber = getWeekNumber(currentUTCDate);
     const month = currentUTCDate.getMonth();
@@ -94,36 +97,27 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise, onClose}) =
       month: previousExercise?.month || month,
       date: previousExercise?.date || new Date(),
       exceptional: state.exceptional,
-      metric: state.sets * state.reps * (state.weight as number)
+      metric: state.sets * state.reps * (state.weight as number),
     };
-    if(exercise.type?.id === undefined) {
-      Toast.show({
-        type: 'error',
-        position: 'top',
-        text1: 'Error',
-        text2: 'Not a valid Exercise Type, check category \ exercise type.',
-        visibilityTime: 4000,
-        topOffset: -100,
-        autoHide: true,
-      });
+    if (exercise.type?.id === undefined) {
+      showToast('Error', "'Not a valid Exercise Type, check category  exercise type.'");
       return;
     }
     setLoading(true);
     const newExercise = exercise as ExerciseSchema;
     setTimeout(
       async () =>
-        await mutateItem.mutateAsync({item: newExercise, action: previousExercise ? "ADD" : "SAVE"}).then(async () => {
+        await mutateItem.mutateAsync({ item: newExercise, action: previousExercise ? 'ADD' : 'SAVE' }).then(async () => {
           const planFound = plans.find(
-            p =>
-              !p.completed && p.type.id === newExercise.type.id && p.type.category.id === newExercise.type.category.id,
+            (p) => !p.completed && p.type.id === newExercise.type.id && p.type.category.id === newExercise.type.category.id
           );
           if (planFound) {
             const metExpectations = planFound.sets * planFound.reps * planFound.weight;
             const exerciseTotal = newExercise.reps * newExercise.sets * newExercise.weight;
-            setPlanState({plan: planFound, showPlanModal: true, metPlanExpectations: metExpectations <= exerciseTotal});
+            setPlanState({ plan: planFound, showPlanModal: true, metPlanExpectations: metExpectations <= exerciseTotal });
           } else navigation.goBack();
         }),
-      10,
+      10
     );
   };
 
@@ -133,14 +127,14 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise, onClose}) =
     }
     const exerciseTypes = await fetchExerciseTypesByCategory(categories[categoryId - 1].id);
     dispatch({
-      type: "setItAll",
-      payload: {exerciseType: exerciseTypes[0], exerciseTypes: exerciseTypes, category: categories[categoryId - 1]},
+      type: 'setItAll',
+      payload: { exerciseType: exerciseTypes[0], exerciseTypes: exerciseTypes, category: categories[categoryId - 1] },
     });
     categoryRef.current = categoryId;
   };
 
   const onWeightChange = (value: number | string, validWeight: boolean) => {
-    dispatch({type: "setWeight", payload: {value, validWeight}});
+    dispatch({ type: 'setWeight', payload: { value, validWeight } });
   };
 
   useEffect(() => {
@@ -154,7 +148,7 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise, onClose}) =
   }, [categoriesLoading, state.category]);
 
   const handleOnComplete = async (complete: boolean) => {
-    if (complete && planState.plan) await mutatePlan.mutateAsync({item: planState.plan, action: "SAVE"});
+    if (complete && planState.plan) await mutatePlan.mutateAsync({ item: planState.plan, action: 'SAVE' });
     navigation.goBack();
   };
 
@@ -170,87 +164,77 @@ const AddExercise: React.FC<Props> = ({navigation, previousExercise, onClose}) =
 
   return (
     <SafeAreaView style={styles.container}>
-      
       <Toast />
       <ScrollView>
-        <View style={{flexDirection: "row", gap: 40}}>
-          <View style={{flex: 6}}>
+        <View style={{ flexDirection: 'row', gap: 40 }}>
+          <View style={{ flex: 6 }}>
             <PickerField
               item={state.category}
-              name={"Category"}
-              picker={200}
-              left={20}
+              name={'Category'}
+              picker={screenOrientation.isLandscape ? 100 : 200}
+              left={screenOrientation.isLandscape ? 240 : 20}
               items={categories}
-              onChange={value => dispatch({type: "setCategory", payload: value})}
+              onChange={(value) => dispatch({ type: 'setCategory', payload: value })}
             />
           </View>
-          <View style={{justifyContent: "flex-end", paddingBottom: 12, paddingRight: 12}}>
-            <AddObject isCategory s={refresh} />
+          <View style={{ justifyContent: 'flex-end', paddingBottom: 12, paddingRight: 12 }}>
+            <AddObject isLandscape={screenOrientation.isLandscape} isCategory s={refresh} />
           </View>
         </View>
-        <View style={{flexDirection: "row", gap: 40, paddingBottom: 55}}>
-          <View style={{flex: 6}}>
+        <View style={{ flexDirection: 'row', gap: 40, paddingBottom: 55 }}>
+          <View style={{ flex: 6 }}>
             <PickerField
-              name={"Exercise Type"}
-              picker={300}
-              left={20}
+              name={'Exercise Type'}
+              picker={screenOrientation.isLandscape ? 100 : 300}
+              left={screenOrientation.isLandscape ? 240 : 20}
               item={state.exerciseType}
               items={state.exerciseTypes}
-              onChange={value => dispatch({type: "setExerciseType", payload: value})}
+              onChange={(value) => dispatch({ type: 'setExerciseType', payload: value })}
             />
           </View>
-          <View style={{justifyContent: "flex-end", paddingBottom: 12, paddingRight: 12}}>
-            <AddObject isCategory={false} s={_refresh} />
+          <View style={{ justifyContent: 'flex-end', paddingBottom: 12, paddingRight: 12 }}>
+            <AddObject isLandscape={screenOrientation.isLandscape} isCategory={false} s={_refresh} />
           </View>
         </View>
-        <View style={{paddingTop: 20}}>
+        <View style={{ paddingTop: 20 }}>
           <Weight
-            title={"Weight"}
+            title={'Weight'}
             value={state.weight}
             onChange={(value: string | number, validWeight: boolean) => onWeightChange(value, validWeight)}
           />
         </View>
-        <View style={{flexDirection: "row", gap: 20, alignSelf: "center"}}>
-          <NumberInput
-            title={"Sets"}
-            value={state.sets}
-            onChange={(value: any) => dispatch({type: "setSets", payload: value})}
-          />
-          <NumberInput
-            title={"Reps"}
-            value={state.reps}
-            onChange={(value: any) => dispatch({type: "setReps", payload: value})}
-          />
+        <View style={{ flexDirection: 'row', gap: 20, alignSelf: 'center' }}>
+          <NumberInput title={'Sets'} value={state.sets} onChange={(value: any) => dispatch({ type: 'setSets', payload: value })} />
+          <NumberInput title={'Reps'} value={state.reps} onChange={(value: any) => dispatch({ type: 'setReps', payload: value })} />
         </View>
-        <View style={{flexDirection: "row", justifyContent: "center", paddingVertical: 25, gap: 25}}>
-          <Text
-            style={{textAlignVertical: "center", fontSize: 26, fontFamily: "Roboto-Bold", color: colors.summerDark}}>
-            Exceptional exercise:{" "}
+        <View style={{ flexDirection: 'row', justifyContent: 'center', paddingVertical: 25, gap: 25 }}>
+          <Text style={{ textAlignVertical: 'center', fontSize: 26, fontFamily: 'Roboto-Bold', color: colors.summerDark }}>
+            Exceptional exercise:{' '}
           </Text>
           <CheckBox
             isSelected={state.exceptional}
-            size="S"
+            size='S'
             color={colors.summerDark}
-            onSelection={(b: boolean) => dispatch({type: "setExceptional", payload: b})}
+            onSelection={(b: boolean) => dispatch({ type: 'setExceptional', payload: b })}
           />
         </View>
-        <View style={{paddingTop: 20, alignSelf: "center", flexDirection: "row", gap: 10}}>
-          <View style={{width: 180}}>
+        <View style={{ paddingTop: 20, alignSelf: 'center', flexDirection: 'row', gap: 10 }}>
+          <View style={{ width: 180 }}>
             <CustomButton
               titleColor={colors.summerWhite}
-              size="M"
+              size='M'
               backgroundColor={colors.summerDark}
-              title="Cancel"
+              title='Cancel'
               onPress={() => (onClose ? onClose() : navigation.goBack())}
             />
           </View>
-          <View style={{width: 180}}>
+          <View style={{ width: 180 }}>
             <CustomButton
               titleColor={state.validWeight ? colors.accent : colors.summerWhite}
-              size="M"
+              size='M'
               backgroundColor={colors.summerDark}
               disabled={!state.validWeight}
-              title="Save"
+              title='Save'
               loading={loading}
               onPress={handleAddExercise}
             />
@@ -266,29 +250,29 @@ const styles = StyleSheet.create({
     flex: 1,
     margin: 16,
     paddingVertical: 50,
-    alignSelf: "center",
+    alignSelf: 'center',
   },
   inputContainer: {
     marginBottom: 16,
-    flexDirection: "column",
-    alignItems: "center",
+    flexDirection: 'column',
+    alignItems: 'center',
     marginRight: 10,
   },
   touchFieldLabel: {
     color: colors.new,
     fontSize: 22,
-    fontWeight: "800",
+    fontWeight: '800',
     padding: 6,
     paddingRight: 10,
   },
   input: {
-    borderColor: "#BDBDBD",
+    borderColor: '#BDBDBD',
     borderWidth: 1,
     borderRadius: 4,
     minWidth: 75,
     marginLeft: 27.5,
-    textAlign: "center",
-    fontFamily: "Roboto-Black",
+    textAlign: 'center',
+    fontFamily: 'Roboto-Black',
     padding: 8,
     fontSize: 24,
   },

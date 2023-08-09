@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect as useFocusEffect, useState } from 'react'
 import { Dimensions, Platform, ScaledSize } from 'react-native'
 import Orientation, { LANDSCAPE, OrientationType } from 'react-native-orientation-locker'
 
@@ -8,7 +8,7 @@ export const useScreenOrientation = () =>
     const isAndroid = () => Platform.OS === 'android'
     const [screenOrientation, setScreenOrientation] = useState(Orientation.getInitialOrientation())
 
-     useEffect(() => {
+     useFocusEffect(() => {
       const onChange = (result: OrientationType) => {
         setScreenOrientation(result)
       }

@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQueryClient } from 'react-query';
 import CustomButton from '../../components/CustomButton';
 import { CategorySchema, ExerciseTypeSchema } from '../../config/realm';
-import { useRealm } from '../../hooks/hooks';
+import { useRealm, useScreenOrientation } from '../../hooks/hooks';
 import { colors, validateSchema } from '../../utils/util';
 import NewObjectModal from '../Exercise/AddExercise/Modal/NewObjectModal';
 import { handleDelete, handleEdit } from './Settings';
@@ -20,6 +20,7 @@ export function ExerciseTypes() {
     { visible: boolean; id: number }[]
   >([]);
   const qc = useQueryClient();
+  const screenOrientation = useScreenOrientation();
 
   const onEdit = (name: string, id: number, category?: CategorySchema) => {
     handleEdit(id, name, category);
@@ -116,7 +117,9 @@ export function ExerciseTypes() {
                     currentCategory={c.category}
                     currentValue={c.name}
                     title={'Save'}
-                  />
+                    isLandscape={screenOrientation.isLandscape}
+                    extra={[c.stdMetricReps, c.stdMetricSets]}                  
+                    />
                 )}
               </View>
             );

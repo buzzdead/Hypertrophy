@@ -7,7 +7,7 @@ import { addExercise, fetchPlanById, setPlanCompleted } from '../../api/exercise
 import Contingent from '../../components/Contingent';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import { CategorySchema, ExerciseSchema, ExerciseTypeSchema, PlanSchema } from '../../config/realm';
-import { useFocus, useMutations } from '../../hooks/hooks';
+import { useFocus, useMutations, useScreenOrientation } from '../../hooks/hooks';
 import { Mutations } from '../../hooks/useRealm';
 import { CatColors, colors } from '../../utils/color';
 import PlanModal from './PlanModal';
@@ -34,9 +34,9 @@ interface Props {
 
 export const PlanItem: React.FC<Props> = ({
   plan = {
-    reps: 1,
-    sets: 1,
-    weight: 0,
+    reps: 10,
+    sets: 3,
+    weight: 15,
     type: null,
     exceptional: false,
     id: undefined,
@@ -53,6 +53,7 @@ export const PlanItem: React.FC<Props> = ({
   const { mutateItem: completePlan } = useMutations('Plan', (plan: PlanSchema) => setPlanCompleted(plan));
   const { mutateItem: exercises } = useMutations('Exercise', (exercise: ExerciseSchema) => addExercise(exercise));
   const [loading, setLoading] = useState(false);
+  const screenOrientation = useScreenOrientation()
 
   const handleSave = (data: Omit<Plan, 'week' | 'completed'>) => {
     const plan = { ...data, week: week, completed: false } as PlanSchema;
@@ -91,6 +92,7 @@ export const PlanItem: React.FC<Props> = ({
         visible={showModal}
         categories={categories}
         exerciseTypes={exerciseTypes}
+        isLandscape={screenOrientation.isLandscape}
       />
       <Contingent shouldRender={!loading}>
         <TouchableOpacity
