@@ -59,10 +59,33 @@ export async function fetchExerciseTypesByCategory(categoryId: number) {
 
 export async function changeExerciseType(exerciseTypeId: number, sets: number, reps: number) {
   const exerciseType = realmObject.find(e => e.id === exerciseTypeId)
-  if(!exerciseType) throw new Error
+  console.log(exerciseTypeId)
+  if (!exerciseType) throw new Error
   await rw.performWriteTransaction(() => {
     exerciseType.stdMetricReps = reps
     exerciseType.stdMetricSets = sets
+    const theseExercises = exercises.filter(e => e.type.id === exerciseTypeId)
+    const sumOfMetrics = theseExercises.reduce((sum, exercise) => {
+      const metric = exercise.weight * exercise.reps * exercise.sets;
+      return sum + metric;
+    }, 0);
+    const averageMetric = sumOfMetrics / theseExercises.length;
+    exerciseType.averageMetric = averageMetric
+    exerciseType.exerciseCount = theseExercises.length
+    const filteredExercises = exercises.filter(e => e.type.id === exerciseType.id)
+    const newETMetric = filteredExercises.reduce((sum, exercise) => {
+      let metric = exercise.weight * exercise.reps * exercise.sets;
+      const stdMetric = exercise.weight * reps * sets
+      if (exercise.sets > sets) { metric *= (1 - (0.1 * (exercise.sets - sets))) }
+      const howMuchBigger = stdMetric / exercise.type.averageMetric
+      if (howMuchBigger > 1.4) {
+        metric *= Math.min((stdMetric / exercise.type.averageMetric), 1.8)
+      }
+      exercise.metric = metric
+      return sum + metric
+    }, 0)
+    exerciseType.averageMetric = newETMetric / filteredExercises.length
+
   })
 }
 

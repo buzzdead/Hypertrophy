@@ -5,6 +5,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { CategorySchema, ExerciseTypeSchema } from '../config/realm';
 import { colors } from '../utils/util';
 import { FlatList } from 'react-native-gesture-handler'
+import Contingent from './Contingent';
 
 interface SideBarProps {
   categories: CategorySchema[];
@@ -135,6 +136,7 @@ export const SideBar: React.FC<SideBarProps> = React.memo(
         </View>
         <Text style={styles.sidebarTitle}>Filter</Text>
         <View style={{ flexDirection: 'row' }}>
+          <Contingent shouldRender={!sidebarVisible}>
               <FlatList
                 data={currentExerciseTypes}
                 keyExtractor={(e) => `${e.name}-${e.id}`}
@@ -151,6 +153,7 @@ export const SideBar: React.FC<SideBarProps> = React.memo(
                   </TouchableOpacity>
                 )}
               />
+              </Contingent>
 
           <View style={isLandScape ? styles.sidebarItemsRow : styles.sidebarItemsColumn}>
             <FlatList

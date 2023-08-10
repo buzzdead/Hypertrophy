@@ -45,6 +45,7 @@ const NewObjectModal = ({
   const [reps, setReps] = useState(extra !== undefined ? extra[0] : 0);
 
   const handleAdd = async () => {
+    console.log(sets, reps, extra, (extra && sets !== extra[0]), (extra && reps !== extra[1]), id)
     if (extra !== undefined && sets !== extra[0] && reps !== extra[1] && id) await changeExerciseType(id, sets, reps);
     modalFunction && id ? modalFunction(objectName, id, category) : onAdd && onAdd(objectName, objectType === 'Category', category);
   };
