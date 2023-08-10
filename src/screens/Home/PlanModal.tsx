@@ -37,7 +37,8 @@ export const PlanModal: React.FC<PlanModalProps> = ({ visible, onRequestClose, o
   });
 
   const handleSave = () => {
-    if (state.exerciseType?.id === undefined) {
+    const et = getET()
+    if (et?.id === undefined) {
       showToast('Error', 'Not a valid Exercise Type, check category  exercise type.')
       return;
     }
@@ -45,13 +46,20 @@ export const PlanModal: React.FC<PlanModalProps> = ({ visible, onRequestClose, o
       reps: state.reps,
       sets: state.sets,
       weight: state.weight,
-      type: state.exerciseType,
+      type: et,
       id: state.id,
       exceptional: state.exceptional,
     };
     onSave(d);
     onRequestClose();
   };
+
+  const getET = () => {
+    if(state.exerciseType) return state.exerciseType
+    const et = state.category ? state.exerciseTypes.find(e => e.category.id === state.category.id) 
+    : state.exerciseTypes.find(e => e.category.id === state.categories[0].id)
+    return et !== undefined ? et : null
+  }
 
   return (
     <Modal visible={visible} onRequestClose={onRequestClose} animationType='slide' transparent>
@@ -71,7 +79,7 @@ export const PlanModal: React.FC<PlanModalProps> = ({ visible, onRequestClose, o
             picker={isLandscape ? 150 : 200}
             maxWidth={isLandscape ? 800 : 400}
             left={25}
-            item={state.exerciseType || state.category ? state.exerciseTypes.find(e => e.category.id === state.category.id) : state.exerciseTypes.find(e => e.category.id === state.categories[0].id)}
+            item={getET()}
             items={state.exerciseTypes.filter((e) => e.category?.id === state.category?.id)}
             onChange={(value) => setState({ ...state, exerciseType: value })}
           />

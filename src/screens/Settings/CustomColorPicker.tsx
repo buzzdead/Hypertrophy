@@ -26,6 +26,7 @@ const CustomColorPicker: React.FC<Props> = ({
       <ColorPickerWheel
         color={selectedColor}
         onColorChange={handleColorSelection}
+        
       />
       <View
         style={{

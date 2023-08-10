@@ -47,8 +47,9 @@ export const Chart: React.FC<Props> = ({
           style={{ axisLabel: { padding: 30, fontSize: 16 } }}
           dependentAxis
           label={isMetric ? '' : 'Exercises'}
-          tickCount={isLoading ? 7 : maxExercises > 14 ? Math.ceil(maxExercises / (isLandScape ? 4 : 2)) : isLandScape ? Math.ceil(maxExercises / 2) : maxExercises || 1}
+          tickCount={isLoading ? 7 : maxExercises > 14 ? Math.ceil(maxExercises / (isLandScape ? 4 : 2)) : isLandScape ? Math.ceil(maxExercises / 2) : maxExercises === 1 ? 2 : maxExercises || 1}
           tickFormat={(i) => (isLoading ? '' : Math.round(i))}
+          tickValues={maxExercises === 1 ? [0, 1] : undefined}
         />
         <VictoryGroup offset={20}>
           {chartType === 'Line' ? (

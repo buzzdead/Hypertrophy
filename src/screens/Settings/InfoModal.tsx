@@ -6,50 +6,56 @@ import { colors } from '../../utils/color';
 import Contingent from '../../components/Contingent';
 
 interface Props {
-    visible: boolean
-    onDismiss: () =>  void
-    infoType: "Home" | "Progress"
+  visible: boolean;
+  onDismiss: () => void;
+  infoType: 'Home' | 'Progress';
 }
 
-export const InfoModal: React.FC<Props> = ({visible, onDismiss, infoType}) => {
+export const InfoModal: React.FC<Props> = ({ visible, onDismiss, infoType }) => {
+  function renderInfoText(label: string, value: string) {
     return (
-      <Modal 
-          visible={visible} 
-          onDismiss={onDismiss} 
-          contentContainerStyle={styles.modalContent}
-          style={styles.modal}
-      >
-        
-        <Contingent shouldRender={infoType === "Progress"}>
-        <View style={{gap: 25}}>
-        <Text style={styles.infoText}>Average metric: {InfoProgress.AvgMetric}</Text>
-        <Text style={styles.infoText}>PR: {InfoProgress.PR}</Text>
-        <Text style={styles.infoText}>Metric: {InfoProgress.Metric}</Text>
-        </View>
-        <View style={{gap: 25}}>
-        <Text style={styles.infoText}>Graph: {InfoHome.Graph}</Text>
-        <Text style={styles.infoText}>Plans: {InfoHome.Plans}</Text>
-        </View>
-        </Contingent>
-        
-      </Modal>
+      <View style={{flexDirection: 'column'}}>
+        <Text style={styles.label}>{label}</Text>
+        <Text style={styles.infoText}>{value}</Text>
+      </View>
     );
-  };
-  
-  const styles = StyleSheet.create({
-    infoText: {
-        fontFamily: 'Roboto-BoldItalic',
-        fontSize: 18,
-        color: colors.summerDarkest
-    },
-    modal: {
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '100%'
-    },
-    modalContent: {
-      backgroundColor: 'white',
-      padding: 20,
-    },
-  });
-  
+  }
+
+  return (
+    <Modal visible={visible} onDismiss={onDismiss} contentContainerStyle={styles.modalContent} style={styles.modal}>
+      <Contingent shouldRender={infoType === 'Progress'}>
+        <View style={{ gap: 25 }}>
+          {renderInfoText('Average metric:', InfoProgress.AvgMetric)}
+          {renderInfoText('PR:', InfoProgress.PR)}
+          {renderInfoText('Metric:', InfoProgress.Metric)}
+        </View>
+        <View style={{ gap: 25 }}>
+          {renderInfoText('Graph:', InfoHome.Graph)}
+          {renderInfoText('Plans:', InfoHome.Plans)}
+        </View>
+      </Contingent>
+    </Modal>
+  );
+};
+
+const styles = StyleSheet.create({
+  infoText: {
+    fontFamily: 'Roboto-Medium',
+    fontSize: 16,
+    color: colors.summerDark,
+  },
+  modal: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+  },
+  label: {
+    fontSize: 18,
+    fontFamily: 'Roboto-Bold',
+    color: colors.summerDarkest,
+  },
+});

@@ -151,7 +151,7 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
         isSwipingHorizontally={isSwipingHorizontally}
       />
       <Navigation
-        textDisplay={state.groupedExercises[state.currentPage]?.weekNumber}
+        textDisplay={state.groupedExercises[state.currentPage]?.weekNumber ?? 0}
         firstPage={state.currentPage === 0}
         lastPage={state.groupedExercises.length - 1 > 0 ? state.currentPage === state.groupedExercises.length - 1 : state.currentPage === 0}
         handleNextPage={handleNextPage}
