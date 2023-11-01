@@ -1,4 +1,4 @@
-import{ ExerciseSchema, ExerciseTypeSchema, MonthSchema, CategorySchema, PlanSchema } from "../src/config/realm";
+import{ ExerciseSchema, ExerciseTypeSchema, MonthSchema, CategorySchema, PlanSchema, PlanPresetSchema } from "../src/config/realm";
 
 export type Schema = {
   Exercise: ExerciseSchema,
@@ -6,6 +6,7 @@ export type Schema = {
   Month: MonthSchema,
   Category: CategorySchema,
   Plan: PlanSchema,
+  PlanPreset: PlanPresetSchema
 };
 
 

@@ -38,6 +38,7 @@ export const withLoading = async (
         console.error(error);
         setLoading(false);
       });
+      return promises
   }, delay);
 };
 

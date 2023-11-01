@@ -68,7 +68,7 @@ export const Home = () => {
   });
 
   if (exercisesLoading || categoriesLoading || !focused) return <LoadingIndicator />;
-
+  console.log("rendering home screen")
   return (
     <SafeAreaView style={{ height: '100%', width: '100%' }}>
       <ScrollView >
@@ -78,7 +78,7 @@ export const Home = () => {
             textAlign: 'center',
             fontFamily: 'Roboto-Bold',
             fontSize: 30,
-            color: colors.summerDark,
+            color: colors.summerDarkest,
           }}
         >
           Week {state.weekNumber}

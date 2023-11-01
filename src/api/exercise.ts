@@ -1,5 +1,5 @@
 import {Exercise, Plan} from "../../typings/types";
-import {ExerciseSchema, ExerciseTypeSchema, MonthSchema, PlanSchema} from "../config/realm";
+import {ExerciseSchema, ExerciseTypeSchema, MonthSchema, PlanPresetSchema, PlanSchema} from "../config/realm";
 import {RealmWrapper} from "./RealmWrapper";
 
 const rw = new RealmWrapper();
@@ -16,6 +16,7 @@ const getRealmObjectFromPrimaryKey = (id: number) => {
 const months = realm.objects<MonthSchema>("Month");
 const exercises = realm.objects<ExerciseSchema>("Exercise");
 const plans = realm.objects<PlanSchema>("Plan")
+const planPresets = realm.objects<PlanPresetSchema>("PlanPreset")
 
 export async function findAllDuplicateExercises(exercise: Exercise) {
   const exercises = realm.objects<ExerciseSchema>("Exercise");
@@ -106,13 +107,19 @@ export async function saveExercise(exercise: Exercise) {
     addMetric(existingExercise as ExerciseSchema, metric)
   });
 }
-export async function fetchExercises(limitBy?: { by: "Month" | "Week"; when: number }) {
+export async function fetchExercises(limitBy?: { by: "Month" | "Week"; when: number[] }) {
   if (limitBy && limitBy.by === "Month") {
     const month = limitBy.when;
+    if(month.length > 1)
+    return Array.from(realm.objects<ExerciseSchema>('Exercise').filtered('month >= $0 && month <= $1', month[0], month[1]))
+    else
     return Array.from(realm.objects<ExerciseSchema>('Exercise').filtered('month == $0', month));
   }
   else if(limitBy && limitBy.by === "Week") {
     const week = limitBy.when;
+    if(week.length > 1)
+    return Array.from(realm.objects<ExerciseSchema>('Exercise').filtered('month >= $0 && month <= $1', week[0], week[1]))
+    else
     return Array.from(realm.objects<ExerciseSchema>('Exercise').filtered('week == $0', week));
   }
   return Array.from(exercises);
@@ -148,13 +155,22 @@ export async function deleteExercise(exercise: Exercise) {
 
 // Plans
 
-export async function addPlan(plan: Plan) {
+export async function addPlan(plan: Plan, additional?: number) {
+  const newPlan = {...plan,
+    id: rw.getMaxId<PlanSchema>("Plan"),
+    weight: Number(plan.weight) } as PlanSchema
+
   await rw.performWriteTransaction(() => {
-    realm.create("Plan", {
-      ...plan,
-      id: rw.getMaxId<PlanSchema>("Plan"),
-      weight: Number(plan.weight)
-    });
+     
+    if(additional) {
+      const preset = planPresets.find(p => p.id === additional)
+      preset && preset.plans.push(newPlan)
+    }
+    else {
+      realm.create("Plan", {
+        ...newPlan
+      });
+    }
   });
 }
 
@@ -195,4 +211,34 @@ export async function fetchPlanById(planId: number) {
 // Months
 export async function fetchMonths() {
   return months;
+}
+
+export async function createPreset(name: string) {
+  await rw.performWriteTransaction(() => { 
+    realm.create("PlanPreset", {
+      id: rw.getMaxId<PlanPresetSchema>("PlanPreset"),
+      name: name,
+      plans: []
+    })
+  })
+}
+
+export async function addToPreset(presetId: number, plan: Plan) {
+  const preset = planPresets.find(p => p.id === presetId)
+  await rw.performWriteTransaction(() => {
+    preset?.plans.push(plan as PlanSchema)
+  })
+}
+
+export async function deletePlanPreset(planPreset: PlanPresetSchema) {
+  await rw.performWriteTransaction(() => {
+    realm.delete(planPreset)
+  }
+  )
+}
+
+export async function editPlanPreset(planPreset: PlanPresetSchema, name: string) {
+  await rw.performWriteTransaction(() => {
+    planPreset.name = name
+  })
 }

@@ -6,7 +6,7 @@ import { Plan } from '../../../typings/types';
 import { addExercise, fetchPlanById, setPlanCompleted } from '../../api/exercise';
 import Contingent from '../../components/Contingent';
 import LoadingIndicator from '../../components/LoadingIndicator';
-import { CategorySchema, ExerciseSchema, ExerciseTypeSchema, PlanSchema } from '../../config/realm';
+import { CategorySchema, ExerciseSchema, ExerciseTypeSchema, PlanPresetSchema, PlanSchema } from '../../config/realm';
 import { useFocus, useMutations, useScreenOrientation } from '../../hooks/hooks';
 import { Mutations } from '../../hooks/useRealm';
 import { CatColors, colors } from '../../utils/color';
@@ -19,14 +19,13 @@ interface Props {
   newPlan?: boolean;
   week: number;
   completed: boolean;
-  exerciseTypes: ExerciseTypeSchema[];
-  categories: CategorySchema[];
   mutatePlan: UseMutationResult<
     void | boolean,
     unknown,
     {
       item: PlanSchema;
       action: Mutations;
+      additional?: number;
     },
     () => PlanSchema[] | null
   >;
@@ -43,8 +42,6 @@ export const PlanItem: React.FC<Props> = ({
   },
   newPlan = false,
   week,
-  categories,
-  exerciseTypes,
   mutatePlan,
   completed,
 }) => {
@@ -53,11 +50,20 @@ export const PlanItem: React.FC<Props> = ({
   const { mutateItem: completePlan } = useMutations('Plan', (plan: PlanSchema) => setPlanCompleted(plan));
   const { mutateItem: exercises } = useMutations('Exercise', (exercise: ExerciseSchema) => addExercise(exercise));
   const [loading, setLoading] = useState(false);
-  const screenOrientation = useScreenOrientation()
+  const [additional, setAdditional] = useState(0)
+  const screenOrientation = useScreenOrientation();
 
-  const handleSave = (data: Omit<Plan, 'week' | 'completed'>) => {
-    const plan = { ...data, week: week, completed: false } as PlanSchema;
-    withLoading(() => mutatePlan.mutateAsync({ item: plan, action: newPlan ? 'ADD' : 'SAVE' }), setLoading);
+  const handleSave = async (data: Partial<Plan> | Partial<Plan>[], additional?: number) => {
+    const plan: PlanSchema | PlanSchema[] = Array.isArray(data)
+      ? data.map((d) => {
+          return { ...d, week: week, completed: false } as PlanSchema;
+        })
+      : [{ ...data, week: data.week ?? week, completed: false } as PlanSchema];
+    await withLoading(
+      async () => plan.forEach((p) => mutatePlan.mutateAsync({ item: p, action: newPlan ? 'ADD' : 'SAVE', additional: additional })),
+      setLoading
+    );
+    if(additional) setAdditional(additional)
   };
 
   const handleDelete = () => {
@@ -75,23 +81,25 @@ export const PlanItem: React.FC<Props> = ({
 
     const newExercise = PlanToExercise(currentPlan, currentDate, month, 0);
 
-    withLoading(() => [
-      completePlan.mutateAsync({ item: currentPlan, action: 'SAVE' }),
-      exercises.mutateAsync({ item: newExercise, action: 'ADD' }),
-    ], setLoading);
+    withLoading(
+      () => [completePlan.mutateAsync({ item: currentPlan, action: 'SAVE' }), exercises.mutateAsync({ item: newExercise, action: 'ADD' })],
+      setLoading
+    );
   };
 
   if (!isFocused) return <LoadingIndicator />;
-
+  console.log("rendering item")
   return (
     <Contingent style={{ width: showModal ? 300 : 150, height: showModal ? 200 : 100 }} shouldRender={showModal}>
       <PlanModal
         data={plan}
-        onSave={(data) => handleSave(data)}
+        showTabs={newPlan}
+        additional={additional}
+        onSave={(data, additional?: number) => handleSave(data, additional)}
         onRequestClose={() => setShowModal(false)}
         visible={showModal}
-        categories={categories}
-        exerciseTypes={exerciseTypes}
+        loading={loading}
+        week={week}
         isLandscape={screenOrientation.isLandscape}
       />
       <Contingent shouldRender={!loading}>
@@ -114,7 +122,10 @@ export const PlanItem: React.FC<Props> = ({
               />
             </TouchableOpacity>
           </Contingent>
-          <Contingent shouldRender={!newPlan && !completed} style={{ position: 'absolute', zIndex: 123, alignSelf: 'flex-end', right: 0 }}>
+          <Contingent
+            shouldRender={!newPlan && !completed && week !== 999}
+            style={{ position: 'absolute', zIndex: 123, alignSelf: 'flex-end', right: 0 }}
+          >
             <TouchableOpacity onPress={handleComplete} style={{ padding: 5, paddingBottom: 10 }}>
               <MaterialCommunityIcons adjustsFontSizeToFit name={'check-outline'} size={26} color={'green'} />
             </TouchableOpacity>

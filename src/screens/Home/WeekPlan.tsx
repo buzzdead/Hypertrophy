@@ -8,51 +8,51 @@ import {useRealm} from "../../hooks/hooks";
 import {useFocus} from "../../hooks/useFocus";
 import {Mutations} from "../../hooks/useRealm";
 import {PlanItem} from "./PlanItem";
+import Contingent from "../../components/Contingent";
 
 interface Props {
   week: number;
+  customPlans?: PlanSchema[]
+  loading?: boolean
 }
 
-export const WeekPlan: React.FC<Props> = ({week}) => {
+export const WeekPlan: React.FC<Props> = ({week, customPlans}) => {
+
+  const presetMode = customPlans !== undefined
+
   const {
     data: plans,
     mutateItem: mutatePlan,
     loading: plansLoading,
   } = useRealm<PlanSchema>({
     schemaName: "Plan",
-    mutateFunction: (item: PlanSchema, action: Mutations) => {
-      return action === "ADD" ? addPlan(item) : action === "SAVE" ? editPlan(item) : deletePlan(item.id);
+    mutateFunction: (item: PlanSchema, action: Mutations, additional?: number) => {
+      return action === "ADD" ? addPlan(item, additional) : action === "SAVE" ? editPlan(item) : deletePlan(item.id);
     },
   });
 
-  const {data: exerciseTypes, loading: exerciseTypesLoading} = useRealm<ExerciseTypeSchema>({
-    schemaName: "ExerciseType",
-  });
-  const {data: categories, loading: categoriesLoading} = useRealm<CategorySchema>({schemaName: "Category"});
   const focused = useFocus();
 
   const currentPlans = plans.filter(p => p.isValid() && p.week === week);
   currentPlans.sort((a, b) => Number(b.completed) - Number(a.completed));
   
-  if (plansLoading || exerciseTypesLoading || !focused)
+  if (plansLoading || !focused)
     return (
       <View style={{width: "100%", height: "100%"}}>
         <LoadingIndicator />
       </View>
     );
-
   return (
     <SafeAreaView
-      style={{width: "100%", paddingTop: 20, paddingHorizontal: 40, justifyContent: "center", alignItems: "center"}}>
+      style={{width: "100%", paddingTop: 20, paddingHorizontal: presetMode ? 0 : 40, justifyContent: "center", alignItems: "center"}}>
+      <Contingent style={{width: "100%", justifyContent: "center", alignItems: "center"}} shouldRender={!presetMode}>
       <FlatList
         ItemSeparatorComponent={() => <View style={{padding: 5}}></View>}
         showsHorizontalScrollIndicator={false}
         horizontal
-        data={currentPlans}
+        data={customPlans || currentPlans}
         renderItem={({item}) => (
           <PlanItem
-            categories={categories}
-            exerciseTypes={exerciseTypes}
             week={week}
             completed={item.completed}
             mutatePlan={mutatePlan}
@@ -62,9 +62,7 @@ export const WeekPlan: React.FC<Props> = ({week}) => {
         ListFooterComponent={
           <View style={{paddingLeft: 10}}>
             <PlanItem
-              categories={categories}
               completed={false}
-              exerciseTypes={exerciseTypes}
               newPlan
               week={week}
               mutatePlan={mutatePlan}
@@ -72,6 +70,24 @@ export const WeekPlan: React.FC<Props> = ({week}) => {
           </View>
         }
       />
+      <View style={{display: 'flex', flexDirection: 'column', width: '100%', maxHeight: 300, minHeight: 300, gap: 50, alignItems: 'center'}}>
+      <FlatList
+        ItemSeparatorComponent={() => <View style={{padding: 5}}></View>}
+        showsHorizontalScrollIndicator={false}
+        numColumns={2}
+        columnWrapperStyle={{gap: 10}}
+        data={customPlans || currentPlans}
+        renderItem={({item}) => (
+          <PlanItem
+            week={week}
+            completed={item.completed}
+            mutatePlan={mutatePlan}
+            plan={item}
+          />
+        )} />
+       
+        </View>
+      </Contingent>
     </SafeAreaView>
   );
 };

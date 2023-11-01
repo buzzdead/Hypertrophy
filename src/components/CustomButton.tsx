@@ -3,12 +3,14 @@ import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import Contingent from './Contingent';
 import LoadingIndicator from './LoadingIndicator';
 
-type Size = "S" | "SM" | "M" | "L"
+type Size = "S" | "SM" | "M" | "L" | "XL" | "XXL"
 const SIZE_TO_PADDING: { [key in Size]: { width: number, height: number } } = {
   S: { width: 54, height: 52 },
   SM: { width: 135, height: 52 },
   M: { width: 175, height: 52 },
   L: { width: 250, height: 52 },
+  XL: {width: 300, height: 52},
+  XXL: {width: 365, height: 52}
 };
 
 type CustomButtonProps = {

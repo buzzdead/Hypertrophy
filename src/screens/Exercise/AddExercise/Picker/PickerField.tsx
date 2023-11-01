@@ -3,16 +3,16 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Picker from "./Picker";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons/faCaretDown";
-import { CategorySchema, ExerciseTypeSchema } from "../../../../config/realm";
+import { CategorySchema, ExerciseTypeSchema, PlanPresetSchema } from "../../../../config/realm";
 import { colors } from "../../../../utils/util";
 
 type Props = {
-  item: Nullable<CategorySchema | ExerciseTypeSchema>;
-  items: (CategorySchema | ExerciseTypeSchema)[];
+  item: Nullable<CategorySchema | ExerciseTypeSchema | PlanPresetSchema>;
+  items: (CategorySchema | ExerciseTypeSchema | PlanPresetSchema)[];
   picker: number;
   onChange: (value: any) => void;
   setLoading?: () => void;
-  name: "Exercise Type" | "Category"
+  name: "Exercise Type" | "Category" | 'Plan preset'
   left: number
   maxWidth?: number
 };
@@ -24,7 +24,7 @@ const PickerField = ({ item, items, onChange, setLoading, picker, left, name, ma
     setPickerVisible(!pickerVisible);
   };
 
-  const handleOnChange = (value: CategorySchema | ExerciseTypeSchema) => {
+  const handleOnChange = (value: CategorySchema | ExerciseTypeSchema | PlanPresetSchema) => {
     onChange(value);
     setLoading && setLoading();
   };

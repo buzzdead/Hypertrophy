@@ -2,6 +2,7 @@
 import Realm from "realm";
 import { getWeekNumber } from "../utils/date";
 import { colors } from "../utils/color";
+import { Plan } from "../../typings/types";
 
 export class CategorySchema extends Realm.Object {
   static schema = {
@@ -116,9 +117,34 @@ export class PlanSchema extends Realm.Object {
   exceptional!: boolean
 }
 
+export class PlanPresetSchema extends Realm.Object {
+  static schema = {
+    name: "PlanPreset",
+    primaryKey: "id",
+    properties: {
+      id: { type: "int", indexed: true },
+      name: "string",
+      plans: { type: "list", objectType: "Plan" }
+    }
+  }
+  id!: number;
+  name!: string;
+  plans!: PlanSchema[]
+}
+
+export class SettingsSchema extends Realm.Object {
+  static schema = {
+    name: "Settings",
+    properties: {
+      isFirstTimeUser: {type: "bool", default: true}
+    }
+  }
+  isFirstTimeUser!: boolean;
+}
+
 const realmConfig: Realm.Configuration = {
-  schema: [ExerciseSchema, ExerciseTypeSchema, CategorySchema, MonthSchema, PlanSchema],
-  schemaVersion: 22,
+  schema: [ExerciseSchema, ExerciseTypeSchema, CategorySchema, MonthSchema, PlanSchema, PlanPresetSchema, SettingsSchema],
+  schemaVersion: 24,
   onMigration: migration,
 };
 
@@ -234,6 +260,72 @@ function migration(oldRealm: Realm, newRealm: Realm) {
       ex.stdMetricReps = 10
       ex.stdMetricSets = 3
     })
+  }
+  if (oldRealm.schemaVersion < 23) {
+    const exerciseTypes = newRealm.objects<ExerciseTypeSchema>("ExerciseType")
+    const plan1: Plan = {
+      week: 999,
+      type: exerciseTypes[1],
+      sets: 3,
+      reps: 10,
+      weight: 50,
+      completed: false,
+      exceptional: false,
+    }
+    const plan2: Plan = {
+      week: 999,
+      type: exerciseTypes[2],
+      sets: 3,
+      reps: 10,
+      weight: 50,
+      completed: false,
+      exceptional: false,
+    }
+    const plan3: Plan = {
+      week: 999,
+      type: exerciseTypes[3],
+      sets: 3,
+      reps: 10,
+      weight: 50,
+      completed: false,
+      exceptional: false,
+    }
+    
+    const plans = newRealm.objects<PlanSchema>("Plan")
+
+    const maxId = plans.max("id") as number
+    
+    newRealm.create("Plan", {
+      ...plan1,
+      id: maxId + 1
+    })
+    newRealm.create("Plan", {
+      ...plan2,
+      id: maxId + 2
+    })
+    newRealm.create("Plan", {
+      ...plan3,
+      id: maxId + 3
+    })
+
+    const thePlans = plans.filter(e => e.week === 999)
+
+    newRealm.create("PlanPreset", {
+      id: 1,
+      name: "Monday",
+      plans: thePlans
+    })
+  }
+  if (oldRealm.schemaVersion < 24) {
+    const settings = newRealm.objects<SettingsSchema>("Settings")
+    if(settings.length > 0) {
+      return
+    }
+    else {
+      newRealm.create("Settings", {
+        isFirstTimeUser: true
+      })
+    }
   }
 }
 

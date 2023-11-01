@@ -2,13 +2,13 @@
 import React from "react";
 import { View, Modal, TouchableWithoutFeedback, TouchableHighlight, FlatList, StyleSheet } from "react-native";
 import { Text } from "react-native-paper";
-import { CategorySchema, ExerciseTypeSchema } from "../../../../config/realm";
+import { CategorySchema, ExerciseTypeSchema, PlanPresetSchema } from "../../../../config/realm";
 import { colors } from "../../../../utils/util";
 
 type PickerProps = {
   visible: boolean;
-  items: (CategorySchema | ExerciseTypeSchema)[];
-  onSelect: (item: CategorySchema | ExerciseTypeSchema) => void;
+  items: (CategorySchema | ExerciseTypeSchema | PlanPresetSchema)[];
+  onSelect: (item: CategorySchema | ExerciseTypeSchema | PlanPresetSchema) => void;
   onClose: () => void;
   top: number
   left: number
@@ -26,7 +26,7 @@ const Picker: React.FC<PickerProps> = ({ visible, items, onSelect, onClose, top,
         accessibilityLabel="menu"
         scrollEnabled
         style={{maxHeight: 350}}
-          data={items.filter(item => item.name !== "default")}
+          data={items}
           renderItem={({ item }) => (
             <TouchableHighlight
             underlayColor={colors.summerBlue}

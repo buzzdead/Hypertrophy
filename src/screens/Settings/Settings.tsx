@@ -1,13 +1,13 @@
 // screens/Settings.tsx
 import React, { useState } from 'react';
 import { Alert, SafeAreaView, ScrollView, Text, View } from 'react-native';
-import { deleteCategory, deleteExerciseType, editCategory, editExerciseType } from '../../api/realm';
-import { CategorySchema, ExerciseTypeSchema } from '../../config/realm';
+import { deleteCategory, deleteExerciseType, deletePlanPreset, editCategory, editExerciseType, editPlanPreset } from '../../api/realm';
+import { CategorySchema, ExerciseTypeSchema, PlanPresetSchema } from '../../config/realm';
 import { colors } from '../../utils/util';
 import CustomButton from '../../components/CustomButton';
 import { InfoModal } from './InfoModal';
 
-export const handleDelete = (o: CategorySchema | ExerciseTypeSchema): Promise<void> => {
+export const handleDelete = (o: CategorySchema | ExerciseTypeSchema | PlanPresetSchema): Promise<void> => {
   return new Promise((resolve) => {
     Alert.alert(
       'Delete',
@@ -16,7 +16,7 @@ export const handleDelete = (o: CategorySchema | ExerciseTypeSchema): Promise<vo
         {
           text: 'Yes',
           onPress: () => {
-            o instanceof CategorySchema ? deleteCategory(o) : deleteExerciseType(o);
+            o instanceof CategorySchema ? deleteCategory(o) : o instanceof PlanPresetSchema ? deletePlanPreset(o) : deleteExerciseType(o);
             resolve();
           },
         },
@@ -36,6 +36,10 @@ export const handleDelete = (o: CategorySchema | ExerciseTypeSchema): Promise<vo
 export const handleEdit = (id: number, name: string, category?: CategorySchema) => {
   category ? editExerciseType(id, name, category) : editCategory(id, name);
 };
+
+export const handleEditPlanPreset = (planPreset: PlanPresetSchema, name: string) => {
+  editPlanPreset(planPreset, name)
+}
 
 type Props = {
   navigation: any;
@@ -82,6 +86,13 @@ const Settings: React.FC<Props> = ({ navigation }) => {
               size='L'
               title={'ExerciseTypes'}
               onPress={() => navigation.navigate('ExerciseTypes')}
+            />
+             <CustomButton
+              backgroundColor={colors.summerDark}
+              titleColor={colors.summerWhite}
+              size='L'
+              title={'Plan Presets'}
+              onPress={() => navigation.navigate('PlanPresets')}
             />
             <CustomButton
               backgroundColor={colors.summerDark}

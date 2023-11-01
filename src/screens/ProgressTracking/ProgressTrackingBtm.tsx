@@ -2,6 +2,7 @@ import React from "react"
 import { StyleSheet, View } from "react-native"
 import CustomButton from "../../components/CustomButton"
 import { colors } from "../../utils/util"
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 interface Props {
     mode: 'Daily' | 'Weekly'
@@ -49,7 +50,7 @@ const styles = StyleSheet.create({
       flexDirection: "row",
     },
     buttonsNormal: {
-      bottom: 10,
+      bottom: 0,
       alignSelf: "center",
       flexDirection: "row",
     },

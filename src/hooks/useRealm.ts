@@ -6,7 +6,7 @@ import {validateSchema} from "../utils/util";
 interface UseRealmConfig<T> {
   schemaName: keyof Schema;
   limitBy?: {by: "Month"; when: number};
-  mutateFunction?: (item: T, action: Mutations) => Promise<void | boolean>;
+  mutateFunction?: (item: T, action: Mutations, additional?: number) => Promise<void | boolean>;
 }
 
 export type Mutations = "ADD" | "SAVE" | "DEL";
@@ -18,12 +18,12 @@ export function useRealm<T extends Schema[keyof Schema]>({schemaName, limitBy, m
 
   const mutateItem = useMutation(
     // This function now returns a Promise
-    ({item, action}: {item: T; action: Mutations}) => {
+    ({item, action, additional}: {item: T; action: Mutations, additional?: number}) => {
       if (!mutateFunction) {
         throw new Error("No mutate function provided");
       }
       // Call onMutate and return the Promise it produces
-      return mutateFunction(item, action);
+      return mutateFunction(item, action, additional);
     },
     {
       onMutate: async ({item: newItem, action}) => {

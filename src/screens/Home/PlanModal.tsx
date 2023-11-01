@@ -1,137 +1,78 @@
-import React, { useState } from 'react';
-import { Modal, StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { Modal, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { Plan } from '../../../typings/types';
-import { CheckBox } from '../../components/Checkbox';
-import CustomButton from '../../components/CustomButton';
-import NumberInput from '../../components/NumberInput';
-import { CategorySchema, ExerciseTypeSchema } from '../../config/realm';
+import { AddPlan } from './AddPlan';
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { colors } from '../../utils/color';
-import PickerField from '../Exercise/AddExercise/Picker/PickerField';
-import Weight from '../Exercise/AddExercise/Weight';
-import Toast from 'react-native-toast-message';
-import { showToast } from '../../utils/util';
-import { ScrollView } from 'react-native-gesture-handler';
+import { AddFromPreset } from './AddFromPreset';
+import Contingent from '../../components/Contingent';
+import LoadingIndicator from '../../components/LoadingIndicator';
 
 interface PlanModalProps {
   visible: boolean;
   onRequestClose: () => void;
-  onSave: (data: Omit<Plan, 'week' | 'completed'>) => void;
-  data: Omit<Plan, 'week' | 'completed'>;
-  exerciseTypes: ExerciseTypeSchema[];
-  categories: CategorySchema[];
-  isLandscape?: boolean
+  onSave: (data: Partial<Plan> | Partial<Plan>[], additional?: number) => void;
+  data: Partial<Plan>;
+  isLandscape?: boolean;
+  additional: number
+  showTabs: boolean
+  loading: boolean
+  week: number
 }
 
-export const PlanModal: React.FC<PlanModalProps> = ({ visible, onRequestClose, onSave, data, exerciseTypes, categories, isLandscape=false }) => {
-  //samme her, fixe properties.
-  const [state, setState] = useState({
-    reps: data.reps,
-    sets: data.sets,
-    id: data.id,
-    weight: data.weight,
-    category: categories[0],
-    exerciseType: data.type,
-    exerciseTypes: exerciseTypes,
-    categories: categories,
-    exceptional: data.exceptional,
+export const PlanModal: React.FC<PlanModalProps> = ({
+  visible,
+  onRequestClose,
+  onSave,
+  data,
+  isLandscape = false,
+  additional,
+  showTabs = false,
+  loading,
+  week
+}) => {
+  const planProps = { onRequestClose, onSave, data, isLandscape };
+
+  const FirstRoute = () => <AddPlan {...planProps} newPlan={showTabs}/>;
+  const SecondRoute = () => <AddFromPreset {...planProps} additional={additional} loading={loading} week={week}/>;
+
+  const renderScene = SceneMap({
+    first: FirstRoute,
+    second: SecondRoute,
   });
 
-  const handleSave = () => {
-    const et = getET()
-    if (et?.id === undefined) {
-      showToast('Error', 'Not a valid Exercise Type, check category  exercise type.')
-      return;
-    }
-    const d = {
-      reps: state.reps,
-      sets: state.sets,
-      weight: state.weight,
-      type: et,
-      id: state.id,
-      exceptional: state.exceptional,
-    };
-    onSave(d);
-    onRequestClose();
-  };
-
-  const getET = () => {
-    if(state.exerciseType) return state.exerciseType
-    const et = state.category ? state.exerciseTypes.find(e => e.category.id === state.category.id) 
-    : state.exerciseTypes.find(e => e.category.id === state.categories[0].id)
-    return et !== undefined ? et : null
-  }
-
-  return (
+  const [index, setIndex] = React.useState(0);
+  const [routes] = React.useState([
+    { key: 'first', title: 'Add Plan' },
+    { key: 'second', title: 'Add from preset' },
+  ]);
+  return loading ? <LoadingIndicator /> : (
     <Modal visible={visible} onRequestClose={onRequestClose} animationType='slide' transparent>
-      <ScrollView style={styles.container}>
+      <View style={styles.container}>
         <View style={styles.content}>
-          <PickerField
-            item={state.category || state.categories[0]}
-            name={'Category'}
-            left={25}
-            maxWidth={isLandscape ? 800 : 400}
-            picker={100}
-            items={state.categories}
-            onChange={(value) => setState({ ...state, category: value })}
-          />
-          <PickerField
-            name={'Exercise Type'}
-            picker={isLandscape ? 150 : 200}
-            maxWidth={isLandscape ? 800 : 400}
-            left={25}
-            item={getET()}
-            items={state.exerciseTypes.filter((e) => e.category?.id === state.category?.id)}
-            onChange={(value) => setState({ ...state, exerciseType: value })}
-          />
-          <View style={{ paddingTop: 100 }}>
-            <Weight title={'Add weight'} value={state.weight} onChange={(value: any) => setState({ ...state, weight: value })} />
-            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-              <NumberInput title={'Sets'} value={data.sets} onChange={(value: any) => setState({ ...state, sets: value })} />
-              <NumberInput title={'Reps'} value={data.reps} onChange={(value: any) => setState({ ...state, reps: value })} />
-            </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'center',
-                paddingVertical: 25,
-                gap: 25,
-              }}
-            >
-              <Text
-                style={{
-                  textAlignVertical: 'center',
-                  fontSize: 26,
-                  fontFamily: 'Roboto-Bold',
-                  color: colors.summerDark,
-                }}
-              >
-                Exceptional exercise:{' '}
-              </Text>
-              <CheckBox
-                isSelected={false}
-                size='S'
-                color={colors.summerDark}
-                onSelection={(b: boolean) => setState({ ...state, exceptional: b })}
+          <Contingent style={{width: '100%', height: '100%'}} shouldRender={showTabs}>
+          <TabView
+          swipeEnabled={false}
+            renderTabBar={(props) => (
+              <TabBar
+                {...props}
+                labelStyle={{fontFamily: 'Roboto-Bold', color: 'black'}}
+                activeColor={colors.summerButton}
+                inactiveColor={colors.summerDark}
+                style={{ backgroundColor: 'white', maxHeight: 100, elevation: 0}}
+                indicatorStyle={{ backgroundColor: colors.summerButton }}
               />
-            </View>
-            <View style={styles.buttons}>
-              <View style={{ width: 180 }}>
-                <CustomButton
-                  titleColor={colors.summerWhite}
-                  size='M'
-                  backgroundColor={colors.summerDark}
-                  title='Cancel'
-                  onPress={onRequestClose}
-                />
-              </View>
-              <View style={{ width: 180 }}>
-                <CustomButton titleColor={colors.accent} size='M' backgroundColor={colors.summerDark} title='Save' onPress={handleSave} />
-              </View>
-            </View>
-          </View>
-          <Toast />
+              
+            )}
+            navigationState={{ index, routes }}
+            renderScene={renderScene}
+            onIndexChange={setIndex}
+            style={{gap: 15, display: 'flex'}}
+          />
+          <FirstRoute />
+          </Contingent>
         </View>
-      </ScrollView>
+      </View>
     </Modal>
   );
 };
@@ -143,17 +84,10 @@ const styles = StyleSheet.create({
   },
   content: {
     backgroundColor: 'white',
-    borderRadius: 10,
     padding: 20,
     width: '100%',
+    flex: 1,
     justifyContent: 'center',
-    height: '100%',
-  },
-  buttons: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 20,
-    gap: 25,
   },
   cancelButton: {
     backgroundColor: 'red',

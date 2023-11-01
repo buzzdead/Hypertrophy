@@ -5,6 +5,7 @@ import Contingent from '../../components/Contingent';
 import CustomButton from '../../components/CustomButton';
 import { colors } from '../../utils/color';
 import { ExerciseTypeSchema } from '../../config/realm';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 interface Props {
   pr: boolean;
@@ -35,7 +36,7 @@ export const ProgressTrackingTop: React.FC<Props> = ({
       <View
         style={{
           position: 'absolute',
-          top: isLandscape ? 0 : 75,
+          top: isLandscape ? 0 : hp('7%'),
           flexDirection: isLandscape ? 'column' : 'row',
           justifyContent: isLandscape ? 'flex-start' : 'center',
           gap: 20,

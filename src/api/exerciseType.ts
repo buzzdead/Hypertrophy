@@ -59,7 +59,6 @@ export async function fetchExerciseTypesByCategory(categoryId: number) {
 
 export async function changeExerciseType(exerciseTypeId: number, sets: number, reps: number) {
   const exerciseType = realmObject.find(e => e.id === exerciseTypeId)
-  console.log(exerciseTypeId)
   if (!exerciseType) throw new Error
   await rw.performWriteTransaction(() => {
     exerciseType.stdMetricReps = reps

@@ -26,7 +26,8 @@ export const ChartData = ({exercises, categories, month, year, lastHalf = false,
   let tickValues: number[] = [];
   let chartData: number[] | IGroup[];
   if (mode === "Weekly") {
-    const modifiedData = groupExercisesByWeek(categorised);
+    const weeklyExercises = lastHalf ? categorised.filter(e => e.month >= 6) : categorised.filter(e => e.month >= 0 && e.month < 6)
+    const modifiedData = groupExercisesByWeek(weeklyExercises);
     modifiedData.unshift({
       exercises: [],
       weekNumber: 0,

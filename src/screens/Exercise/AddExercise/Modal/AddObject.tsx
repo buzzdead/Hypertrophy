@@ -1,18 +1,20 @@
 import React, {useState} from "react";
 import {View, StyleSheet} from "react-native";
-import { addCategory, addExerciseType } from "../../../../api/realm";
+import { addCategory, addExerciseType, createPreset } from "../../../../api/realm";
 import CustomButton from "../../../../components/CustomButton";
 import { CategorySchema } from "../../../../config/realm";
 import { colors } from "../../../../utils/util";
 import NewObjectModal from "./NewObjectModal";
+import { PresetPlanModal } from "./PresetPlanModal";
 
 type Props = {
   isCategory: boolean;
   s: () => void
   isLandscape?: boolean
+  planPresetModal?: boolean
 };
 
-const AddObject = ({isCategory, s, isLandscape=false}: Props) => {
+const AddObject = ({isCategory, s, isLandscape=false, planPresetModal = false}: Props) => {
   const [modalVisible, setModalVisible] = useState(false);
   const name = isCategory ? "Exercise Type" : "Category"
 
@@ -31,6 +33,12 @@ const AddObject = ({isCategory, s, isLandscape=false}: Props) => {
     s()
   };
 
+  const handleAddPresetModal = async (name: string) => {
+    await createPreset(name)
+    s()
+    closeModal()
+  }
+
   return (
     <View accessibilityLabel={`modal-${name}`}>
       <View style={styles.addButton}>
@@ -44,12 +52,13 @@ const AddObject = ({isCategory, s, isLandscape=false}: Props) => {
         </View>
       <NewObjectModal
       name={name === 'Category' ? 'Exercise Type' : 'Category'}
-        visible={modalVisible}
+        visible={modalVisible && !planPresetModal}
         isLandscape={isLandscape}
         onClose={closeModal}
         onAdd={handleAdd}
         objectType={isCategory ? "Category" : "Exercise Type"}
       />
+      <PresetPlanModal visible={modalVisible && planPresetModal} onClose={closeModal} isLandscape={isLandscape} onAdd={handleAddPresetModal} />
     </View>
   );
 };

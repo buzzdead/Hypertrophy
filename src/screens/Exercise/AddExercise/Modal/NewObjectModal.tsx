@@ -45,7 +45,6 @@ const NewObjectModal = ({
   const [reps, setReps] = useState(extra !== undefined ? extra[0] : 0);
 
   const handleAdd = async () => {
-    console.log(sets, reps, extra, (extra && sets !== extra[0]), (extra && reps !== extra[1]), id)
     if (extra !== undefined && sets !== extra[0] && reps !== extra[1] && id) await changeExerciseType(id, sets, reps);
     modalFunction && id ? modalFunction(objectName, id, category) : onAdd && onAdd(objectName, objectType === 'Category', category);
   };
@@ -68,11 +67,11 @@ const NewObjectModal = ({
           height: isLandscape ? '100%' : undefined,
         }}
       >
-        <Text style={{ textAlign: 'center', fontFamily: 'Roboto-Bold', fontSize: 28, color: 'black' }}>{name} Modal</Text>
+        <Text style={{ textAlign: 'center', fontFamily: 'Roboto-Bold', fontSize: 24, color: 'black', marginBottom: 10 }}>Add {name}</Text>
         <TextInput value={objectName} onChangeText={setObjectName} placeholder={`${objectType} Name`} style={styles.input} />
         {objectType === 'Exercise Type' && (
           <PickerField
-            name={name}
+            name={"Category"}
             item={category!}
             items={categories}
             onChange={(value) => handleOnChange(value)}

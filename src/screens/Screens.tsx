@@ -12,6 +12,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { useNavigation } from '@react-navigation/native';
 import { ColorScheme } from './Settings/ColorScheme';
 import { Metrics } from './Settings/Metrics';
+import { PlanPresets } from './Settings/PlanPresets';
 
 type StackParamList = {
   Exercises: undefined;
@@ -21,6 +22,7 @@ type StackParamList = {
   Categories: undefined;
   ColorScheme: undefined;
   Metrics: undefined;
+  PlanPresets: undefined;
 };
 
 const Stack = createStackNavigator<StackParamList>();
@@ -53,6 +55,7 @@ const Screens = () => {
       <Stack.Screen name='Details' component={ExerciseDetails} options={navigationOptions('Exercise Details')} />
       <Stack.Screen name='AddExercise' component={AddExercise} options={navigationOptions('Add Exercise')} />
       <Stack.Screen name='Categories' component={Categories} options={navigationOptions('Categories')} />
+      <Stack.Screen name='PlanPresets' component={PlanPresets} options={navigationOptions('PlanPresets')} />
       <Stack.Screen name='ExerciseTypes' component={ExerciseTypes} options={navigationOptions('Exercise Types')} />
       <Stack.Screen name='ColorScheme' component={ColorScheme} options={navigationOptions('Color Scheme')} />
       <Stack.Screen name='Metrics' component={Metrics} options={navigationOptions('Metrics')} />

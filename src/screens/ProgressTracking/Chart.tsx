@@ -2,7 +2,8 @@ import React from 'react';
 import { VictoryChart, VictoryAxis, VictoryGroup, VictoryBar, VictoryTheme, VictoryLine } from 'victory-native';
 import { colors } from '../../utils/util';
 import Contingent from '../../components/Contingent';
-import { View } from 'react-native';
+import { View, Dimensions } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 interface Props {
   chartData: number[] | null; // chartData can be null when loading
@@ -36,7 +37,7 @@ export const Chart: React.FC<Props> = ({
 
   return (
     <>
-      <VictoryChart height={isLandScape ? 225 : 375} width={isLandScape ? 500 : 400} theme={VictoryTheme.material}>
+      <VictoryChart height={isLandScape ? hp('30%') : hp('40%')} width={isLandScape ? 500 : 400} theme={VictoryTheme.material}>
         <VictoryAxis
           style={{ axisLabel: { padding: 30, fontSize: 16 } }}
           tickCount={isLoading ? 8 : data.length || 1}
