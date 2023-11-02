@@ -47,7 +47,7 @@ export const PlanModal: React.FC<PlanModalProps> = ({
     { key: 'second', title: 'Add from preset' },
   ]);
   return loading ? <LoadingIndicator /> : (
-    <Modal visible={visible} onRequestClose={onRequestClose} animationType='slide' transparent>
+    <Modal visible={visible} onRequestClose={onRequestClose} animationType='fade' transparent>
       <View style={styles.container}>
         <View style={styles.content}>
           <Contingent style={{width: '100%', height: '100%'}} shouldRender={showTabs}>

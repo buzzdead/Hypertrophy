@@ -1,4 +1,5 @@
-import {CategorySchema, ExerciseTypeSchema, ExerciseSchema, MonthSchema, PlanSchema} from "./config/realm";
+import { Plan } from "../typings/types";
+import {CategorySchema, ExerciseTypeSchema, ExerciseSchema, MonthSchema, PlanSchema, SettingsSchema, PlanPresetSchema} from "./config/realm";
 import { colors } from "./utils/color";
 
 export const initializeDB = (realm: Realm) => {
@@ -7,6 +8,16 @@ export const initializeDB = (realm: Realm) => {
   const exercises = realm.objects<ExerciseSchema>("Exercise");
   const months = realm.objects<MonthSchema>("Month")
   const plans = realm.objects<PlanSchema>("Plan")
+  const settings = realm.objects<SettingsSchema>("Settings")
+  const planPresets = realm.objects<PlanPresetSchema>("PlanPreset")
+
+  if (settings.length === 0) {
+    realm.write(() => {
+      realm.create("Settings", {
+        isFirstTimeUser: true
+      });
+    });
+  }
 
   type catColors = keyof typeof colors.categories
 
@@ -218,5 +229,60 @@ export const initializeDB = (realm: Realm) => {
         });
       } */
     });
+    realm.write(() => {
+      const et1 = exerciseTypes.find(e => e.id === 1)
+      const et2 = exerciseTypes.find(e => e.id === 2)
+      const et3 = exerciseTypes.find(e => e.id === 3)
+      if(planPresets.length === 0) {
+        const plan1: Plan = {
+          week: 999,
+          type: et1,
+          sets: 3,
+          reps: 10,
+          weight: 50,
+          completed: false,
+          exceptional: false,
+        }
+        const plan2: Plan = {
+          week: 999,
+          type: et2,
+          sets: 3,
+          reps: 10,
+          weight: 50,
+          completed: false,
+          exceptional: false,
+        }
+        const plan3: Plan = {
+          week: 999,
+          type: et3,
+          sets: 3,
+          reps: 10,
+          weight: 50,
+          completed: false,
+          exceptional: false,
+        }
+        const maxId = 0
+       
+        realm.create("Plan", {
+          ...plan1,
+          id: maxId + 1
+        })
+        realm.create("Plan", {
+          ...plan2,
+          id: maxId + 2
+        })
+        realm.create("Plan", {
+          ...plan3,
+          id: maxId + 3
+        })
+    
+        const thePlans = plans.filter(e => e.week === 999)
+    
+        realm.create("PlanPreset", {
+          id: 1,
+          name: "Monday",
+          plans: [...thePlans]
+        })}
+    })
   }
 };

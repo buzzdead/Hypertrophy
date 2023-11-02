@@ -88,7 +88,6 @@ export const PlanItem: React.FC<Props> = ({
   };
 
   if (!isFocused) return <LoadingIndicator />;
-  console.log("rendering item")
   return (
     <Contingent style={{ width: showModal ? 300 : 150, height: showModal ? 200 : 100 }} shouldRender={showModal}>
       <PlanModal

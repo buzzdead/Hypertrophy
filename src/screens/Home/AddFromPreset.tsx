@@ -29,7 +29,7 @@ let theId = 0
 
 export const AddFromPreset: React.FC<Props> = ({ onRequestClose, data, onSave, isLandscape, week }) => {
   const { data: planPresets, refresh, loading: presetsLoading } = useRealm<PlanPresetSchema>({ schemaName: 'PlanPreset' });
-  const [planPreset, setPlanPreset] = useState(planPresets.find(e => e.id === theId) ||  planPresets[0])
+  const [planPreset, setPlanPreset] = useState<PlanPresetSchema>(planPresets.find(e => e.id === theId) ||  planPresets[0])
   const [addPlan, setAddPlan] = useState(false);
   const [loading, setLoading] = useState(false)
   const screenOrientation = useScreenOrientation();
@@ -65,7 +65,6 @@ export const AddFromPreset: React.FC<Props> = ({ onRequestClose, data, onSave, i
   });
   
   if(loading || presetsLoading) return <LoadingIndicator />
-  console.log("rendering preset")
   return addPlan ? (
     <AddPlan
       isLandscape={isLandscape}

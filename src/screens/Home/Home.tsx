@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { SafeAreaView, View, Text } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Contingent from '../../components/Contingent';
@@ -8,16 +8,19 @@ import { HomeChartData } from './HomeChartData';
 import { Chart } from '../ProgressTracking/Chart';
 import { WeekPlan } from './WeekPlan';
 import { useFocus, useRealm, useScreenOrientation } from '../../hooks/hooks';
-import { CategorySchema, ExerciseSchema } from '../../config/realm';
+import { CategorySchema, ExerciseSchema, SettingsSchema } from '../../config/realm';
 import { useMount } from '../../hooks/useMount';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useFocusEffect } from '@react-navigation/native';
+import { Welcome } from './Welcome/Welcome';
+import { setFirstTimeUser } from '../../api/exercise';
 
 interface State {
   maxExercises: number;
   chartData: number[];
   days: string[];
   weekNumber: number;
+  firstTimeUser?: boolean
 }
 
 export const Home = () => {
@@ -26,6 +29,7 @@ export const Home = () => {
     chartData: [],
     days: [],
     weekNumber: 0,
+    firstTimeUser: false
   });
 
   const currentDate = new Date();
@@ -46,6 +50,7 @@ export const Home = () => {
 
   const { data: exercises, loading: exercisesLoading } = useRealm<ExerciseSchema>({ schemaName: 'Exercise' });
   const { data: categories, loading: categoriesLoading } = useRealm<CategorySchema>({ schemaName: 'Category' });
+  const { data: settings } = useRealm<SettingsSchema>({schemaName: 'Settings'})
   const currentExercises = exercises.filter((e) => e.isValid());
 
   useLayoutEffect(() => {
@@ -66,9 +71,19 @@ export const Home = () => {
       setState({ maxExercises, chartData, days, weekNumber });
     }
   });
+  const setFirstTimeUserToLocal = async () => {
+    await setFirstTimeUser()
+    setState({...state, firstTimeUser: true})
+  }
+  useEffect(() => {
+    if(settings[0]?.isFirstTimeUser) setFirstTimeUserToLocal()
+  }, [settings])
 
+  const setRead = () => {
+    setState({...state, firstTimeUser: false})
+  }
   if (exercisesLoading || categoriesLoading || !focused) return <LoadingIndicator />;
-  console.log("rendering home screen")
+  if(state.firstTimeUser) return <Welcome setRead={setRead}/>
   return (
     <SafeAreaView style={{ height: '100%', width: '100%' }}>
       <ScrollView >
@@ -83,10 +98,10 @@ export const Home = () => {
         >
           Week {state.weekNumber}
         </Text>
-        <MaterialCommunityIcons name={'weight-lifter'} size={125} style={{ textAlign: 'center', paddingTop: 5 }} />
+        <MaterialCommunityIcons color='grey' name={'weight-lifter'} size={125} style={{ textAlign: 'center', paddingTop: 5 }} />
 
         <View style={{ paddingVertical: 20 }}>
-          <WeekPlan week={state.weekNumber} />
+          <WeekPlan week={state.weekNumber || weekNumber} />
         </View>
         <View style={{ width: '100%', height: '100%' }}>
           <Contingent style={{ width: '100%', height: '100%' }} shouldRender={state.maxExercises > 0}>

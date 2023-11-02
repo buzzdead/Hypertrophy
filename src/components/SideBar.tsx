@@ -135,7 +135,7 @@ export const SideBar: React.FC<SideBarProps> = React.memo(
           </TouchableOpacity>
         </View>
         <Text style={styles.sidebarTitle}>Filter</Text>
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{ flexDirection: 'row', }}>
           <Contingent shouldRender={!sidebarVisible}>
               <FlatList
                 data={currentExerciseTypes}

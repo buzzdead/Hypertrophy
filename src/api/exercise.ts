@@ -1,5 +1,5 @@
 import {Exercise, Plan} from "../../typings/types";
-import {ExerciseSchema, ExerciseTypeSchema, MonthSchema, PlanPresetSchema, PlanSchema} from "../config/realm";
+import {ExerciseSchema, ExerciseTypeSchema, MonthSchema, PlanPresetSchema, PlanSchema, SettingsSchema} from "../config/realm";
 import {RealmWrapper} from "./RealmWrapper";
 
 const rw = new RealmWrapper();
@@ -96,7 +96,7 @@ export async function saveExercise(exercise: Exercise) {
   if (!existingExercise) throw new Error();
 
   await rw.performWriteTransaction(() => {
-    removeMetric(existingExercise as ExerciseSchema)
+    removeMetric(existingExercise as unknown as ExerciseSchema)
     existingExercise.type = type;
     existingExercise.sets = sets;
     existingExercise.reps = reps;
@@ -104,7 +104,7 @@ export async function saveExercise(exercise: Exercise) {
     existingExercise.weight = weight;
     existingExercise.metric = metric;
     existingExercise.exceptional = exceptional;
-    addMetric(existingExercise as ExerciseSchema, metric)
+    addMetric(existingExercise as unknown as ExerciseSchema, metric)
   });
 }
 export async function fetchExercises(limitBy?: { by: "Month" | "Week"; when: number[] }) {
@@ -240,5 +240,13 @@ export async function deletePlanPreset(planPreset: PlanPresetSchema) {
 export async function editPlanPreset(planPreset: PlanPresetSchema, name: string) {
   await rw.performWriteTransaction(() => {
     planPreset.name = name
+  })
+}
+
+export async function setFirstTimeUser() {
+  const settings = realm.objects<SettingsSchema>("Settings")
+  if(!settings[0]) throw new Error
+  await rw.performWriteTransaction(() => {
+    settings[0].isFirstTimeUser = false
   })
 }

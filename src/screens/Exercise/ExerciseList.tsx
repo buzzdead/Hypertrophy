@@ -169,14 +169,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  pagination: {
-    flexDirection: "row",
-    gap: 3,
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-    paddingBottom: 5,
-  },
 });
 
 export default ExerciseList;

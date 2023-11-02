@@ -41,7 +41,6 @@ const styles = StyleSheet.create({
       width: 350,
     },
     buttons: {
-      position: "absolute",
       gap: 10,
     },
     buttonsLandScape: {

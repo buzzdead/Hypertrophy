@@ -13,7 +13,7 @@ import { Navigation } from '../../components/Navigation';
 import { ProgressTrackingTop } from './ProgressTrackingTop';
 import { useProgressTracking } from '../../hooks/useProgressTracking';
 
-export const ProgressTracking = () => {
+const ProgressTracking: React.FC = () => {
   const screenOrientation = useScreenOrientation();
   const mounted = useMount();
   const focused = useFocus();
@@ -130,6 +130,7 @@ export const ProgressTracking = () => {
         justifyContent: screenOrientation.isLandscape ? 'flex-start' : 'center',
         alignItems: 'center',
         gap: 20,
+        flex: 1,
       }}
     >
       <ProgressTrackingTop
@@ -190,3 +191,5 @@ export const ProgressTracking = () => {
     </SafeAreaView>
   );
 };
+
+export default ProgressTracking
