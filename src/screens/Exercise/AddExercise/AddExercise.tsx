@@ -109,7 +109,7 @@ const AddExercise: React.FC<Props> = ({ navigation, previousExercise, onClose })
       async () =>
         await mutateItem.mutateAsync({ item: newExercise, action: previousExercise ? 'ADD' : 'SAVE' }).then(async () => {
           const planFound = plans.find(
-            (p) => !p.completed && p.type.id === newExercise.type.id && p.type.category.id === newExercise.type.category.id
+            (p) => !p.completed && p.week !== 999 && p.type.id === newExercise.type.id && p.type.category.id === newExercise.type.category.id
           );
           if (planFound) {
             const metExpectations = planFound.sets * planFound.reps * planFound.weight;

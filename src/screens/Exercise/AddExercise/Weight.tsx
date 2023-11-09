@@ -20,7 +20,7 @@ const Weight: React.FC<Props> = ({value, onChange}) => {
 
   return (
     <View style={styles.inputContainer}>
-      <View style={[styles.weightInputContainer, !isWeightValid && styles.invalidWeightInputContainer]}>
+      <View style={[styles.weightInputContainer]}>
         <TextInput
           style={[styles.input, !isWeightValid && styles.invalidInput]}
           value={String(value)}
@@ -69,9 +69,6 @@ const styles = StyleSheet.create({
   weightInputContainer: {
     flexDirection: "row",
     gap: 5,
-  },
-  invalidWeightInputContainer: {
-    borderColor: "red",
   },
   invalidInput: {
     borderColor: "red",

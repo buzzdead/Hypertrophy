@@ -38,6 +38,7 @@ export const AddPlan = ({ data, isLandscape, onRequestClose, onSave, week, addit
     category: categories[0],
     exerciseType: data.type,
     exceptional: data.exceptional,
+    validWeight: true
   });
 
   const handleSave = () => {
@@ -78,7 +79,7 @@ export const AddPlan = ({ data, isLandscape, onRequestClose, onSave, week, addit
         maxWidth={isLandscape ? 800 : 400}
         picker={100}
         items={categories}
-        onChange={(value) => setState({ ...state, category: value })}
+        onChange={(value) => setState({ ...state, category: value, exerciseType: exerciseTypes.find(e => e.category.id === value.id) })}
       />
       <PickerField
         name={'Exercise Type'}
@@ -90,7 +91,7 @@ export const AddPlan = ({ data, isLandscape, onRequestClose, onSave, week, addit
         onChange={(value) => setState({ ...state, exerciseType: value })}
       />
       <View style={{ paddingTop: 100 }}>
-        <Weight title={'Add weight'} value={state.weight} onChange={(value: any) => setState({ ...state, weight: value })} />
+        <Weight title={'Add weight'} value={state.weight} onChange={(value: any, valid: boolean) => setState({ ...state, weight: value, validWeight: valid })} />
         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
           <NumberInput title={'Sets'} value={data.sets} onChange={(value: any) => setState({ ...state, sets: value })} />
           <NumberInput title={'Reps'} value={data.reps} onChange={(value: any) => setState({ ...state, reps: value })} />
@@ -131,7 +132,7 @@ export const AddPlan = ({ data, isLandscape, onRequestClose, onSave, week, addit
             />
           </View>
           <View style={{ width: 180 }}>
-            <CustomButton titleColor={colors.accent} size='M' backgroundColor={colors.summerDark} title={newPlan ? 'Create' : 'Save'} onPress={handleSave} />
+            <CustomButton titleColor={colors.accent} size='M' backgroundColor={colors.summerDark} title={newPlan ? 'Create' : 'Save'} disabled={!state.validWeight} onPress={handleSave} />
           </View>
         </View>
       </View>

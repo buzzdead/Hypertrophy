@@ -96,7 +96,7 @@ export const Home = () => {
             color: colors.summerDarkest,
           }}
         >
-          Week {state.weekNumber}
+          Week {state.weekNumber || weekNumber}
         </Text>
         <MaterialCommunityIcons color='grey' name={'weight-lifter'} size={125} style={{ textAlign: 'center', paddingTop: 5 }} />
 
