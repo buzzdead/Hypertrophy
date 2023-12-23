@@ -30,7 +30,7 @@ interface State {
 
 const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   const {data: categories, loading: categoriesLoading} = useRealm<CategorySchema>({schemaName: "Category"});
-  const {data: exercises, loading: exercisesLoading} = useRealm<ExerciseSchema>({schemaName: "Exercise"});
+  const {data: exercises, loading: exercisesLoading} = useRealm<ExerciseSchema>({schemaName: "Exercise", limitBy: {by: 'Year', when: 2023}});
   const screenOrientation = useScreenOrientation();
   const mounted = useMount();
   const focused = useFocus();

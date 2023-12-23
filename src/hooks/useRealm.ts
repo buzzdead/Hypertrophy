@@ -5,7 +5,7 @@ import {validateSchema} from "../utils/util";
 
 interface UseRealmConfig<T> {
   schemaName: keyof Schema;
-  limitBy?: {by: "Month"; when: number};
+  limitBy?: {by: "Month" | "Week" | "Year"; when: number};
   mutateFunction?: (item: T, action: Mutations, additional?: number) => Promise<void | boolean>;
 }
 
@@ -65,5 +65,5 @@ export function useRealm<T extends Schema[keyof Schema]>({schemaName, limitBy, m
     refetchOnWindowFocus: false,
   });
 
-  return {data: data === undefined ? [] : data, loading, refresh, mutateItem};
+  return {data: data === undefined ? [] : data as T[], loading, refresh, mutateItem};
 }
