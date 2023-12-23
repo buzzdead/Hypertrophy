@@ -52,6 +52,7 @@ export class ExerciseSchema extends Realm.Object {
       id: { type: "int", indexed: true },
       week: { type: "int", indexed: true },
       month: { type: "int", indexed: true },
+      year: { type: "int", indexed: true },
       type: "ExerciseType",
       sets: "int",
       reps: "int",
@@ -70,6 +71,7 @@ export class ExerciseSchema extends Realm.Object {
   weight!: number;
   week!: number
   month!: number
+  year!: number
   exceptional!: boolean
   metric!: number
 }
@@ -144,7 +146,7 @@ export class SettingsSchema extends Realm.Object {
 
 const realmConfig: Realm.Configuration = {
   schema: [ExerciseSchema, ExerciseTypeSchema, CategorySchema, MonthSchema, PlanSchema, PlanPresetSchema, SettingsSchema],
-  schemaVersion: 24,
+  schemaVersion: 25,
   onMigration: migration,
 };
 
@@ -326,6 +328,13 @@ function migration(oldRealm: Realm, newRealm: Realm) {
         isFirstTimeUser: true
       })
     }
+  }
+  if (oldRealm.schemaVersion < 25) {
+    const newExercises = newRealm.objects<ExerciseSchema>("Exercise")
+    newExercises.forEach(e => {
+      const year = new Date(e.date).getFullYear()
+      e.year = year;
+    }) 
   }
 }
 
