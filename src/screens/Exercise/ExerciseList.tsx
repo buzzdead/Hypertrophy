@@ -1,5 +1,5 @@
 import React, {useEffect, useLayoutEffect, useRef, useState} from "react";
-import {SafeAreaView, StyleSheet, View} from "react-native";
+import {SafeAreaView, StyleSheet, Text, View} from "react-native";
 import {StackScreenProps} from "@react-navigation/stack";
 import {Exercise, ExerciseWithDuplicates, IGroup} from "../../../typings/types";
 import {groupExercisesByWeek} from "../../utils/util";
@@ -11,6 +11,7 @@ import {CategorySchema, ExerciseSchema} from "../../config/realm";
 import {Navigation} from "../../components/Navigation";
 import {useScreenOrientation} from "../../hooks/useScreenOrientation";
 import {useMount} from "../../hooks/useMount";
+import YearDropdown from "../../components/Dropdown.";
 
 type ExeciseListProps = StackScreenProps<
   {
@@ -26,11 +27,14 @@ interface State {
   currentPage: number;
   seleectedCategories: CategorySchema[];
   groupedExercises: IGroup[];
+  year: number;
+  exercisesByYear: ExerciseSchema[];
 }
 
 const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   const {data: categories, loading: categoriesLoading} = useRealm<CategorySchema>({schemaName: "Category"});
-  const {data: exercises, loading: exercisesLoading} = useRealm<ExerciseSchema>({schemaName: "Exercise", limitBy: {by: 'Year', when: 2023}});
+  const {data: exercises, loading: exercisesLoading} = useRealm<ExerciseSchema>({schemaName: "Exercise"});
+
   const screenOrientation = useScreenOrientation();
   const mounted = useMount();
   const focused = useFocus();
@@ -42,10 +46,17 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
     currentPage: 0,
     seleectedCategories: [],
     groupedExercises: [],
+    year: 0,
+    exercisesByYear: [],
   });
 
   const currentPageRef = useRef(state.currentPage);
   const categoriesRef = useRef(state.seleectedCategories);
+
+  useEffect(() => {
+    const theExercises = state.year === 0 ? exercises : exercises.filter(e => e.year === state.year)
+    setState({...state, exercisesByYear: theExercises})
+  }, [state.year, exercises])
 
   const handleNextPage = (currentPage?: number, selectedCat?: CategorySchema[]) => {
     const newCurrent = typeof currentPage === "number" ? currentPage : state.currentPage;
@@ -108,7 +119,10 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
 
   useLayoutEffect(() => {
     if (categoriesLoading) return;
-    const groups = groupExercisesByWeek(exercises, true);
+    const old = state.groupedExercises[0]?.exercises[0]?.exercise.year
+    const didYearChange = old !== state.year
+
+    const groups = groupExercisesByWeek(state.exercisesByYear, true);
     const newCurrentPage =
       state.groupedExercises.length > groups.length && state.currentPage > 0
         ? state.currentPage - 1
@@ -118,10 +132,10 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
     setState({
       ...state,
       groupedExercises: groups,
-      filteredExercises: updateFilteredExercises(newCurrentPage, state.seleectedCategories, groups),
-      currentPage: newCurrentPage,
+      filteredExercises: updateFilteredExercises(didYearChange ? 0 : newCurrentPage, state.seleectedCategories, groups),
+      currentPage: didYearChange ? 0 : newCurrentPage,
     });
-  }, [exercises]);
+  }, [state.exercisesByYear]);
 
   // Figure out a way to fix rerendering cause of this
   const panResponder = usePanHandler({
@@ -134,7 +148,7 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
   });
 
   if (exercisesLoading || categoriesLoading || !focused) return <LoadingIndicator />;
-
+  
   return (
     <SafeAreaView style={styles.container} {...panResponder?.current?.panHandlers}>
       <SideBar
@@ -144,6 +158,7 @@ const ExerciseList: React.FC<ExeciseListProps> = ({navigation}) => {
         onCategoriesChange={handleFilterChange}
         prevSelectedCat={state.seleectedCategories || []}
       />
+      <YearDropdown defaultValue={state.year} onChange={(value) => setState({...state, year: value})}/>
       <WeeklyExercises
         navigation={navigation}
         groupedExercises={state.filteredExercises}

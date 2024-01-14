@@ -12,19 +12,20 @@ import Toast from 'react-native-toast-message';
 import { Navigation } from '../../components/Navigation';
 import { ProgressTrackingTop } from './ProgressTrackingTop';
 import { useProgressTracking } from '../../hooks/useProgressTracking';
+import YearDropdown from '../../components/Dropdown.';
 
 const ProgressTracking: React.FC = () => {
   const screenOrientation = useScreenOrientation();
   const mounted = useMount();
   const focused = useFocus();
 
-  const { state, setState, getChartData, updateChart, exercises, categories, months, allExerciseTypes, loaded } =
+  const { state, setState, getChartData, updateChart, categories, months, allExerciseTypes, loaded } =
     useProgressTracking(mounted);
 
   const containsMonth = (month: number) => {
     if (!state.availableMonths) return;
     if(state.mode === "Weekly") return false
-    return months?.find((e) => e.month === state.availableMonths[month]?.numerical);
+    return months?.find((e) => e.month === state.availableMonths[month]?.numerical && state.year === 0 || e.year === state.year.toString());
   };
 
   const handleNext = () => {
@@ -102,14 +103,16 @@ const ProgressTracking: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!mounted) return;
-    setTimeout(() => setState({ ...state, loading: false }), 50);
+    if (!mounted || !state.loading) return;
+    setTimeout(() => setState({ ...state, loading: false }), 20);
+    console.log("settting loading false")
   }, [state.lastHalf, state.currentMonth, state.maxExercises, state.filteredCategories, state.chartData]);
 
   useLayoutEffect(() => {
     if (!loaded) return;
+    console.log("getting dat")
     getChartData();
-  }, [loaded, state.mode, state.metric, exercises]);
+  }, [loaded, state.mode, state.metric, state.exercisesByYear]);
 
   if (!focused || !mounted) return <LoadingIndicator />;
 
@@ -121,7 +124,6 @@ const ProgressTracking: React.FC = () => {
         </Text>
       </View>
     );
-
   return (
     <SafeAreaView
       style={{
@@ -133,6 +135,7 @@ const ProgressTracking: React.FC = () => {
         flex: 1,
       }}
     >
+      <YearDropdown defaultValue={state.year} absolute onChange={(v) => setState({...state, year: v})} />
       <ProgressTrackingTop
         pr={state.pr}
         isLandscape={screenOrientation.isLandscape}

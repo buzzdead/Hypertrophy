@@ -29,7 +29,7 @@ export const ProgressTrackingTop: React.FC<Props> = ({
   return (
     <View style={{ position: 'absolute', top: 10, left: 15, width: '100%', alignItems: isLandscape ? 'center' : 'flex-start' }}>
       <Contingent shouldRender={pr}>
-        <Text style={{ fontFamily: 'Roboto-Black' }}>{`Exercise: ${exerciseType?.name} - Averge Metric: ${Math.round(
+        <Text style={{marginTop: 20, fontFamily: 'Roboto-Black' }}>{`Exercise: ${exerciseType?.name} - Averge Metric: ${Math.round(
           exerciseType?.averageMetric
         )}`}</Text>
       </Contingent>
