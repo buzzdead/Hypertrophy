@@ -19,7 +19,8 @@ export class RealmWrapper {
 
   async getRealmObject<T extends Schema[keyof Schema]>(schemaName: keyof Schema, limitBy?: { by: 'Month' | "Week" | "Year", when: number }) {
     if (schemaName === "Exercise" && limitBy && limitBy.by === "Year") {
-      const exercises = fetchExercises({by: 'Year', when: [limitBy.when]})
+      
+      const exercises = Array.from(this.realm.objects<T>(schemaName).filtered("year == $0", limitBy.when))
       return exercises;
     }
     if (limitBy && limitBy.by === "Month") {

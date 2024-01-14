@@ -70,6 +70,7 @@ export async function addExercise(exercise: Exercise) {
           metric *= Math.min((stdMetric / exercise.type.averageMetric), 1.6)
         }}
   exerciseToAdd.metric = metric
+  exerciseToAdd.year = parseInt(eYear);
   await rw.performWriteTransaction(() => {
     if (month !== undefined) month.exerciseCount += 1;
     else {
@@ -123,8 +124,8 @@ export async function fetchExercises(limitBy?: { by: "Month" | "Week" | "Year"; 
     return Array.from(realm.objects<ExerciseSchema>('Exercise').filtered('week == $0', week));
   }
   else if (limitBy && limitBy.by === "Year") {
-    const year = limitBy.when;
-    return Array.from(realm.objects<ExerciseSchema>('Exercise').filtered(''))
+    const year = limitBy.when[0];
+    return Array.from(realm.objects<ExerciseSchema>('Exercise').filtered('year == $0', year))
   }
   return Array.from(exercises);
 }
