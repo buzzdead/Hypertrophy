@@ -31,6 +31,7 @@ export function useRealm<T extends Schema[keyof Schema]>({schemaName, limitBy, m
         const previousItems = queryClient.getQueryData<T[]>(schemaName);
         if (previousItems) {
           action === "DEL"
+          //@ts-ignore
             ? queryClient.setQueryData<T[]>(schemaName, {...previousItems.filter(p => p.id !== newItem.id)})
             : queryClient.setQueryData<T[]>(schemaName, [...previousItems, newItem]);
         }
