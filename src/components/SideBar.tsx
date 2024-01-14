@@ -105,6 +105,7 @@ export const SideBar: React.FC<SideBarProps> = React.memo(
       <Animated.View
         style={[
           styles.sidebar,
+          {top: icon === 'chart-bar' ? 0 : -15},
           {
             right: -sideBarWidth + SidebarVisibleWidth,
             width: sideBarWidth - SidebarVisibleWidth,

@@ -1,11 +1,11 @@
 // realmConfig.ts
-import Realm from "realm";
+import Realm, { ObjectSchema } from "realm";
 import { getWeekNumber } from "../utils/date";
 import { colors } from "../utils/color";
 import { Plan } from "../../typings/types";
 
 export class CategorySchema extends Realm.Object {
-  static schema = {
+  static schema: ObjectSchema = {
     name: "Category",
     primaryKey: "id",
     properties: {
@@ -21,7 +21,7 @@ export class CategorySchema extends Realm.Object {
 }
 
 export class ExerciseTypeSchema extends Realm.Object {
-  static schema = {
+  static schema: ObjectSchema = {
     name: "ExerciseType",
     primaryKey: "id",
     properties: {
@@ -45,13 +45,14 @@ export class ExerciseTypeSchema extends Realm.Object {
 }
 
 export class ExerciseSchema extends Realm.Object {
-  static schema = {
+  static schema: ObjectSchema = {
     name: "Exercise",
     primaryKey: "id",
     properties: {
       id: { type: "int", indexed: true },
       week: { type: "int", indexed: true },
       month: { type: "int", indexed: true },
+      year: { type: "int", indexed: true },
       type: "ExerciseType",
       sets: "int",
       reps: "int",
@@ -70,12 +71,13 @@ export class ExerciseSchema extends Realm.Object {
   weight!: number;
   week!: number
   month!: number
+  year!: number
   exceptional!: boolean
   metric!: number
 }
 
 export class MonthSchema extends Realm.Object {
-  static schema = {
+  static schema: ObjectSchema = {
     name: "Month",
     primaryKey: "id",
     properties: {
@@ -93,7 +95,7 @@ export class MonthSchema extends Realm.Object {
 }
 
 export class PlanSchema extends Realm.Object {
-  static schema = {
+  static schema: ObjectSchema = {
     name: "Plan",
     primaryKey: "id",
     properties: {
@@ -118,7 +120,7 @@ export class PlanSchema extends Realm.Object {
 }
 
 export class PlanPresetSchema extends Realm.Object {
-  static schema = {
+  static schema: ObjectSchema = {
     name: "PlanPreset",
     primaryKey: "id",
     properties: {
@@ -133,10 +135,10 @@ export class PlanPresetSchema extends Realm.Object {
 }
 
 export class SettingsSchema extends Realm.Object {
-  static schema = {
+  static schema: ObjectSchema = {
     name: "Settings",
     properties: {
-      isFirstTimeUser: {type: "bool", default: true}
+      isFirstTimeUser: { type: "bool", default: true }
     }
   }
   isFirstTimeUser!: boolean;
@@ -144,7 +146,7 @@ export class SettingsSchema extends Realm.Object {
 
 const realmConfig: Realm.Configuration = {
   schema: [ExerciseSchema, ExerciseTypeSchema, CategorySchema, MonthSchema, PlanSchema, PlanPresetSchema, SettingsSchema],
-  schemaVersion: 24,
+  schemaVersion: 25,
   onMigration: migration,
 };
 
@@ -290,11 +292,11 @@ function migration(oldRealm: Realm, newRealm: Realm) {
       completed: false,
       exceptional: false,
     }
-    
+
     const plans = newRealm.objects<PlanSchema>("Plan")
 
     const maxId = plans.max("id") as number
-    
+
     newRealm.create("Plan", {
       ...plan1,
       id: maxId + 1
@@ -318,7 +320,7 @@ function migration(oldRealm: Realm, newRealm: Realm) {
   }
   if (oldRealm.schemaVersion < 24) {
     const settings = newRealm.objects<SettingsSchema>("Settings")
-    if(settings.length > 0) {
+    if (settings.length > 0) {
       return
     }
     else {
@@ -326,6 +328,13 @@ function migration(oldRealm: Realm, newRealm: Realm) {
         isFirstTimeUser: true
       })
     }
+  }
+  if (oldRealm.schemaVersion < 25) {
+    const newExercises = newRealm.objects<ExerciseSchema>("Exercise")
+    newExercises.forEach(e => {
+      const year = new Date(e.date).getFullYear()
+      e.year = year;
+    })
   }
 }
 

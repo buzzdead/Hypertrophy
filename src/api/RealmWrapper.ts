@@ -1,6 +1,7 @@
 import Realm, { Results } from "realm";
 import { Schema } from "../../typings/types";
 import RealmService from "./realmService";
+import { fetchExercises } from "./exercise";
 
 export class RealmWrapper {
   private realm: Realm;
@@ -16,7 +17,12 @@ export class RealmWrapper {
   }
 
 
-  async getRealmObject<T extends Schema[keyof Schema]>(schemaName: keyof Schema, limitBy?: { by: 'Month', when: number }) {
+  async getRealmObject<T extends Schema[keyof Schema]>(schemaName: keyof Schema, limitBy?: { by: 'Month' | "Week" | "Year", when: number }) {
+    if (schemaName === "Exercise" && limitBy && limitBy.by === "Year") {
+      
+      const exercises = Array.from(this.realm.objects<T>(schemaName).filtered("year == $0", limitBy.when))
+      return exercises;
+    }
     if (limitBy && limitBy.by === "Month") {
       const month = limitBy.when;
       const year = new Date().getFullYear(); // or use a specific year if needed

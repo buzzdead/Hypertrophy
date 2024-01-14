@@ -19,7 +19,9 @@ interface Chart {
     loading: boolean;
     metric: boolean;
     pr: boolean;
+    year: number
     chartType: ChartType
+    exercisesByYear: ExerciseSchema[]
 }
 
 export const useProgressTracking = (mounted: boolean) => {
@@ -35,16 +37,25 @@ export const useProgressTracking = (mounted: boolean) => {
         maxExercises: 0,
         days: [],
         currentMonth: 0,
+        year: 0,
         lastHalf: false,
         filteredCategories: [],
         filteredExerciseTypes: [],
         availableMonths: [],
+        exercisesByYear: [],
         mode: 'Daily',
         loading: false,
         metric: false,
         pr: false,
         chartType: 'Bar'
     });
+
+    useEffect(() => {
+        const theExercises = state.year === 0 ? exercises : exercises.filter((e) => e.year === state.year);
+        const newAvailableMonths = getAvailableMonths(months, state.year)
+        setState({ ...state, exercisesByYear: theExercises , availableMonths: newAvailableMonths, currentMonth: 0 })
+        console.log("yeart efect")
+    }, [state.year, exercises])
 
     const updateChart = (
         availableMonths: Month[],
@@ -55,7 +66,7 @@ export const useProgressTracking = (mounted: boolean) => {
         selectedCategories?: CategorySchema[],
         pr?: boolean
     ) => {
-        const exc = state.mode === 'Daily' ? exercises.filter((e) => e.month === availableMonths[newCurrentMonth]?.numerical) : exercises;
+        const exc = state.mode === 'Daily' ? state.exercisesByYear.filter((e) => e.month === availableMonths[newCurrentMonth]?.numerical) : state.exercisesByYear;
 
         const filteredExercises =
             filteredExerciseTypes.length === 0 ? exc : exc.filter((e) => filteredExerciseTypes.some((et) => et.id === e.type.id));
@@ -97,12 +108,13 @@ export const useProgressTracking = (mounted: boolean) => {
         newExerciseTypes?: ExerciseTypeSchema[],
         pr?: boolean
     ) => {
+        console.log('getting chartdata')
         const newCategories =
             selectedCategories?.length === 0
                 ? categories
                 : categories.filter((category) => selectedCategories?.some((c) => c.id === category.id));
 
-        const availableMonths = state.mode === 'Weekly' ? [{numerical: 0, name: "Q1/Q2"}] : (state.availableMonths.length === 0 || state.availableMonths[0].name === 'Q1/Q2' || state.availableMonths[0].name === 'Q3/Q4') ? getAvailableMonths(months) : state.availableMonths;
+        const availableMonths = state.mode === 'Weekly' ? [{ numerical: 0, name: "Q1/Q2" }] : (state.availableMonths.length === 0 || state.availableMonths[0].name === 'Q1/Q2' || state.availableMonths[0].name === 'Q3/Q4') ? getAvailableMonths(months, state.year) : state.availableMonths;
         if (availableMonths.length === 0) return;
 
         updateChart(
@@ -120,7 +132,7 @@ export const useProgressTracking = (mounted: boolean) => {
     useEffect(() => {
         if (!exerciseTypesLoading && !exercisesLoading && !categoriesLoading && !monthsLoading)
             setLoaded(true)
-    })
+    }, [exerciseTypesLoading, exercisesLoading, categoriesLoading, monthsLoading])
 
-    return { state, setState, getChartData, updateChart, exercises, months, allExerciseTypes, categories, loaded }
+    return { state, setState, getChartData, updateChart, months, allExerciseTypes, categories, loaded }
 }

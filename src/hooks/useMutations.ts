@@ -1,5 +1,6 @@
 import { useQueryClient, useMutation } from "react-query";
 import { Schema } from "../../typings/types";
+import { SettingsSchema } from "../config/realm";
 
 export type Mutations = "ADD" | "SAVE" | "DEL";
 
@@ -24,6 +25,7 @@ export function useMutations<T extends Schema[keyof Schema]>(
             const previousItems = queryClient.getQueryData<T[]>(schemaName);
             if (previousItems) {
               action === "DEL"
+              //@ts-ignore
                 ? queryClient.setQueryData<T[]>(schemaName, {...previousItems.filter(p => p.id !== newItem.id)})
                 : queryClient.setQueryData<T[]>(schemaName, [...previousItems, newItem]);
             }

@@ -69,9 +69,10 @@ export const months: Month[] = [
   {numerical: 11, name: "December"},
 ];
 
-export const getAvailableMonths = (storedMonths: MonthSchema[]): Month[] => {
+export const getAvailableMonths = (storedMonths: MonthSchema[], year: number): Month[] => {
   const availableMonths: Month[] = [];
-  storedMonths.forEach(e => {
+  const filteredMonths = storedMonths.filter(m => year === 0 || m.year === year.toString());
+  filteredMonths.forEach(e => {
     if (!availableMonths.find(m => m.numerical === e.month)) {
       const month = months.find(m => m.numerical === e.month);
       month && availableMonths.push(month);
